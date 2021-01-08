@@ -14,6 +14,30 @@ function createMap() {
   }); 
 }
 
+/** Creates a marker that shows a read-only info window when clicked. */
+function createMarkerForDisplay(lat, lng, content) {
+  const marker =
+      new google.maps.Marker({position: {lat: lat, lng: lng}, map: map});
+
+  const contentString = 
+  '<div id="content">' +
+    '<div id="locationInfo">' +
+    "</div>" +
+    '<p> Location Title: </p>' +
+    content + 
+    '<div id="bodyContent">' +
+    "<p>Number of Votes: 1</br>" +
+    "Voters: You</br></p>" +
+    "<button>VOTE</button><br/><br/>"
+    "</div>" +
+    "</div>";
+
+  const infoWindow = new google.maps.InfoWindow({content: contentString});
+  marker.addListener('click', () => {
+    infoWindow.open(map, marker);
+  });
+}
+
 /** Creates a marker that shows a textbox the user can edit. */
 function createMarkerForEdit(lat, lng) {
   // If we're already showing an editable marker, then remove it.
@@ -48,6 +72,7 @@ function buildInfoWindowInput(lat, lng) {
   button.appendChild(document.createTextNode('CONFIRM'));
 
   button.onclick = () => {
+    createMarkerForDisplay(lat, lng, textBox.value);
     editMarker.setMap(null);
   };
 
