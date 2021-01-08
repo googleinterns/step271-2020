@@ -29,7 +29,7 @@
     <div id="meeting-time-voting">
       <h2>Proposed Meeting Times</h2>
       <form id="vote-time">
-        <table>
+        <table id="times-table">
           <tr>
             <th>Option</th>
             <th>Time</th>
@@ -57,6 +57,11 @@
         </table>
       </form>
       <button onclick="voteTime()">Vote Time</button>
+      <div>
+        <label for="new-time">Suggest another time</label>
+        <input id="new-time" type="datetime-local" name="new-time">
+        <button onclick="proposeTime()">Add time</button>
+      </div>
     </div>
   </body>
 </html>
