@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <title>Meeting</title>
+    <script src="script.js"></script>
+    <style>
+      table,
+      th,
+      td {
+        border: 1px solid black;
+        text-align: left;
+      }
+    </style>
+  </head>
+  <!-- In MVP, this will just be an HTML file with empty divs where all the data goes -->
+  <!-- onload will call JS functions that fetches meeting data and renders -->
+  <body>
+    <h1>Meeting Name</h1>
+    <div id="meeting-time-voting">
+      <h2>Proposed Meeting Times</h2>
+      <form id="vote-time">
+        <table>
+          <tr>
+            <th>Option</th>
+            <th>Time</th>
+            <th>Current Votes</th>
+            <th>Vote</th>
+          </tr>
+          <tr>
+            <th>1</th>
+            <th>Thursday, 14th January 10:00</th>
+            <th id="time-1-vote">0</th>
+            <th><input id="time-1" type="radio" name="vote-time" /></th>
+          </tr>
+          <tr>
+            <th>2</th>
+            <th>Tuesday, 12th January 08:00</th>
+            <th id="time-2-vote">0</th>
+            <th><input id="time-2" type="radio" name="vote-time" /></th>
+          </tr>
+          <tr>
+            <th>3</th>
+            <th>Friday, 15th January 16:00</th>
+            <th id="time-3-vote">0</th>
+            <th><input id="time-3" type="radio" name="vote-time" /></th>
+          </tr>
+        </table>
+      </form>
+      <button onclick="voteTime()">Vote Time</button>
+    </div>
+  </body>
+</html>
