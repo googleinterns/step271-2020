@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+  <!-- Create Meeting Step 1: Set meeting name and add guests -->
+  <head>
+    <meta charset="UTF-8">
+    <title>Create Meeting</title>
+    <script src="createMeeting.js"></script>
+  </head>
+  <body>
+    <div>
+      <h1>Create Meeting</h1>
+      <h2>Step 1</h2> 
+      <form id="meeting-name-form">
+        <label for="meeting-name">Meeting Name</label>
+        <input type="text" name="meeting-name">
+      </form>
+      <div>
+        <ul id="guest-list"></ul>
+      </div>
+      <div>
+        <form id="meeting-guests-form">
+          <label for="meeting-guest">Add Guests</label>
+          <input id="meeting-guest" type="text" name="meeting-guest">
+        </form>
+        <button onclick="addMeetingGuest()">Add guest</button>
+      </div>
+      <button>Next</button>
+    </div>
+  </body>
+</html>
