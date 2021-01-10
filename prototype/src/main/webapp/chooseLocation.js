@@ -14,6 +14,15 @@ function createMap() {
   }); 
 }
 
+/** Creates a map that allows users to add markers and already has a displayed marker.
+ * Note: This is just for the prototype. In the MVP, all maps will created with no 
+ * markers.
+ */
+function createMapWithMarker() {
+  createMap();
+  createMarkerForDisplay(-33.8688, 151.2093, "A Proposed Location");
+}
+
 /** Creates a marker that shows a read-only info window when clicked. */
 function createMarkerForDisplay(lat, lng, content) {
   const marker =
@@ -85,4 +94,3 @@ function buildInfoWindowInput(lat, lng) {
 
   return containerDiv;
 }
-
