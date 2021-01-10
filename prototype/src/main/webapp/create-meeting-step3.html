@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+  <!-- Create Meeting Step 3: Manually propose meeting times -->
+  <head>
+    <meta charset="UTF-8">
+    <title>Create Meeting</title>
+    <script src="createMeeting.js"></script>
+  </head>
+  <body>
+    <div>
+      <h1>Find a Meeting Time</h1>
+      <h2>Manually suggest input times</h2>
+      <form> 
+        <div>
+          <ul id="meeting-time-list">
+            <li id="meeting-time-0">
+              <label for="meeting-time">New Time: </label>
+              <input type="datetime-local" name="meeting-time">
+            </li>
+          </ul>
+        </div>
+      </form>
+      <button>+</button> <!-- adds a time input field to the page -->
+      <div>
+        <button>Next</button>
+      </div>
+    </div>
+  </body>
+</html>
