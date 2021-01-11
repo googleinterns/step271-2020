@@ -37,8 +37,8 @@ function createMarkerForDisplay(lat, lng, content) {
     '<div id="bodyContent">' +
     "<p>Number of Votes: 1</br>" +
     "Voters: You</br></p>" +
-    "<input type=\"checkbox\" id=\"vote\" name=\"vote\" value=\"vote\">" +
-    "<label for=\"vote\"> VOTE</label><br></br>" +
+    "<input type='checkbox' id='vote' name='vote' value='vote'>" +
+    "<label for='vote'> VOTE</label><br></br>" +
     "</div>" +
     "</div>";
 
