@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <title>Meeting</title>
+    <script src="viewMeeting.js"></script>
+    <style>
+      table,
+      th,
+      td {
+        border: 1px solid black;
+        text-align: left;
+      }
+    </style>
+  </head>
+  <!-- In MVP, this will just be an HTML file with empty divs where all the data goes -->
+  <!-- onload will call JS functions that fetches meeting data and renders -->
+  <body>
+    <h1>Meeting Name</h1>
+    <div id="guest-list">
+      <h2>Meeting Creator</h2>
+      <p>Elmo</p>
+      <h2>Invited Attendees</h2>
+      <ul>
+        <li>Bert</li>
+        <li>Ernie</li>
+      </ul>
+    </div>
+    <div id="meeting-time-voting">
+      <h2>Proposed Meeting Times</h2>
+      <form id="vote-time">
+        <table id="times-table">
+          <tr>
+            <th>Option</th>
+            <th>Time</th>
+            <th>Current Votes</th>
+            <th>Vote</th>
+          </tr>
+          <tr>
+            <td>1</td>
+            <td>Thursday, 14th January 10:00</td>
+            <td id="time-1-vote">0</td>
+            <td><input id="time-1" type="radio" name="vote-time" /></td>
+          </tr>
+          <tr>
+            <td>2</td>
+            <td>Tuesday, 12th January 08:00</td>
+            <td id="time-2-vote">0</td>
+            <td><input id="time-2" type="radio" name="vote-time" /></td>
+          </tr>
+          <tr>
+            <td>3</td>
+            <td>Friday, 15th January 16:00</td>
+            <td id="time-3-vote">0</td>
+            <td><input id="time-3" type="radio" name="vote-time" /></td>
+          </tr>
+        </table>
+      </form>
+      <button onclick="voteTime()">Vote Time</button>
+      <div>
+        <label for="new-time">Suggest another time</label>
+        <input id="new-time" type="datetime-local" name="new-time">
+        <button onclick="proposeTime()">Add time</button>
+      </div>
+    </div>
+  </body>
+</html>
