@@ -1,4 +1,4 @@
-var MEETING_TIMES_ADDED = 1; // Number of meeting time inputs on the page 
+let meetingTimesAdded = 1; // Number of meeting time inputs on the page 
 
 /**
  * Adds a meeting guest to ul element with id "meeting-guest"
