@@ -29,18 +29,18 @@ function createMarkerForDisplay(lat, lng, content) {
       new google.maps.Marker({position: {lat: lat, lng: lng}, map: map});
 
   const contentString = 
-  '<div id="content">' +
-    '<div id="locationInfo">' +
-    "</div>" +
-    '<p> Location Title: </p>' +
-    content + 
-    '<div id="bodyContent">' +
-    "<p>Number of Votes: 1</br>" +
-    "Voters: You</br></p>" +
-    "<input type='checkbox' id='vote' name='vote' value='vote'>" +
-    "<label for='vote'> VOTE</label><br></br>" +
-    "</div>" +
-    "</div>";
+      `<div id="content">
+      <div id="locationInfo">
+      </div>
+      <p> Location Title: </p>
+      ${content}
+      <div id="bodyContent">
+      <p>Number of Votes: 1</br>
+      Voters: You</br></p>
+      <input type='checkbox' id='vote' name='vote' value='vote'>
+      <label for='vote'> VOTE</label><br></br>
+      </div>
+      </div>`;
 
   const infoWindow = new google.maps.InfoWindow({content: contentString});
   marker.addListener('click', () => {
