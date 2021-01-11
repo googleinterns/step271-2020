@@ -6,15 +6,12 @@
     <script src="chooseLocation.js"></script>
     <link rel="stylesheet" href="style.css">
   </head>
-  <body onload="createMap();">
+  <body onload="createMapWithMarker();">
     <h1>Meeting Locations: </h1>
     <p>Click on the map to propose a new location.</p>
+    <p>Click on a location tag to see information and vote</p></br>
     <div id="map"></div></br>
-    <button id="myButton">Send Event</button>
-    <script type="text/javascript">
-    document.getElementById("myButton").onclick = function () {
-      location.href = "/vote-locations.html";
-    };
-    </script>
+    <h2> Number of Votes vs. Location </h2>
+    <img src="images/bargraph.png" alt="Bar graph for Number of Votes vs Location" width="750" height="500">
   </body>
 </html>
