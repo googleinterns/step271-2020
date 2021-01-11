@@ -6,7 +6,9 @@ function voteTime() {
   let inputs = document.getElementById("vote-time").elements;
   for (let i = 0; i < proposedMeetingTimes; i++) {
     if (inputs[i].checked === true) {
-      document.getElementById(inputs[i].id + "-vote").innerText = (
+      let voteCountDiv = document.getElementById(inputs[i].id + "-vote");
+      voteCountDiv.innerText = (
+        // increment the vote count displayed in the div by 1
         parseInt(document.getElementById(inputs[i].id + "-vote").innerText) + 1
       ).toString();
       // disable radio button, since user may only vote once for each time
