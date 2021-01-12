@@ -42,14 +42,14 @@ function removeMeetingGuest(guest) {
  * Add a meeting time datetime-local input to the page, enclosed in 
  * a 'li' element.
  * The element appended to the DOM will have an id of 'meeting-time-NUMBER', 
- * where NUMBER equal to value of MEETING_TIMES_ADDED (which is incremented
+ * where NUMBER equal to value of meetingTimesAdded (which is incremented
  * each time this function is called). This is to identify the meeting time input
  * so that users may remove the meeting time. See removeMeetingTime().
  */
 function addMeetingTime() {
   let listItem = document.createElement('li');
-  listItem.id = 'meeting-time-' + MEETING_TIMES_ADDED; 
-  MEETING_TIMES_ADDED += 1;
+  listItem.id = 'meeting-time-' + meetingTimesAdded; 
+  meetingTimesAdded += 1;
 
   let newTimeInput = document.createElement('input');
   newTimeInput.type = 'datetime-local';
