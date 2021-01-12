@@ -68,7 +68,7 @@ function addMeetingTime() {
   listItem.appendChild(newTimeInput);
   listItem.appendChild(removeTimeButton);
 
-  let timeListDiv = document.getElementById('meeting-time-list')
+  let timeListDiv = document.getElementById('meeting-time-list');
   timeListDiv.appendChild(listItem);
 }
 
