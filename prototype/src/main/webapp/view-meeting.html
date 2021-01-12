@@ -4,6 +4,9 @@
     <meta charset="UTF-8" />
     <title>Meeting</title>
     <script src="viewMeeting.js"></script>
+    <script src="chooseLocation.js"></script>
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAcLlZxKd7qtaKgdkko0zMJyKzV4jImaG8"></script>
+    <link rel="stylesheet" href="style.css">
     <style>
       table,
       th,
@@ -15,7 +18,7 @@
   </head>
   <!-- In MVP, this will just be an HTML file with empty divs where all the data goes -->
   <!-- onload will call JS functions that fetches meeting data and renders -->
-  <body>
+  <body onload="createMapWithMarker();">
     <h1>Meeting Name</h1>
     <div id="guest-list">
       <h2>Meeting Creator</h2>
@@ -62,6 +65,14 @@
         <input id="new-time" type="datetime-local" name="new-time">
         <button onclick="proposeTime()">Add time</button>
       </div>
+    </div>
+    <div id="location-voting">
+      <h2>Meeting Locations</h2>
+      <p>Click on the map to propose a new location.</p>
+      <p>Click on a location tag to see information and vote</p></br>
+      <div id="map"></div></br>
+      <h3> Number of Votes vs. Location </h3>
+      <img src="images/bargraph.png" alt="Bar graph for Number of Votes vs Location" width="750" height="500">
     </div>
   </body>
 </html>
