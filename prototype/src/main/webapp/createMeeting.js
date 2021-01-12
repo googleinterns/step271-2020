@@ -1,3 +1,5 @@
+let meetingTimesAdded = 1; // Number of meeting time inputs on the page 
+
 /**
  * Adds a meeting guest to ul element with id "meeting-guest"
  */
@@ -34,4 +36,48 @@ function addMeetingGuest() {
  */
 function removeMeetingGuest(guest) {
   document.getElementById(guest).remove();
+}
+
+/**
+ * Add a meeting time datetime-local input to the page, enclosed in 
+ * a 'li' element.
+ * The element appended to the DOM will have an id of 'meeting-time-NUMBER', 
+ * where NUMBER equal to value of meetingTimesAdded (which is incremented
+ * each time this function is called). This is to identify the meeting time input
+ * so that users may remove the meeting time. See removeMeetingTime().
+ */
+function addMeetingTime() {
+  let listItem = document.createElement('li');
+  listItem.id = 'meeting-time-' + meetingTimesAdded; 
+  meetingTimesAdded += 1;
+
+  let newTimeInput = document.createElement('input');
+  newTimeInput.type = 'datetime-local';
+  newTimeInput.name = 'meeting-time';
+
+  let newTimeInputLabel = document.createElement('label');
+  newTimeInputLabel.htmlFor = 'meeting-time';
+  newTimeInputLabel.innerText = 'New Time: ';
+
+  // delete button associated with this meeting time
+  let removeTimeButton = document.createElement('button');
+  removeTimeButton.innerHTML = '-';
+  removeTimeButton.addEventListener('click', function() {removeMeetingTime(listItem.id);});
+
+  listItem.appendChild(newTimeInputLabel);
+  listItem.appendChild(newTimeInput);
+  listItem.appendChild(removeTimeButton);
+
+  let timeListDiv = document.getElementById('meeting-time-list');
+  timeListDiv.appendChild(listItem);
+}
+
+/**
+ * Removes a meeting time 'li' element with the id as given in
+ * timeListItemId.
+ * @param {*} timeListItemId the id of the meeting time 'li' element to be
+ *     removed.
+ */
+function removeMeetingTime(timeListItemId) {
+  document.getElementById(timeListItemId).remove();
 }
