@@ -51,32 +51,20 @@ function createLocationForEdit(lat, lng) {
  * button.
  */
 function buildInfoWindowInput(lat, lng) {
-  const titlePrompt = document.createElement('span');
-  titlePrompt.innerText = "Enter location title:"
   const titleTextbox = document.createElement('textarea');
-
-  const notePrompt = document.createElement('span');
-  notePrompt.innerText = "Enter note:"
   const noteTextbox = document.createElement('textarea');
 
   const button = document.createElement('button');
   button.appendChild(document.createTextNode('CONFIRM'));
-
   button.onclick = () => {
     postLocation(titleTextbox.value, lat, lng, noteTextbox.value);
     editLocation.setMap(null);
   };
 
   const containerDiv = document.createElement('div');
-  containerDiv.appendChild(titlePrompt);
-  containerDiv.appendChild(document.createElement('br'));
-  containerDiv.appendChild(titleTextbox);
-  containerDiv.appendChild(document.createElement('br'));
-  containerDiv.appendChild(notePrompt);
-  containerDiv.appendChild(document.createElement('br'));
-  containerDiv.appendChild(noteTextbox);
-  containerDiv.appendChild(document.createElement('br'));
-  containerDiv.appendChild(button);
+  containerDiv.append('Enter location title:', document.createElement('br'), titleTextbox,
+      document.createElement('br'), 'Enter note:', document.createElement('br'), noteTextbox,
+      document.createElement('br'), button);
 
   return containerDiv;
 }
