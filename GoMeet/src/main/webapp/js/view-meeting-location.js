@@ -1,6 +1,7 @@
+/* Map that is displayed on the page. */
 let map;
 
-/* Editable marker that displays when a user clicks in the map. */
+/* Editable location that displays when a user clicks in the map. */
 let editLocation;
 
 /** Creates a map that allows users to add markers. */
@@ -14,7 +15,7 @@ function createMap() {
   }); 
 }
 
-/** Sends a marker to the backend for saving. */
+/** Sends a location to the backend for saving. */
 function postLocation(title, lat, lng, note) {
   const params = new URLSearchParams();
   params.append('title', title);
