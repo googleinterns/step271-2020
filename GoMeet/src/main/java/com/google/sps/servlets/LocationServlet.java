@@ -20,19 +20,6 @@ import org.jsoup.safety.Whitelist;
 /** Handles fetching and saving markers data. */
 @WebServlet("/locations")
 public class LocationServlet extends HttpServlet {
-
-  /** Responds with a JSON array containing marker data. */
-  @Override
-  public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
-    response.setContentType("application/json");
-
-    Collection<Location> locations = getLocations();
-    Gson gson = new Gson();
-    String json = gson.toJson(locations);
-
-    response.getWriter().println(json);
-  }
-
   /** Accepts a POST request containing a new marker. */
   @Override
   public void doPost(HttpServletRequest request, HttpServletResponse response) {
@@ -43,26 +30,6 @@ public class LocationServlet extends HttpServlet {
 
     Location location = new Location(title, lat, lng, note);
     storeLocation(location);
-  }
-
-  /** Fetches markers from Datastore. */
-  private Collection<Location> getLocations() {
-    Collection<Location> locations = new ArrayList<>();
-
-    DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
-    Query query = new Query("Location");
-    PreparedQuery results = datastore.prepare(query);
-
-    for (Entity entity : results.asIterable()) {
-      String title = (String) entity.getProperty("title");
-      double lat = (double) entity.getProperty("lat");
-      double lng = (double) entity.getProperty("lng");
-      String note = (String) entity.getProperty("note");
-
-      Location location = new Location(title, lat, lng, note);
-      locations.add(location);
-    }
-    return locations;
   }
 
   /** Stores a marker in Datastore. */
