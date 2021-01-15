@@ -24,12 +24,12 @@ import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
 import static org.mockito.Mockito.*;
 
+/** Tests for LocationServlet.java */
 @RunWith(JUnit4.class)
 public class LocationServletTest {
 
   private HttpServletRequest request;
   private HttpServletResponse response;
-
 
   private final LocalServiceTestHelper helper =
       new LocalServiceTestHelper(new LocalDatastoreServiceTestConfig());
@@ -46,7 +46,8 @@ public class LocationServletTest {
     helper.tearDown();
   }
 
-  /** Test if new location entity is accurately added to the Database.
+  /** 
+   * Tests if new location entity is accurately added to the Database.
    * Run this test twice to prove we're not leaking any state across tests.
    */
   private void doPostTest() {
