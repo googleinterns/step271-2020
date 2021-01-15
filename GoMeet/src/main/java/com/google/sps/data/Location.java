@@ -1,7 +1,7 @@
-/** Represents a marker on the map. */
 package com.google.sps.data;
 import java.util.Collection;
 
+/** Represents a possible venue for a meeting. */
 public class Location {
 
   private final String title;
