@@ -17,10 +17,10 @@ import javax.servlet.http.HttpServletResponse;
 import org.jsoup.Jsoup;
 import org.jsoup.safety.Whitelist;
 
-/** Handles fetching and saving markers data. */
+/** Handles fetching and saving location data. */
 @WebServlet("/locations")
 public class LocationServlet extends HttpServlet {
-  /** Accepts a POST request containing a new marker. */
+  /** Accepts a POST request containing a new location. */
   @Override
   public void doPost(HttpServletRequest request, HttpServletResponse response) {
     double lat = Double.parseDouble(request.getParameter("lat"));
@@ -32,7 +32,7 @@ public class LocationServlet extends HttpServlet {
     storeLocation(location);
   }
 
-  /** Stores a marker in Datastore. */
+  /** Stores a location in Datastore. */
   public void storeLocation(Location location) {
     Entity locationEntity = new Entity("Location");
     locationEntity.setProperty("title", location.getTitle());
