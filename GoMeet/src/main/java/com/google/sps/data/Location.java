@@ -14,7 +14,7 @@ public class Location {
   public Location(String title, double lat, double lng, String note) {
     this.title = title;
     this.lat = lat;
-	this.lng = lng;
+    this.lng = lng;
     this.note = note;
     this.voteCount = 1;
   }
