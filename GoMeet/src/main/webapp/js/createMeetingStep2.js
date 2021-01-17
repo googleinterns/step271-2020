@@ -28,3 +28,14 @@ function validateDuration() {
   }
   return true;
 }
+
+/**
+ * Sets the duration and meeting time finding method for this meeting,
+ * by saving the duration and method to session storage, and redirects
+ * to the next step in the create meeting sequence.
+ */
+function saveDurationAndMethod() {
+  if (validateDuration() && saveMeeting()) {
+    location.href = 'create-meeting-step2-manual.html';
+  }
+}
