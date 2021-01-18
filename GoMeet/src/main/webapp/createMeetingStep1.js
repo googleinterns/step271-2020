@@ -1,36 +1,41 @@
 let guestsAdded = 0; // Number of guest email inputs on the page 
 
-function addGuest() {
+/**
+ * Add an input element to the guest list for user to add email 
+ * @param {*} doc the document object to be manipulated 
+ */
+function addGuest(doc) {
   guestsAdded += 1; 
-  let listItem = document.createElement('li');
+  let listItem = doc.createElement('li');
   let guestNumber = guestsAdded; 
   listItem.id = 'guest-' + guestNumber; 
 
-  let newTextInput = document.createElement('input'); 
+  let newTextInput = doc.createElement('input'); 
   newTextInput.type = 'text';
   newTextInput.name = 'guest-' + guestNumber
 
-  let newInputLabel = document.createElement('label');
+  let newInputLabel = doc.createElement('label');
   newInputLabel.htmlFor = 'guest-' + guestNumber;
   newInputLabel.innerText = 'Guest: ';
 
   // delete button associated with this guest
-  let removeGuestButton = document.createElement('button');
+  let removeGuestButton = doc.createElement('button');
   removeGuestButton.innerHTML = 'X';
-  removeGuestButton.addEventListener('click', function() {removeGuest(listItem.id);});
+  removeGuestButton.addEventListener('click', function() {removeGuest(listItem.id, doc);});
 
   listItem.appendChild(newInputLabel);
   listItem.appendChild(newTextInput);
   listItem.appendChild(removeGuestButton);
 
-  let guestList = document.getElementById('guest-list');
+  let guestList = doc.getElementById('guest-list');
   guestList.appendChild(listItem);
 }
 
-/**
- * Remove the guest email from the list and update the id's of the remaining guests
- * @param {} guest the id of the 'li' element to be removed
- */
-function removeGuest(guest) {
-  document.getElementById(guest).remove();
+ /**
+  * Remove the guest email from the list and update the id's of the remaining guests
+  * @param {*} guest the id of the 'li' element to be removed
+  * @param {*} doc the document object to be manipulated 
+  */
+ function removeGuest(guest, doc) {
+  doc.getElementById(guest).remove();
 }
