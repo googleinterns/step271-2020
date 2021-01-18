@@ -13,9 +13,11 @@
       <h2>Manually suggest meeting times</h2>
     </div>
     <div id="meeting-time-inputs">
-      <div>
+      <div id="meeting-time-1">
         <label for="meeting-time-1">New time</label>
         <input type="datetime-local" name="meeting-time-1">
+        <!-- delete button for the time input - hidden until there is more than 1 time -->
+        <button onclick="deleteTimeInput('meeting-time-1')" class="delete-time-button" style="display:none">-</button>
       </div>
     </div>
     <div>
