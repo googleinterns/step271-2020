@@ -5,7 +5,7 @@
  *  - All <input> 'name's must be unique, otherwise the value will be overwritten.
  *  - All <input> on the page are expected to be compulsory fields. Empty <input> will 
  *  raise an alert requiring user to fill in every field.
- * @returns true if data successfully stored, false otherwise
+ * @returns true if data successfully stored, throws an Error otherwise
  */
 function saveMeeting() {
   let allInputs = document.getElementsByTagName('input');

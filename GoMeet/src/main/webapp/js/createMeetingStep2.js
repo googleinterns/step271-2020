@@ -6,7 +6,7 @@ const MAX_MINS = 59; // max number of minutes in minute input of meeting duratio
  * valid.
  * The duration should at least be 1 minute, and hours is a value 0-23
  * and minutes 0-59. Alerts the user to input valid value(s)
- * @returns true if duration is valid, false otherwise.
+ * @returns true if duration is valid, otherwise throws an Error.
  */
 function validateDuration() {
   let hours = document.getElementById('duration-hours').value;
