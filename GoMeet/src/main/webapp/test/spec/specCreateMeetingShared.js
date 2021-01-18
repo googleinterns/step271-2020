@@ -77,15 +77,14 @@ describe('saveMeeting', function () {
     expect(sessionStorage.getItem('meeting-guest-1')).toBe('Anna');
   });
 
-  it('alerts user when there are empty inputs on the page and returns false', function () {
+  it('alerts user when there are empty inputs on the page and throws error with \
+      BLANK_FIELDS_ALERT as error message', function () {
     var emptyInputElem = createInputElems([{ 'empty-input': '' }]);
     emptyInputElem = new MockHTMLCollection(emptyInputElem);
 
     documentSpy.and.returnValue(emptyInputElem);
-    
-    spyOn(window, 'alert');
-    expect(saveMeeting()).toBe(false);
-    expect(window.alert).toHaveBeenCalledOnceWith(FILL_ALL_FIELDS_ALERT);
+
+    expect(function(){saveMeeting()}).toThrow(new Error(BLANK_FIELDS_ALERT));
     expect(sessionStorage.getItem('empty-input')).toBe(undefined); // empty input value should not have stored
   });
 
@@ -104,7 +103,8 @@ describe('saveMeeting', function () {
     expect(sessionStorage.getItem('meeting-name')).toBe('Second');
   });
 
-  it('alerts user when there are unselected radio buttons and returns false', function () {
+  it('alerts user when there are unselected radio buttons and throws error with \
+      BLANK_FIELDS_ALERT as error message', function () {
     // Note that radio buttons have a hardcoded 'value' field, so will need separate logic
     // to verify that the 'value' of radio buttons are stored to sessionStorage ONLY when
     // their 'checked' property is 'true'
@@ -117,9 +117,7 @@ describe('saveMeeting', function () {
 
     documentSpy.and.returnValue(inputElements);
 
-    spyOn(window, 'alert');
-    expect(saveMeeting()).toBe(false);
-    expect(window.alert).toHaveBeenCalledOnceWith(FILL_ALL_FIELDS_ALERT);
+    expect(function(){saveMeeting()}).toThrow(new Error(BLANK_FIELDS_ALERT));
     expect(sessionStorage.getItem('time-find-method')).toBe(undefined); // the value of the button was not stored
   });
 

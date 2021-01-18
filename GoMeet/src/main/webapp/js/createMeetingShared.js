@@ -1,4 +1,3 @@
-const FILL_ALL_FIELDS_ALERT = 'Please fill in all required fields.'; 
 /**
  * Takes all values from <input> tags on the page, and saves data to sessionStorage
  * with 'name' of the <input> tag as key, and 'value' of the input tag as the value.
@@ -33,16 +32,14 @@ function saveMeeting() {
         sessionStorage.setItem(key, value);
       }
       else {
-        alert(FILL_ALL_FIELDS_ALERT);
-        return false;
+        throw(new Error(BLANK_FIELDS_ALERT));
       }
     }
   }
   // Check if all groups of radio buttons have been filled out
   let difference = new Set([...radioGroups].filter(x => !radioChecked.has(x)));
   if (difference.size > 0) {
-    alert(FILL_ALL_FIELDS_ALERT);
-    return false;
+    throw(new Error(BLANK_FIELDS_ALERT));
   }
   return true;
 }
