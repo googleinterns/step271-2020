@@ -1,35 +1,36 @@
-/**
- * Adds a meeting guest to ul element with id "meeting-guest"
- */
-function addMeetingGuest() {
-  let guestName = document.getElementById('meeting-guest').value;
-  
-  // Do not let submission of empty field
-  if (guestName === '') {
-    alert('Please enter a guest name');
-    return;
-  }
-  
-  let guest = document.createElement('li');
-  guest.id = guestName;
-  guest.innerText = guestName;
+let guestsAdded = 0; // Number of guest email inputs on the page 
 
-  // Create delete button associated with this guest
+function addGuest() {
+  guestsAdded += 1; 
+  let listItem = document.createElement('li');
+  let guestNumber = guestsAdded; 
+  listItem.id = 'guest-' + guestNumber; 
+
+  let newTextInput = document.createElement('input'); 
+  newTextInput.type = 'text';
+  newTextInput.name = 'guest-' + guestNumber
+
+  let newInputLabel = document.createElement('label');
+  newInputLabel.htmlFor = 'guest-' + guestNumber;
+  newInputLabel.innerText = 'Guest: ';
+
+  // delete button associated with this guest
   let removeGuestButton = document.createElement('button');
   removeGuestButton.innerHTML = 'X';
-  removeGuestButton.addEventListener('click', function() {removeMeetingGuest(guestName);});
-  
-  guest.appendChild(removeGuestButton);
-  document.getElementById('guest-list').appendChild(guest);
+  removeGuestButton.addEventListener('click', function() {removeGuest(listItem.id);});
 
-  // Clear text box
-  document.getElementById('meeting-guest').value = '';
+  listItem.appendChild(newInputLabel);
+  listItem.appendChild(newTextInput);
+  listItem.appendChild(removeGuestButton);
+
+  let guestList = document.getElementById('guest-list');
+  guestList.appendChild(listItem);
 }
 
 /**
- * Deletes a guest name 'li' element from the page with the id in guest param.
- * @param {*} guest the id of the 'li' element to be removed.
+ * Remove the guest email from the list and update the id's of the remaining guests
+ * @param {} guest the id of the 'li' element to be removed
  */
-function removeMeetingGuest(guest) {
+function removeGuest(guest) {
   document.getElementById(guest).remove();
 }
