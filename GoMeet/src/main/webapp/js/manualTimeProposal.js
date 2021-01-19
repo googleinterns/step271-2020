@@ -3,10 +3,22 @@ var timeInputs = 1; // Current number of time inputs on page
 const MEETING_TIME_NAME_PREFIX = 'meeting-time-'; // The prefix of the sessionStorage key name for meeting times
 var timeNameSuffix = 1; // The suffix appended to MEETING_TIME_NAME_PREFIX to make the name unique
 const MAX_TIME_INPUT_REACHED_ALERT = 'Maximum number of proposed times: ' + MAX_TIME_INPUTS.toString();
+
+/**
+ * Called onload to set the minimum time users can input into the <input> with
+ * name 'meeting-time-1' (default input visible on page load) to the current 
+ * date and time.
+ * @param {Document} document the document that this function operates on.
+ */
+function setMinDatetime(document) {
+  document.getElementsByName('meeting-time-1').item(0).min = getDatetimeNow();
+}
+
 /**
  * Adds a time input field and corresponding delete button to the meeting-time-inputs div.
+ * @param {Document} document the document that this function operates on.
  */
-function addTimeInput() {
+function addTimeInput(document) {
   if (timeInputs >= MAX_TIME_INPUTS) {
     alert(MAX_TIME_INPUT_REACHED_ALERT);
     return;
@@ -15,7 +27,7 @@ function addTimeInput() {
   timeInputs++
   // Show delete buttons when it has reached 2 time inputs on the page
   if (timeInputs === 2) {
-    toggleDeleteButtons();
+    toggleDeleteButtons(document);
   }
   timeNameSuffix++
   
@@ -31,7 +43,7 @@ function addTimeInput() {
   let deleteButton = document.createElement('button');
   deleteButton.innerText = '-';
   deleteButton.className = 'delete-time-button';
-  deleteButton.onclick = function() {deleteTimeInput(inputField.name);}; 
+  deleteButton.onclick = function() {deleteTimeInput(document, inputField.name);}; 
   
   let enclosingDiv = document.createElement('div');
   enclosingDiv.id = inputField.name; // ID of div = name of input field, to faciliate deleting
@@ -45,10 +57,11 @@ function addTimeInput() {
 /**
  * Deletes the input div which encloses the datetime-input <input> element, the 
  * <label> for the <input> and the '-' delete button.
+ * @param {Document} document the document that this function operates on.
  * @param {string} inputDivId the id of the div to delete. If invalid or not provided,
  * this function will do nothing.
  */
-function deleteTimeInput(inputDivId) {
+function deleteTimeInput(document, inputDivId) {
   if (inputDivId === null) { // No input ID given
     return;
   }
@@ -60,7 +73,7 @@ function deleteTimeInput(inputDivId) {
   timeInputs--; 
   // Hide delete buttons if they only have one time input left
   if (timeInputs === 1) {
-    toggleDeleteButtons();
+    toggleDeleteButtons(document);
   }
 }
 
@@ -72,8 +85,9 @@ function deleteTimeInput(inputDivId) {
  * 'inline'.
  * If no buttons on the page were found with className 'delete-time-button',
  * this function will do nothing.
+ * @param {Document} document the document that this function operates on.
  */
-function toggleDeleteButtons() {
+function toggleDeleteButtons(document) {
   let deleteButtons = document.getElementsByClassName('delete-time-button');
   for (let i = 0; i < deleteButtons.length; i++) {
     if (deleteButtons[i].style.display === 'none') {
