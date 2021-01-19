@@ -39,3 +39,38 @@ describe ("Add guest function", function() {
     expect(elementType).toBe("BUTTON");
   });
 });
+
+describe ("Remove guest function", function() {
+
+  it ("Should remove one li element from the guest list", function() {
+    addGuest(document);
+    var guestList = document.getElementById('guest-list').childNodes;
+    var firstGuestRemoveButton = guestList[0].childNodes[2]; 
+    firstGuestRemoveButton.click();
+    var listSize = document.getElementById('guest-list').childNodes.length; 
+    expect(listSize).toBe(0); 
+  });
+
+  it ("Should remove the specific li element that the remove button is a child node of", function() {
+    addGuest(document); 
+    addGuest(document); 
+    var guestOne = document.getElementById('guest-1'); 
+    var guestTwo = document.getElementById('guest-2');
+    var guestList = document.getElementById('guest-list').childNodes;
+    
+    // Remove the second guest 
+    guestList[1].childNodes[2].click();
+    var numGuests = guestList.length; 
+    
+    expect(guestOne).toBeDefined(); 
+    expect(guestTwo).toBeNull;
+    expect(numGuests).toBe(1); 
+
+    // Remove the first guest 
+    guestList[0].childNodes[2].click();
+    numGuests = guestList.length; 
+    expect(guestOne).toBeNull; 
+    expect(guestTwo).toBeNull; 
+    expect(numGuests).toBe(0); 
+  });
+});
