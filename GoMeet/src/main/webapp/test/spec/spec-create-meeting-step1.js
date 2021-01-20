@@ -8,35 +8,31 @@ describe ("Add guest function", function() {
     removeGuest('guest-1', document); 
   });
 
-  it ("Should add one li element to the html page", function() {
+  it ("Should add one li element with 3 child nodes to the html page", function() {
     let listSize = document.getElementById('guest-list').childNodes.length; 
-    let elementType = document.getElementById('guest-1').tagName;
     expect(listSize).toBe(1); 
+
+    let guestOne = document.getElementById('guest-1');
+    let elementType = guestOne.tagName; 
     expect(elementType).toBe("LI"); 
+
+    let guestOneChildren = guestOne.childNodes; 
+    let guestOneNumChildren = guestOneChildren.length; 
+    expect(guestOneNumChildren).toBe(3);
+    
+    let childOneType = guestOneChildren[0].tagName; 
+    let childTwoType = guestOneChildren[1].tagName; 
+    let childThreeType = guestOneChildren[2].tagName; 
+    expect(childOneType).toBe("LABEL"); 
+    expect(childTwoType).toBe("INPUT"); 
+    expect(childThreeType).toBe("BUTTON"); 
   });
 
-  it ("Should add a li element with 3 child nodes", function() {
-    let listElement = document.getElementById('guest-1'); 
-    let numChildren = listElement.childNodes.length; 
-    expect(numChildren).toBe(3); 
-  });
-
-  it ("The first child node should be a label element", function() {
-    let children = document.getElementById('guest-1').childNodes; 
-    let elementType = children[0].tagName;
-    expect(elementType).toBe("LABEL"); 
-  });
-
-  it ("The second child node should be an input element", function() {
-    let children = document.getElementById('guest-1').childNodes; 
-    let elementType = children[1].tagName; 
-    expect(elementType).toBe("INPUT");
-  });
-
-  it ("The third child node should be a button element", function() {
-    let children = document.getElementById('guest-1').childNodes; 
-    let elementType = children[2].tagName; 
-    expect(elementType).toBe("BUTTON");
+  it ("Should add another guest to the list", function() {
+    addGuest(document); 
+    let listSize = document.getElementById('guest-list').childNodes.length; 
+    expect(listSize).toBe(2); 
+    removeGuest('guest-2', document); 
   });
 });
 
