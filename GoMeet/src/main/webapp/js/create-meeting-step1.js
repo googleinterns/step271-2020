@@ -11,7 +11,7 @@ function addGuest(doc) {
   listItem.id = 'guest-' + guestNumber; 
 
   let newTextInput = doc.createElement('input'); 
-  newTextInput.type = 'text';
+  newTextInput.type = 'email';
   newTextInput.name = 'guest-' + guestNumber
 
   let newInputLabel = doc.createElement('label');
