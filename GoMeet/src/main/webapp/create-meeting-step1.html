@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+  <!-- Create Meeting Step 1: Set meeting name and add guests -->
+  <head>
+    <title>GoMeet Create Meeting Step 1</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="js/create-meeting-step1.js"></script>
+  </head>
+  <body onload="addGuest(document);">
+    <h1 class="center">GoMeet</h1>
+    <h2>Create Meeting</h2>
+    <h3>Step 1: Set meeting name and add guests</h3>
+    <form id="meeting-name-form">
+      <label for="meeting-name">Enter meeting name: </label>
+      <input type="text" name="meeting-name" id='meeting-name'>
+    </form>
+    <br> 
+    <form id="meeting-host-form">
+      <label for="meeting-host">Enter your email: </label>
+      <input type="email" name="meeting-host" id='meeting-host'>
+    </form>
+    <p>Please enter guests' emails to invite them to the meeting</p>
+    <ul id="guest-list"></ul>
+    <button onclick="addGuest(document)">Add another guest</button>
+    <button onclick="location.href='create-meeting-step2.html'">Next</button>
+  </body>
+</html>
