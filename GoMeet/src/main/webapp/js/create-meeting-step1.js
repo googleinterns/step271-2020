@@ -20,8 +20,8 @@ function addGuest(doc) {
 
   // delete button associated with this guest
   let removeGuestButton = doc.createElement('button');
-  removeGuestButton.innerHTML = 'X';
-  removeGuestButton.addEventListener('click', function() {removeGuest(listItem.id, doc);});
+  removeGuestButton.innerText = 'X';
+  removeGuestButton.addEventListener('click', ()=>(removeGuest(listItem.id, doc)));
 
   listItem.appendChild(newInputLabel);
   listItem.appendChild(newTextInput);

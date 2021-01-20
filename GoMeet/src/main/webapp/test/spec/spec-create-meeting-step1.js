@@ -60,8 +60,7 @@ describe ("Remove guest function", function() {
     
     // Remove the second guest 
     guestList[1].childNodes[2].click();
-    let numGuests = guestList.length; 
-    
+    let numGuests = guestList.length;
     expect(guestOne).toBeDefined(); 
     expect(guestTwo).toBeNull;
     expect(numGuests).toBe(1); 
