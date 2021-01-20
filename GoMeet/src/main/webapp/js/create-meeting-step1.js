@@ -2,7 +2,7 @@ let guestsAdded = 0; // Number of guest email inputs on the page
 
 /**
  * Add an input element to the guest list for user to add email 
- * @param {*} doc the document object to be manipulated 
+ * @param {Document} doc the document object to be manipulated 
  */
 function addGuest(doc) {
   guestsAdded += 1; 
@@ -33,8 +33,8 @@ function addGuest(doc) {
 
  /**
   * Remove the guest email from the list and update the id's of the remaining guests
-  * @param {*} guest the id of the 'li' element to be removed
-  * @param {*} doc the document object to be manipulated 
+  * @param {String} guest the id of the 'li' element to be removed
+  * @param {Document} doc the document object to be manipulated 
   */
  function removeGuest(guest, doc) {
   doc.getElementById(guest).remove();
