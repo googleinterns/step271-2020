@@ -39,3 +39,31 @@ function addGuest(doc) {
  function removeGuest(guest, doc) {
   doc.getElementById(guest).remove();
 }
+
+/**
+ * Checks whether all the email input elements on the document are valid
+ * Note: Server side checks will also be made to validate emails 
+ * @param {Document} doc the document object containing the email inputs
+ */
+function validateEmails(doc) {
+  let allInputs = doc.getElementsByTagName('INPUT');
+
+  for (let i = 0; i < allInputs.length; i++) {
+    if (allInputs.item(i).type === 'email') {
+      if (!isValidEmail(allInputs.item(i).value)) {
+        return false; 
+      }
+    }
+  }
+  return true; 
+}
+
+/**
+ * Checks whether the given email address is valid according to the 
+ * regular expression pattern 
+ * @param {String} address the email address to be validated 
+ */
+function isValidEmail(address) {
+  const regex = /^(([^<>()[\]\.,;:\s@\"]+(\.[^<>()[\]\.,;:\s@\"]+)*)|(\".+\"))@(([^<>()[\]\.,;:\s@\"]+\.)+[^<>()[\]\.,;:\s@\"]{2,})$/i;
+  return regex.test(address.toLowerCase());
+}

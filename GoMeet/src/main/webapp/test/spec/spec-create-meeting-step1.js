@@ -69,3 +69,21 @@ describe ("Remove guest function", function() {
     expect(numGuests).toBe(0); 
   });
 });
+
+describe ("Validate email function", function() {
+  it ("Should check if an email is valid", function() {
+    let badEmailOne = "1@2.3"; 
+    let badEmailTwo = "!@.com"; 
+    let badEmailThree = "name@address-com"; 
+    expect(isValidEmail(badEmailOne)).toBe(false);
+    expect(isValidEmail(badEmailTwo)).toBe(false);
+    expect(isValidEmail(badEmailThree)).toBe(false);
+
+    let goodEmailOne = "name@address.com"; 
+    let goodEmailTwo = "name1@address.com"; 
+    let goodEmailThree = "name-1@address.com";
+    expect(isValidEmail(goodEmailOne)).toBe(true);
+    expect(isValidEmail(goodEmailTwo)).toBe(true);
+    expect(isValidEmail(goodEmailThree)).toBe(true);
+  });
+});
