@@ -1,4 +1,4 @@
-describe ("Add guest function", function() {
+describe ("addGuest", function() {
 
   beforeAll(function() {
     addGuest(document);
@@ -36,7 +36,7 @@ describe ("Add guest function", function() {
   });
 });
 
-describe ("Remove guest function", function() {
+describe ("removeGuest", function() {
 
   it ("Should remove one li element from the guest list", function() {
     addGuest(document);
@@ -70,11 +70,12 @@ describe ("Remove guest function", function() {
   });
 });
 
-describe ("Validate email function", function() {
+describe ("isValidEmail", function() {
   it ("Should check if an email is valid", function() {
     let badEmailOne = "1@2.3"; 
     let badEmailTwo = "!@.com"; 
     let badEmailThree = "name@address-com"; 
+    
     expect(isValidEmail(badEmailOne)).toBe(false);
     expect(isValidEmail(badEmailTwo)).toBe(false);
     expect(isValidEmail(badEmailThree)).toBe(false);

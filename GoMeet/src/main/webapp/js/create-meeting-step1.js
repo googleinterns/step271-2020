@@ -50,8 +50,10 @@ function validateEmails(doc) {
 
   for (let i = 0; i < allInputs.length; i++) {
     if (allInputs.item(i).type === 'email') {
-      if (!isValidEmail(allInputs.item(i).value)) {
-        return false; 
+      if (allInputs.item(i).value === '') {
+        throw(new Error(BLANK_FIELDS_ALERT)); 
+      } else if (!isValidEmail(allInputs.item(i).value)) {
+        throw(new Error(INVALID_EMAILS_ALERT));
       }
     }
   }
@@ -66,4 +68,19 @@ function validateEmails(doc) {
 function isValidEmail(address) {
   const regex = /^(([^<>()[\]\.,;:\s@\"]+(\.[^<>()[\]\.,;:\s@\"]+)*)|(\".+\"))@(([^<>()[\]\.,;:\s@\"]+\.)+[^<>()[\]\.,;:\s@\"]{2,})$/i;
   return regex.test(address.toLowerCase());
+}
+
+/**
+ * Saves the meeting name, host email and guest emails to session
+ * storage, and redirects to the next step in the create meeting sequence.
+ * @param {Document} doc the document object containing the user inputs
+ */
+ function saveStepOneToSessionStorage(doc) {
+  try {
+    if (validateEmails(doc) && saveMeeting()) {
+      location.href = 'create-meeting-step2.html';
+    }
+  } catch(err) {
+    alert(err.message);
+  }
 }
