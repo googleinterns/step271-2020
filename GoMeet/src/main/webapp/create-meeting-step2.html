@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+  <!-- Create Meeting Step 2: Set meeting duration and select Google Calendar or Manual time proposal -->
+  <head>
+    <meta charset="UTF-8" />
+    <title>Create Meeting</title>
+    <script src="js/create-meeting-shared.js"></script>
+    <script src="js/create-meeting-step2.js"></script>
+    <script src="js/error-messages.js"></script>
+  </head>
+  <body>
+    <div>
+      <h2>Step 2</h2>
+      <h2>Find a Meeting Time</h2>
+      <div>
+        <p>Meeting Duration</p>
+        <!-- minimum meeting length 1 minute. maximum meeting length 23 hours 59 minutes mins -->
+        <input type="number" id="duration-hours" name="duration-hours" min="0" max="23" />
+        <label for="duration-hours">hours</label>
+        <input type="number" id="duration-mins" name="duration-mins" min="1" max="59" />
+        <label for="duration-mins">minutes</label>
+      </div>
+      <div>
+        <p>Generate meeting times</p>
+        <label for="time-find-method">Manually</label>
+        <input type="radio" name="time-find-method" value="manual" />
+      </div>
+      <div>
+        <button onclick="saveDurationAndMethod()">Next</button>
+      </div>
+    </div>
+  </body>
+</html>
