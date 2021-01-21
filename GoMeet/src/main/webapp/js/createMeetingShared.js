@@ -26,12 +26,10 @@ function saveMeeting() {
         radioChecked.add(input.name);
         sessionStorage.setItem(key, value);
       }
-    }
-    else { // all other types of inputs
+    } else { // all other types of inputs
       if (value !== '') {
         sessionStorage.setItem(key, value);
-      }
-      else {
+      } else {
         throw(new Error(BLANK_FIELDS_ALERT));
       }
     }
