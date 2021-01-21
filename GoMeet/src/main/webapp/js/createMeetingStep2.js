@@ -34,8 +34,7 @@ function saveDurationAndMethod() {
     if (validateDuration() && saveMeeting()) {
       location.href = 'create-meeting-step2-manual.html';
     }
-  }
-  catch(err) {
+  } catch(err) {
     alert(err.message);
   }
 }
