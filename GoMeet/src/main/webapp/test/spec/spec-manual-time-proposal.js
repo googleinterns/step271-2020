@@ -56,6 +56,7 @@ describe('addTimeInput', function () {
     expect(inputField.type).toEqual('datetime-local');
     expect(inputField.name).toEqual(inputName);
     expect(inputField.min).toEqual(ISO_DATESTRING);
+    expect(inputField.onchange.toString()).toBe('function() {rectifyInputtedTime(this);}');
 
     var deleteButton = addedInputDiv.children.item(2);
     expect(deleteButton.tagName).toEqual('BUTTON');
@@ -249,6 +250,49 @@ describe('getDatetimeNow', function() {
       with seconds and milliseconds set to 0', function() {
     let now = getDatetimeNow();
     expect(now).toEqual(ISO_DATESTRING);
+  });
+
+  afterEach(function() {
+    jasmine.clock().uninstall();
+  })
+});
+
+// Tests for rectifyInputtedTime
+describe('rectifyInputtedTime', function() {
+  var inputElem = document.createElement('input');
+  inputElem.type = 'datetime-local';
+
+  beforeEach(function() {
+    jasmine.clock().install();
+    jasmine.clock().mockDate(FAKE_NOW);
+    spyOn(window, 'alert');
+  });
+
+  it('clears the input field and alerts the user if the time entered is earlier than now', function() {
+    // create a date that is 24 hours (24*60*60*1000 milliseconds) earlier than FAKE_NOW
+    let inputtedTime = new Date(FAKE_NOW.getTime() - 24*60*60*1000).toISOString();
+    inputElem.value = inputtedTime.substring(0, inputtedTime.length - 1); // trim the time zone data
+    rectifyInputtedTime(inputElem);
+    expect(inputElem.value).toEqual('');
+    expect(window.alert).toHaveBeenCalledWith(INVALID_TIME_ERROR);
+  });
+
+  it('clears the input field and alerts the user if the time entered is equal to now', function() {
+    // create a date that is 24 hours (24*60*60*1000 milliseconds) earlier than FAKE_NOW
+    let inputtedTime = new Date(FAKE_NOW.getTime() - 24*60*60*1000).toISOString();
+    inputElem.value = inputtedTime.substring(0, inputtedTime.length - 1);
+    rectifyInputtedTime(inputElem);
+    expect(inputElem.value).toEqual('');
+    expect(window.alert).toHaveBeenCalledWith(INVALID_TIME_ERROR);
+  });
+
+  it('does not clear the input field if the time entered is later than now', function() {
+    // create a date that is 24 hours (24*60*60*1000 milliseconds) later than FAKE_NOW
+    let inputtedTime = new Date(FAKE_NOW.getTime() + 24*60*60*1000).toISOString();
+    inputElem.value = inputtedTime.substring(0, inputtedTime.length - 1);
+    rectifyInputtedTime(inputElem);
+    expect(inputElem.value).toEqual(inputtedTime.substring(0, inputtedTime.length - 1));
+    expect(window.alert).not.toHaveBeenCalled();
   });
 
   afterEach(function() {

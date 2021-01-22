@@ -38,6 +38,8 @@ function addTimeInput(document) {
   // restrict potential meeting times to future dates only
   let minDate = getDatetimeNow();
   inputField.min = minDate;
+  // whenever user changes the input value, check what the time they inputted to be valid
+  inputField.onchange = function() {rectifyInputtedTime(this);};
 
   let label = document.createElement('label');
   label.htmlFor = inputField.name;
@@ -122,4 +124,18 @@ function getDatetimeNow() {
   nowOffset = nowOffset.substring(0,nowOffset.length - 1); // trim zone data off
 
   return nowOffset;
+}
+
+/**
+ * Clears the input field and alerts the user, if the user entered a time that 
+ * is earlier than or equal to the date and time now.
+ * @param {Element} elem the input element where the user inputted the time
+ */
+function rectifyInputtedTime(elem) {
+  let timeEntered = new Date(elem.value);
+  let now = new Date(getDatetimeNow());
+  if (!(timeEntered > now)) {
+    elem.value = '';
+    alert(INVALID_TIME_ERROR);
+  }
 }
