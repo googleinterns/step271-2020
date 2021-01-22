@@ -37,8 +37,8 @@ describe('Create location for edit', function() {
 describe('Build Info window input', function() {
   const LAT_A = 33.0;
   const LNG_A = 150.0;
-  const TITLE_A = "Waffle Place";
-  const NOTE_A = "Waffles are yummy!";
+  const TITLE_A = 'Waffle Place';
+  const NOTE_A = 'Waffles are yummy!';
   let mockedLocation;
   let mockedFetchWrapper;
 
@@ -56,10 +56,10 @@ describe('Build Info window input', function() {
     let buttonCount = 0;
     for (let i = 0; i < childNodes.length; i++) {
       let childName = childNodes[i].tagName;
-      if (childName === "TEXTAREA") {
+      if (childName === 'TEXTAREA') {
         textareaCount++;
       }
-      if (childName === "BUTTON") {
+      if (childName === 'BUTTON') {
         buttonCount++;
       }
     }
