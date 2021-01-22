@@ -35,7 +35,10 @@ function addTimeInput(document) {
   let inputField = document.createElement('input');
   inputField.type = 'datetime-local';
   inputField.name = MEETING_TIME_NAME_PREFIX + timeNameSuffix.toString();
-  
+  // restrict potential meeting times to future dates only
+  let minDate = getDatetimeNow();
+  inputField.min = minDate;
+
   let label = document.createElement('label');
   label.htmlFor = inputField.name;
   label.innerText = 'New Time';
@@ -97,4 +100,26 @@ function toggleDeleteButtons(document) {
       deleteButtons[i].style.display = 'none';
     }
   }
+}
+
+/**
+ * Returns the ISO datestring of the local current date and time (hours and minutes),
+ * with the time zone data trimmed.
+ * Seconds and milliseconds are set to 0.
+ * @returns the ISO string in the format YYYY-MM-DDTHH:MM:00:00
+ */
+function getDatetimeNow() {
+  let now = new Date();
+
+  // number of minutes BEHIND that UTC time is relative to local time
+  // e.g. Sydney Time is 660 minutes (11 hrs) ahead, so timezoneOffset = -660
+  let timezoneOffset = now.getTimezoneOffset(); 
+
+  let nowOffset = new Date(now.getTime() - timezoneOffset * 60 * 1000);
+  nowOffset.setMilliseconds(0);
+  nowOffset.setSeconds(0);
+  nowOffset = nowOffset.toISOString();
+  nowOffset = nowOffset.substring(0,nowOffset.length - 1); // trim zone data off
+
+  return nowOffset;
 }

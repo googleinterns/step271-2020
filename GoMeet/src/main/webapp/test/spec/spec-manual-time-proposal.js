@@ -1,5 +1,16 @@
 const MEETING_TIME_INPUT_DIV_ID = 'meeting-time-inputs';
 
+// Fake 'now': 2020-12-22 11:12
+const YEAR_NOW = 2020;
+const MONTH_NOW = 11; // Note: 0-11 is Jan-Dec
+const DAY_NOW = 22;
+const HOUR_NOW = 11;
+const MINS_NOW = 12;
+const SEC_NOW = 45;
+const MILLISEC_NOW = 112;
+const ISO_DATESTRING = `${YEAR_NOW}-${MONTH_NOW+1}-${DAY_NOW}T${HOUR_NOW}:${MINS_NOW}:00.000`;
+const FAKE_NOW = new Date(YEAR_NOW, MONTH_NOW, DAY_NOW, HOUR_NOW, MINS_NOW, SEC_NOW, MILLISEC_NOW);
+
 function resetPageState() {
   // reset div to state it was onload (with one child div), so that we get a fresh div to work with next time
   var inputDiv = document.getElementById(MEETING_TIME_INPUT_DIV_ID);
@@ -18,6 +29,12 @@ describe('addTimeInput', function () {
   beforeAll(function() {
     spyOn(window, 'alert');
   });
+
+  beforeEach(function() {
+    // mock the Date object
+    jasmine.clock().install()
+    jasmine.clock().mockDate(FAKE_NOW);
+  })
 
   it('adds one time input to the page with a label and a delete button', function() {
     addTimeInput(document);
@@ -38,6 +55,7 @@ describe('addTimeInput', function () {
     expect(inputField.tagName).toEqual('INPUT');
     expect(inputField.type).toEqual('datetime-local');
     expect(inputField.name).toEqual(inputName);
+    expect(inputField.min).toEqual(ISO_DATESTRING);
 
     var deleteButton = addedInputDiv.children.item(2);
     expect(deleteButton.tagName).toEqual('BUTTON');
@@ -74,6 +92,7 @@ describe('addTimeInput', function () {
   
   afterEach(function() {
     resetPageState();
+    jasmine.clock().uninstall();
   }); 
 });
 
@@ -217,4 +236,22 @@ describe('toggleDeleteButtons', function () {
   afterEach(function() {
     resetPageState();
   }); 
+});
+
+// Tests for getDatetimeNow
+describe('getDatetimeNow', function() {
+  beforeEach(function() {
+    jasmine.clock().install();
+    jasmine.clock().mockDate(FAKE_NOW);
+  });
+
+  it('returns the ISO datestring of the local date and time, \
+      with seconds and milliseconds set to 0', function() {
+    let now = getDatetimeNow();
+    expect(now).toEqual(ISO_DATESTRING);
+  });
+
+  afterEach(function() {
+    jasmine.clock().uninstall();
+  })
 });
