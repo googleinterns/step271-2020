@@ -15,9 +15,14 @@ function resetPageState() {
   // reset div to state it was onload (with one child div), so that we get a fresh div to work with next time
   var inputDiv = document.getElementById(MEETING_TIME_INPUT_DIV_ID);
   var defaultInputField = document.createElement('div');
+  // re-add the 3 fields that mimic the structure of a div for a time input
+  defaultInputField.innerHTML = '<label></label><input><button></button>';
   defaultInputField.id = MEETING_TIME_NAME_PREFIX + '1';
   inputDiv.innerHTML = '';
   inputDiv.appendChild(defaultInputField);
+
+  // reset enteredTimes
+  enteredTimes.clear();
 
   // set the global timeInputs and timeNameSuffix back to their original value of 1
   timeInputs = 1;
@@ -111,10 +116,13 @@ describe('deleteTimeInput', function () {
 
     meetingTime2 = document.createElement('div');
     meetingTime2.id = MEETING_TIME_2;
-    inputDiv.appendChild(meetingTime2);
+    meetingTime2.innerHTML = '<label></label><input><button></button>';
 
     meetingTime3 = document.createElement('div');
     meetingTime3.id = MEETING_TIME_3;
+    meetingTime3.innerHTML = '<label></label><input><button></button>';
+
+    inputDiv.appendChild(meetingTime2);
     inputDiv.appendChild(meetingTime3);
 
     timeInputs = 3; // There are now three inputs including the 2 just hardcoded
@@ -155,6 +163,15 @@ describe('deleteTimeInput', function () {
     // Only node left after deletion is meetingTime1
     expect(inputDiv.children.item(0).isEqualNode(meetingTime1)).toBe(true);
     expect(window.toggleDeleteButtons).toHaveBeenCalledTimes(1);
+  });
+
+  it('removes the deleted input\'s datetime string from enteredTimes', function() {
+    // hardcode a datetime string as the value of the MEETING_TIME_2 input
+    meetingTime2.children.item(TIME_INPUT_FIELD_INDEX).value = ISO_DATESTRING; 
+    enteredTimes.add(ISO_DATESTRING);
+    // deleting the input field should remove the corresponding datetime string from the set
+    deleteTimeInput(document, MEETING_TIME_2);
+    expect(enteredTimes.has(ISO_DATESTRING)).toBe(false);
   });
 
   afterEach(function() {
@@ -268,34 +285,41 @@ describe('rectifyInputtedTime', function() {
     spyOn(window, 'alert');
   });
 
-  it('clears the input field and alerts the user if the time entered is earlier than now', function() {
+  it('clears the input field, does not add the input to the enteredTimes set, \
+      and alerts the user if the time entered is earlier than now', function() {
     // create a date that is 24 hours (24*60*60*1000 milliseconds) earlier than FAKE_NOW
     let inputtedTime = new Date(FAKE_NOW.getTime() - 24*60*60*1000).toISOString();
     inputElem.value = inputtedTime.substring(0, inputtedTime.length - 1); // trim the time zone data
     rectifyInputtedTime(inputElem);
     expect(inputElem.value).toEqual('');
     expect(window.alert).toHaveBeenCalledWith(INVALID_TIME_ERROR);
+    expect(enteredTimes.has(inputElem.value)).toBe(false);
   });
 
-  it('clears the input field and alerts the user if the time entered is equal to now', function() {
+  it('clears the input field, does not add the input to the enteredTimes set, \
+      and alerts the user if the time entered is equal to now', function() {
     // create a date that is 24 hours (24*60*60*1000 milliseconds) earlier than FAKE_NOW
     let inputtedTime = new Date(FAKE_NOW.getTime() - 24*60*60*1000).toISOString();
     inputElem.value = inputtedTime.substring(0, inputtedTime.length - 1);
     rectifyInputtedTime(inputElem);
     expect(inputElem.value).toEqual('');
     expect(window.alert).toHaveBeenCalledWith(INVALID_TIME_ERROR);
+    expect(enteredTimes.has(inputElem.value)).toBe(false);
   });
 
-  it('does not clear the input field if the time entered is later than now', function() {
+  it('does not clear the input field if the time entered is later than now, \
+      and adds the time to the enteredTimes set', function() {
     // create a date that is 24 hours (24*60*60*1000 milliseconds) later than FAKE_NOW
     let inputtedTime = new Date(FAKE_NOW.getTime() + 24*60*60*1000).toISOString();
     inputElem.value = inputtedTime.substring(0, inputtedTime.length - 1);
     rectifyInputtedTime(inputElem);
     expect(inputElem.value).toEqual(inputtedTime.substring(0, inputtedTime.length - 1));
     expect(window.alert).not.toHaveBeenCalled();
+    expect(enteredTimes.has(inputElem.value)).toBe(true);
   });
 
   afterEach(function() {
     jasmine.clock().uninstall();
+    enteredTimes.clear();
   })
 });

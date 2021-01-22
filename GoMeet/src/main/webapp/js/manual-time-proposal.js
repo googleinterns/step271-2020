@@ -3,6 +3,8 @@ var timeInputs = 1; // Current number of time inputs on page
 const MEETING_TIME_NAME_PREFIX = 'meeting-time-'; // The prefix of the sessionStorage key name for meeting times
 var timeNameSuffix = 1; // The suffix appended to MEETING_TIME_NAME_PREFIX to make the name unique
 const MAX_TIME_INPUT_REACHED_ALERT = 'Maximum number of proposed times: ' + MAX_TIME_INPUTS.toString();
+const TIME_INPUT_FIELD_INDEX = 1; // The index of the <input> field with its parent div
+var enteredTimes = new Set();
 
 /**
  * Called onload to set the minimum time users can input into the <input> with
@@ -74,6 +76,8 @@ function deleteTimeInput(document, inputDivId) {
   if (inputDiv == null) { // Input ID is invalid (e.g. does not exist)
     return;
   }
+  let inputField = inputDiv.children.item(TIME_INPUT_FIELD_INDEX);
+  enteredTimes.delete(inputField.value);
   inputDiv.remove();
   timeInputs--; 
   // Hide delete buttons if they only have one time input left
@@ -134,8 +138,12 @@ function getDatetimeNow() {
 function rectifyInputtedTime(elem) {
   let timeEntered = new Date(elem.value);
   let now = new Date(getDatetimeNow());
-  if (!(timeEntered > now)) {
+  // If the time entered has been entered before or is earlier than now
+  if (enteredTimes.has(elem.value) || !(timeEntered > now)) {
     elem.value = '';
     alert(INVALID_TIME_ERROR);
+  }
+  else {
+    enteredTimes.add(elem.value);
   }
 }
