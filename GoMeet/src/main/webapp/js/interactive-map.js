@@ -12,13 +12,12 @@ function createMap() {
 
 /** Creates a marker that shows a textbox the user can edit. */
 function createLocationForEdit(map, lat, lng) {
-  const fetchWrapper = new FetchWrapper();
-
+ 
   editLocation =
       new google.maps.Marker({position: {lat: lat, lng: lng}, map: map});
 
   const infoWindow =
-      new google.maps.InfoWindow({content: buildInfoWindowInput(lat, lng, editLocation, fetchWrapper)});
+      new google.maps.InfoWindow({content: buildInfoWindowInput(lat, lng, editLocation)});
 
   // When the user closes the editable info window, remove the marker.
   google.maps.event.addListener(infoWindow, 'closeclick', () => {
@@ -32,21 +31,22 @@ function createLocationForEdit(map, lat, lng) {
  * Builds and returns HTML elements that show an editable textbox and a submit
  * button.
  */
-function buildInfoWindowInput(lat, lng, editLocation, fetchWrapper) {
+function buildInfoWindowInput(lat, lng, editLocation) {
+  const fetchWrapper = new FetchWrapper();
+
   const titleTextbox = document.createElement('textarea');
   const noteTextbox = document.createElement('textarea');
 
   const button = document.createElement('button');
   button.appendChild(document.createTextNode('CONFIRM'));
   button.onclick = () => {
-    const params = new URLSearchParams();
-    params.append('title', titleTextbox.value);
-    params.append('lat', lat);
-    params.append('lng', lng);
-    params.append('note', noteTextbox.value);
-    fetchWrapper.postLocation('/location-data', params);
-
-    editLocation.setMap(null);
+    try {
+      validateTitle(titleTextbox.value);
+      postLocation(titleTextbox.value, lat, lng, noteTextbox.value, fetchWrapper);
+      editLocation.setMap(null);
+    } catch (err) {
+      alert(err.message);
+    }
   };
 
   const containerDiv = document.createElement('div');
@@ -54,4 +54,24 @@ function buildInfoWindowInput(lat, lng, editLocation, fetchWrapper) {
       document.createElement('br'), 'Enter note:', document.createElement('br'), noteTextbox,
       document.createElement('br'), button);
   return containerDiv;
+}
+
+/** Sends a POST request with the location data. */
+function postLocation(title, lat, lng, note, fetchWrapper) {
+  const params = new URLSearchParams();
+  params.append('title', title);
+  params.append('lat', lat);
+  params.append('lng', lng);
+  params.append('note', note);
+  fetchWrapper.doPost('/location-data', params);
+}
+
+/** 
+ * Check if user input is valid. 
+ * Throws an error if title in an invalid input.
+ */
+function validateTitle(title) {
+  if (title === '') {
+    throw (new Error(BLANK_FIELDS_ALERT));
+  }
 }

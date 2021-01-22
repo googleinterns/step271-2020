@@ -37,19 +37,15 @@ describe('Create location for edit', function() {
 describe('Build Info window input', function() {
   const LAT_A = 33.0;
   const LNG_A = 150.0;
-  const TITLE_A = 'Waffle Place';
-  const NOTE_A = 'Waffles are yummy!';
+  const EMPTY_TITLE = '';
   let mockedLocation;
-  let mockedFetchWrapper;
-
+  
   beforeAll(function() {
     mockedLocation = jasmine.createSpyObj('Marker', ['setMap']);
-    mockedFetchWrapper = new FetchWrapper();
-    spyOn(mockedFetchWrapper, 'postLocation');
   });
 
   it ('Should have two textareas and one button', function() {
-    const infoWindowContent = buildInfoWindowInput(LAT_A, LNG_A, mockedLocation, mockedFetchWrapper);
+    const infoWindowContent = buildInfoWindowInput(LAT_A, LNG_A, mockedLocation);
     const childNodes = infoWindowContent.children;
 
     let textareaCount = 0;
@@ -67,14 +63,27 @@ describe('Build Info window input', function() {
     expect(buttonCount).toBe(1);
   });
 
-  it ('Should send the correct post request', function() {
-    const infoWindowContent = buildInfoWindowInput(LAT_A, LNG_A, mockedLocation, mockedFetchWrapper);
-
+  it ('Should call alert if title is empty', function() {
+    spyOn(window, 'alert');
+    const infoWindowContent = buildInfoWindowInput(LAT_A, LNG_A, mockedLocation);
     const titleTextbox = infoWindowContent.children[1];
-    const noteTextbox = infoWindowContent.children[4];
     const button = infoWindowContent.children[6];
-    titleTextbox.value = TITLE_A;
-    noteTextbox.value = NOTE_A;
+    titleTextbox.value = EMPTY_TITLE;
+    button.click();
+    expect(window.alert).toHaveBeenCalled(); 
+  });
+});
+
+/** Test for Post Location. */
+describe('Post Location', function() {
+  const TITLE_A = 'Krusty Krab';
+  const NOTE_A = 'Krabby Patty!';
+  const LAT_A = 10.0;
+  const LNG_A = 15.0;
+
+  it ('Should send the correct post request', function() {
+    let mockedFetchWrapper = new FetchWrapper();
+    spyOn(mockedFetchWrapper, 'doPost');
 
     const expectedParams = new URLSearchParams();
     expectedParams.append('title', TITLE_A);
@@ -82,8 +91,8 @@ describe('Build Info window input', function() {
     expectedParams.append('lng', LNG_A);
     expectedParams.append('note', NOTE_A);
 
-    button.click();
+    postLocation(TITLE_A, LAT_A, LNG_A, NOTE_A, mockedFetchWrapper);
 
-    expect(mockedFetchWrapper.postLocation).toHaveBeenCalledWith('/location-data', expectedParams);    
+    expect(mockedFetchWrapper.doPost).toHaveBeenCalledWith('/location-data', expectedParams);
   });
 });
