@@ -5,6 +5,7 @@
     <meta charset="UTF-8">
     <title>Create Meeting</title>
     <script src="js/error-messages.js"></script>
+    <script src="js/create-meeting-shared.js"></script>
     <script src="js/manual-time-proposal.js"></script>
   </head>
   <body onload="setMinDatetime(document)"> <!-- set the minimum date that users can enter in 'meeting-time-1' input -->
@@ -24,6 +25,6 @@
     <div>
       <button onclick="addTimeInput(document)">+</button>
     </div>
-    <button>Next</button>
+    <button onclick="saveTimes()">Next</button>
   </body>
 </html>

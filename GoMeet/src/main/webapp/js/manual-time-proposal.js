@@ -147,3 +147,17 @@ function rectifyInputtedTime(elem) {
     enteredTimes.add(elem.value);
   }
 }
+
+/**
+ * Saves the proposed times to Session Storage, and redirects to the next step
+ * in the create meeting process. Please see saveMeeting() in create-meeting-shared.js
+ */
+function saveTimes() {
+  try {
+    if (saveMeeting()) {
+      location.href = 'create-meeting-step3.html'; 
+    }
+  } catch(err) {
+    alert(err.message);
+  }
+}
