@@ -14,14 +14,25 @@
 
 package com.google.sps.data;
 
-/** Names of fields of data in the Datastore MeetingTime entity */
-public class ErrorMessages {
-  public static final String BAD_REQUEST_ERROR = 
-      "meetingId and datetime must both be provided for a new MeetingTime";
-  public static final String INVALID_KEY_ERROR = 
-      "Invalid entity ID";
-  public static final String ENTITY_NOT_FOUND_ERROR = 
-      "Entity not found";
-  public static final String TOO_MANY_RESULTS_ERROR = 
-      "Too many results returned";
+import com.google.gson.Gson;
+
+/** Class of utility functions shared by the servlets and their tests */
+public class ServletUtil {
+  /**
+   * Convert Object to JSON string using the Gson library.
+   * @param obj the object to be converted to JSON
+   * @return a JSON String with the object contents.
+   */
+  public static String convertToJson(Object object) {
+    Gson gson = new Gson();
+    String json = gson.toJson(object);
+    return json;
+  }
+
+  /**
+   * Private constructor 
+   * Class should be instantiated
+   */
+  private ServletUtil() {
+  }
 }
