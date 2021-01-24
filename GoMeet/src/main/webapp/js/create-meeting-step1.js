@@ -46,15 +46,13 @@ function addGuest(doc) {
  * @param {Document} doc the document object containing the email inputs
  */
 function validateEmails(doc) {
-  let allInputs = doc.getElementsByTagName('INPUT');
+  const emailInputs = doc.querySelectorAll("input[type='email']");
 
-  for (let i = 0; i < allInputs.length; i++) {
-    if (allInputs.item(i).type === 'email') {
-      if (allInputs.item(i).value === '') {
-        throw(new Error(BLANK_FIELDS_ALERT)); 
-      } else if (!isValidEmail(allInputs.item(i).value)) {
-        throw(new Error(INVALID_EMAILS_ALERT));
-      }
+  for (let i = 0; i < emailInputs.length; i++) {
+    if (emailInputs.item(i).value === '') {
+      throw (new Error(BLANK_FIELDS_ALERT)); 
+    } else if (!isValidEmail(emailInputs.item(i).value)) {
+      throw (new Error(INVALID_EMAILS_ALERT)); 
     }
   }
   return true; 
