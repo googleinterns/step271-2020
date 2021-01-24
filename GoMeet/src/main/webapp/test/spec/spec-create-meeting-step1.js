@@ -1,4 +1,4 @@
-describe ("addGuest", function() {
+describe ('addGuest', function() {
 
   beforeAll(function() {
     addGuest(document);
@@ -8,7 +8,7 @@ describe ("addGuest", function() {
     removeGuest('guest-1', document); 
   });
 
-  it ("Should add one li element with 3 child nodes to the html page", function() {
+  it ('Should add one li element with 3 child nodes to the html page', function() {
     let listSize = document.getElementById('guest-list').childNodes.length; 
     expect(listSize).toBe(1); 
 
@@ -28,7 +28,7 @@ describe ("addGuest", function() {
     expect(childThreeType).toBe("BUTTON"); 
   });
 
-  it ("Should add another guest to the list", function() {
+  it ('Should add another guest to the list', function() {
     addGuest(document); 
     let listSize = document.getElementById('guest-list').childNodes.length; 
     expect(listSize).toBe(2); 
@@ -36,9 +36,9 @@ describe ("addGuest", function() {
   });
 });
 
-describe ("removeGuest", function() {
+describe ('removeGuest', function() {
 
-  it ("Should remove one li element from the guest list", function() {
+  it ('Should remove one li element from the guest list', function() {
     addGuest(document);
     let guestList = document.getElementById('guest-list').childNodes;
     let firstGuestRemoveButton = guestList[0].childNodes[2]; 
@@ -47,7 +47,7 @@ describe ("removeGuest", function() {
     expect(listSize).toBe(0); 
   });
 
-  it ("Should remove the specific li element that the remove button is a child node of", function() {
+  it ('Should remove the specific li element that the remove button is a child node of', function() {
     addGuest(document); 
     addGuest(document); 
     let guestOne = document.getElementById('guest-1'); 
@@ -70,8 +70,8 @@ describe ("removeGuest", function() {
   });
 });
 
-describe ("isValidEmail", function() {
-  it ("Should check if an email is valid", function() {
+describe ('isValidEmail', function() {
+  it ('Should check if an email is valid', function() {
     let badEmailOne = "1@2.3"; 
     let badEmailTwo = "!@.com"; 
     let badEmailThree = "name@address-com"; 
