@@ -1,7 +1,7 @@
 describe('MeetingTimeDAO - fetchMeetingTime', function () {
   const MEETING_TIME_ID = 'abc123def456';
   const INVALID_ID = 'non-existent-id';
-  const QUERY_STRING = 'meetingTimeId=' + MEETING_TIME_ID;
+  const QUERY_STRING = 'meetingTimeId=' + encodeURIComponent(MEETING_TIME_ID);
   const ERROR_RESPONSE = {
     status: 404,
     message: 'This will be an error message',
