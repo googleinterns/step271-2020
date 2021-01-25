@@ -46,9 +46,10 @@ public class MeetingTimeServlet extends HttpServlet {
   /** Fetches a MeetingTime entity from Datastore according to the entity ID in the query string */
   @Override
   public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
+    response.setContentType("application/json");
     String keyStr = request.getParameter(MeetingTimeFields.MEETING_TIME_ID);
     if (keyStr == null) {
-      response.sendError(HttpServletResponse.SC_BAD_REQUEST, ErrorMessages.BAD_REQUEST_ERROR);
+      sendErrorResponse(response, HttpServletResponse.SC_BAD_REQUEST, ErrorMessages.BAD_REQUEST_ERROR);
       return;
     }
 
@@ -65,13 +66,13 @@ public class MeetingTimeServlet extends HttpServlet {
       result = preparedQuery.asSingleEntity();
     } catch (PreparedQuery.TooManyResultsException e) {
       // there is more than the expected number of entities returned - non-unique key
-      response.sendError(HttpServletResponse.SC_REQUEST_ENTITY_TOO_LARGE, ErrorMessages.TOO_MANY_RESULTS_ERROR);
+      sendErrorResponse(response, HttpServletResponse.SC_REQUEST_ENTITY_TOO_LARGE, ErrorMessages.TOO_MANY_RESULTS_ERROR);
       return;
     }
 
     if (result == null) {
       // entity by the given key is not found
-      response.sendError(HttpServletResponse.SC_NOT_FOUND, ErrorMessages.ENTITY_NOT_FOUND_ERROR);
+      sendErrorResponse(response, HttpServletResponse.SC_NOT_FOUND, ErrorMessages.ENTITY_NOT_FOUND_ERROR);
       return;
     }
     
@@ -90,7 +91,6 @@ public class MeetingTimeServlet extends HttpServlet {
 
     // return as JSON
     String meetingTimeJson = ServletUtil.convertToJson(meetingTime);
-    response.setContentType("application/json");
     response.getWriter().println(meetingTimeJson);
   }
   
@@ -102,7 +102,7 @@ public class MeetingTimeServlet extends HttpServlet {
     String datetime = request.getParameter(MeetingTimeFields.DATETIME);
 
     if (datetime == null) {
-      response.sendError(HttpServletResponse.SC_BAD_REQUEST, ErrorMessages.BAD_REQUEST_ERROR);
+      sendErrorResponse(response, HttpServletResponse.SC_BAD_REQUEST, ErrorMessages.BAD_REQUEST_ERROR);
       return;
     }
 
@@ -114,7 +114,18 @@ public class MeetingTimeServlet extends HttpServlet {
     datastore.put(meetingTime);
 
     // return the key of the created entity
-    response.setContentType("application/text");
+    response.setContentType("application/json");
     response.getWriter().println(meetingTimeKey.toString());
+  }
+
+  private void sendErrorResponse(HttpServletResponse response, int status, String message) throws IOException {
+    HashMap errorResponse = new HashMap<String, Object>() {{
+      put("status", status);
+      put("message", message);
+    }};
+    response.setStatus(status);
+    String error = ServletUtil.convertToJson(errorResponse);
+    response.getWriter().println(error);
+    return;
   }
 }
