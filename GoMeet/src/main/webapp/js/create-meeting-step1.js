@@ -51,7 +51,7 @@ function validateEmails(doc) {
   for (let i = 0; i < emailInputs.length; i++) {
     if (emailInputs.item(i).value === '') {
       throw (new Error(BLANK_FIELDS_ALERT)); 
-    } else if (!isValidEmail(emailInputs.item(i).value)) {
+    } else if (!isValidEmail(emailInputs.item(i))) {
       throw (new Error(INVALID_EMAILS_ALERT)); 
     }
   }
@@ -61,11 +61,10 @@ function validateEmails(doc) {
 /**
  * Checks whether the given email address is valid according to the 
  * regular expression pattern 
- * @param {String} address the email address to be validated 
+ * @param {input} emailInput the email address input to be validated 
  */
-function isValidEmail(address) {
-  const regex = /^(([^<>()[\]\.,;:\s@\"]+(\.[^<>()[\]\.,;:\s@\"]+)*)|(\".+\"))@(([^<>()[\]\.,;:\s@\"]+\.)+[^<>()[\]\.,;:\s@\"]{2,})$/i;
-  return regex.test(address.toLowerCase());
+function isValidEmail(emailInput) {
+  return emailInput.checkValidity();
 }
 
 /**
