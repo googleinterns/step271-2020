@@ -1,4 +1,4 @@
-describe('MeetingTimeDAO - MeetingTime entity Data Access Object', function () {
+describe('MeetingTimeDAO - fetchMeetingTime', function () {
   const MEETING_TIME_ID = 'abc123def456';
   const INVALID_ID = 'non-existent-id';
   const QUERY_STRING = 'meetingTimeId=' + MEETING_TIME_ID;
@@ -62,6 +62,75 @@ describe('MeetingTimeDAO - MeetingTime entity Data Access Object', function () {
     let errorMessage;
     try {
       await MeetingTimeDAO.fetchMeetingTime(123); // meetingTimeId should be a string
+    } catch (error) {
+      errorMessage = error.message;
+    }
+    expect(errorMessage).toEqual(INVALID_PARAM_TYPE);
+  });
+});
+
+// Tests for newMeetingTime
+describe('MeetingTimeDAO - newMeetingTime', function () {
+  const MEETING_TIME_ID = 'abc123def456';
+  const DATETIME_STR = '2021-01-25T17:52';
+  const INVALID_DATETIME_FORMAT = '25 January 2021, 5:25PM';
+  const INVALID_DATETIME = '2021-01-33T17:52'; // No 33rd of January
+  const QUERY_STRING = 'datetime=' + encodeURIComponent(DATETIME_STR);
+  const RESPONSE_INIT = { // send to doPost not doGet
+    method: 'POST'
+  };
+
+  beforeEach(function () {
+    // Return a Response promise
+    spyOn(window, 'fetch').and.callFake(async function (url, init) {
+      return new Response(JSON.stringify(MEETING_TIME_ID), RESPONSE_INIT);
+    });
+  });
+
+  it('throws an exception if the datetimeStr param is not provided', async function () {
+    // Note: cannot use expect().toThrow, because the .toThrow executes before call to
+    // async fetchMeetingTime is resolved.
+    let errorMessage;
+    try {
+      await MeetingTimeDAO.newMeetingTime();
+    } catch (error) {
+      errorMessage = error.message;
+    }
+    expect(errorMessage).toEqual(INSUFFICIENT_REQUEST_PARAM);
+  });
+
+  it('throws an exception if the datetimeStr param is of an invalid format', async function () {
+    let errorMessage;
+    try {
+      await MeetingTimeDAO.newMeetingTime(INVALID_DATETIME_FORMAT);
+    } catch (error) {
+      errorMessage = error.message;
+    }
+    expect(errorMessage).toEqual(INVALID_PARAM_VALUE);
+  });
+
+  it('throws an exception if the datetimeStr param is not a valid date', async function () {
+    let errorMessage;
+    try {
+      await MeetingTimeDAO.newMeetingTime(INVALID_DATETIME);
+    } catch (error) {
+      errorMessage = error.message;
+    }
+    expect(errorMessage).toEqual(INVALID_PARAM_VALUE);
+  });
+
+  it('when successful, returns a JSON string with the meetingTimeId (entity Key) of \
+      the created MeetingTime entity', async function () {
+    let result = await MeetingTimeDAO.newMeetingTime(DATETIME_STR);
+    expect(result).toEqual(MEETING_TIME_ID);
+    expect(window.fetch)
+        .toHaveBeenCalledWith(MeetingTimeDAO.endpoint + QUERY_STRING, RESPONSE_INIT);
+  });
+
+  it('handles invalid argument types by throwing an error', async function () {
+    let errorMessage;
+    try {
+      await MeetingTimeDAO.fetchMeetingTime({datetime: DATETIME_STR}); // datetime should be a single string
     } catch (error) {
       errorMessage = error.message;
     }
