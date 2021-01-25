@@ -50,6 +50,7 @@ public final class MeetingTimeServletTest {
   private final int VOTE_COUNT_VAL = 2;
   private final String DATETIME_VAL = "2021-01-20T16:33:00";
   private final List VOTERS_VAL = new ArrayList<String>(Arrays.asList("John Smith", "Bob Citizen"));
+  
 
   // Mocks
   private final LocalServiceTestHelper helper =
@@ -68,7 +69,7 @@ public final class MeetingTimeServletTest {
     writer = new PrintWriter(stringWriter);
     when(mockedResponse.getWriter()).thenReturn(writer);
   }
-
+  
   // Tests for doPost
   @Test
   public void testSuccessfulNewDoPost() throws IOException {
@@ -96,15 +97,23 @@ public final class MeetingTimeServletTest {
   public void testNullDatetimeQuery() throws IOException {
     when(mockedRequest.getParameter(MeetingTimeFields.DATETIME)).thenReturn(null); // null datetime
     new MeetingTimeServlet().doPost(mockedRequest, mockedResponse);
-    // check that error response was sent with appropriate details
-    verify(mockedResponse, times(1)).sendError(HttpServletResponse.SC_BAD_REQUEST, ErrorMessages.BAD_REQUEST_ERROR);
 
+    // check that error response was sent with appropriate details
+    HashMap errorResponse = new HashMap<String, Object>() {{
+      put("status", HttpServletResponse.SC_BAD_REQUEST);
+      put("message", ErrorMessages.BAD_REQUEST_ERROR);
+    }};
+    String errorJson = ServletUtil.convertToJson(errorResponse);
+    // verify status code set
+    verify(mockedResponse, times(1)).setStatus(HttpServletResponse.SC_BAD_REQUEST);
+
+    // Check that nothing was stored
     List<Entity> results = getAllEntities();
     assertEquals(0, results.size());
 
-    // Assert that nothing is returned
+    // Assert that error response is returned
     writer.flush(); // writer may not have been flushed yet
-    assertTrue(stringWriter.toString().contains(""));
+    assertTrue(stringWriter.toString().contains(errorJson));
   }
 
   // Tests for doGet
@@ -133,10 +142,9 @@ public final class MeetingTimeServletTest {
         .thenReturn(fakeMeetingTimeKey); 
     new MeetingTimeServlet().doGet(mockedRequest, mockedResponse);
 
-    // expect the JSON to be returned & no calls to response.sendError
+    // expect the JSON to be returned
     writer.flush();
     assertTrue(stringWriter.toString().contains(fakeMeetingTimeJson));
-    verify(mockedResponse, never()).sendError(anyInt(), anyString());
   }
    
   @Test 
@@ -146,12 +154,17 @@ public final class MeetingTimeServletTest {
     new MeetingTimeServlet().doGet(mockedRequest, mockedResponse);
     
     // check that error response was sent with appropriate details
-    verify(mockedResponse, times(1))
-        .sendError(HttpServletResponse.SC_BAD_REQUEST, ErrorMessages.BAD_REQUEST_ERROR);
+    HashMap errorResponse = new HashMap<String, Object>() {{
+      put("status", HttpServletResponse.SC_BAD_REQUEST);
+      put("message", ErrorMessages.BAD_REQUEST_ERROR);
+    }};
+    String errorJson = ServletUtil.convertToJson(errorResponse);
+    // verify error status code set
+    verify(mockedResponse, times(1)).setStatus(HttpServletResponse.SC_BAD_REQUEST);
 
-    // Assert that nothing is returned
+    // Assert that error response is returned
     writer.flush(); // writer may not have been flushed yet
-    assertTrue(stringWriter.toString().contains(""));
+    assertTrue(stringWriter.toString().contains(errorJson));
   }
   
   @Test 
@@ -168,32 +181,38 @@ public final class MeetingTimeServletTest {
     // fetch the entity
     when(mockedRequest.getParameter(MeetingTimeFields.MEETING_TIME_ID)).thenReturn(MEETING_TIME_ID_VAL); 
     new MeetingTimeServlet().doGet(mockedRequest, mockedResponse);
-<<<<<<< HEAD
-    TooManyResultsException exception = new TooManyResultsException();
-=======
-    
->>>>>>> 198a789 (remove instantiation of unused exception)
-    // check that error response was sent with appropriate details
-    verify(mockedResponse, times(1))
-        .sendError(HttpServletResponse.SC_REQUEST_ENTITY_TOO_LARGE, ErrorMessages.TOO_MANY_RESULTS_ERROR);
 
-    // Assert that nothing is returned
+    // check that error response was sent with appropriate details
+    HashMap errorResponse = new HashMap<String, Object>() {{
+      put("status", HttpServletResponse.SC_REQUEST_ENTITY_TOO_LARGE);
+      put("message", ErrorMessages.TOO_MANY_RESULTS_ERROR);
+    }};
+    String errorJson = ServletUtil.convertToJson(errorResponse);
+    // verify error status code set
+    verify(mockedResponse, times(1)).setStatus(HttpServletResponse.SC_REQUEST_ENTITY_TOO_LARGE);
+
+    // Assert that error reponse is returned
     writer.flush(); // writer may not have been flushed yet
-    assertTrue(stringWriter.toString().contains(""));
+    assertTrue(stringWriter.toString().contains(errorJson));
   }
   
   @Test 
   public void testDoGetNoResults() throws IOException {
     when(mockedRequest.getParameter(MeetingTimeFields.MEETING_TIME_ID)).thenReturn("non-existent key");
     new MeetingTimeServlet().doGet(mockedRequest, mockedResponse);
-    
-    // check that error response was sent with appropriate details
-    verify(mockedResponse, times(1))
-        .sendError(HttpServletResponse.SC_NOT_FOUND, ErrorMessages.ENTITY_NOT_FOUND_ERROR);
 
-    // Assert that nothing is returned
+    // check that error response was sent with appropriate details
+    HashMap errorResponse = new HashMap<String, Object>() {{
+      put("status", HttpServletResponse.SC_NOT_FOUND);
+      put("message", ErrorMessages.ENTITY_NOT_FOUND_ERROR);
+    }};
+    String errorJson = ServletUtil.convertToJson(errorResponse);
+    // verify error status code set
+    verify(mockedResponse, times(1)).setStatus(HttpServletResponse.SC_NOT_FOUND);
+
+    // Assert that error response is returned
     writer.flush(); // writer may not have been flushed yet
-    assertTrue(stringWriter.toString().contains(""));
+    assertTrue(stringWriter.toString().contains(errorJson));
   }
   @After
   public void tearDown() {
