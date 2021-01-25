@@ -46,7 +46,7 @@ public class LocationServlet extends HttpServlet {
   }
 
   /** Stores a location in Datastore. */
-  public void storeLocation(Location location) {
+  private void storeLocation(Location location) {
     Entity locationEntity = new Entity("Location");
     locationEntity.setProperty("title", location.getTitle());
     locationEntity.setProperty("lat", location.getLat());
