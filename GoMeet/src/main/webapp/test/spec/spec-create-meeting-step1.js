@@ -72,19 +72,35 @@ describe ('removeGuest', function() {
 
 describe ('isValidEmail', function() {
   it ('Should check if an email is valid', function() {
-    let badEmailOne = "1@2.3"; 
-    let badEmailTwo = "!@.com"; 
-    let badEmailThree = "name@address-com"; 
-    
-    expect(isValidEmail(badEmailOne)).toBe(false);
-    expect(isValidEmail(badEmailTwo)).toBe(false);
-    expect(isValidEmail(badEmailThree)).toBe(false);
+    let emailInput = document.createElement('input'); 
+    emailInput.type = 'email';
 
-    let goodEmailOne = "name@address.com"; 
-    let goodEmailTwo = "name1@address.com"; 
-    let goodEmailThree = "name-1@address.com";
-    expect(isValidEmail(goodEmailOne)).toBe(true);
-    expect(isValidEmail(goodEmailTwo)).toBe(true);
-    expect(isValidEmail(goodEmailThree)).toBe(true);
+    // Checking valid email inputs 
+    emailInput.value = "name@address.com"; 
+    expect(isValidEmail(emailInput)).toBe(true);
+    emailInput.value = "name1@address.com";
+    expect(isValidEmail(emailInput)).toBe(true); 
+    emailInput.value = "name-1@address.com"
+    expect(isValidEmail(emailInput)).toBe(true); 
+    emailInput.value = "name-1@address"
+    expect(isValidEmail(emailInput)).toBe(true); 
+    emailInput.value = "name@address1"
+    expect(isValidEmail(emailInput)).toBe(true); 
+
+    // Checking invalid email inputs 
+    emailInput.value = "1@";
+    expect(isValidEmail(emailInput)).toBe(false); 
+    emailInput.value = "name_address_com";
+    expect(isValidEmail(emailInput)).toBe(false); 
+    emailInput.value = "@address.com";
+    expect(isValidEmail(emailInput)).toBe(false); 
+    emailInput.value = "name.com";
+    expect(isValidEmail(emailInput)).toBe(false); 
+    emailInput.value = "name.address.com";
+    expect(isValidEmail(emailInput)).toBe(false); 
+    emailInput.value = "name-address-com";
+    expect(isValidEmail(emailInput)).toBe(false); 
+    emailInput.value = "1@-";
+    expect(isValidEmail(emailInput)).toBe(false); 
   });
 });
