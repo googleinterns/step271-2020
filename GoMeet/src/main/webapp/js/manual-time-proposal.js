@@ -101,8 +101,7 @@ function toggleDeleteButtons(document) {
   for (let i = 0; i < deleteButtons.length; i++) {
     if (deleteButtons[i].style.display === 'none') {
       deleteButtons[i].style.display = 'inline';
-    }
-    else {
+    } else {
       deleteButtons[i].style.display = 'none';
     }
   }
@@ -142,8 +141,7 @@ function rectifyInputtedTime(elem) {
   if (enteredTimes.has(elem.value) || !(timeEntered > now)) {
     elem.value = '';
     alert(INVALID_TIME_ERROR);
-  }
-  else {
+  } else {
     enteredTimes.add(elem.value);
   }
 }
