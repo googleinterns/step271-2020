@@ -51,7 +51,6 @@ public final class MeetingTimeServletTest {
   private final String DATETIME_VAL = "2021-01-20T16:33:00";
   private final List VOTERS_VAL = new ArrayList<String>(Arrays.asList("John Smith", "Bob Citizen"));
   
-
   // Mocks
   private final LocalServiceTestHelper helper =
       new LocalServiceTestHelper(new LocalDatastoreServiceTestConfig());
