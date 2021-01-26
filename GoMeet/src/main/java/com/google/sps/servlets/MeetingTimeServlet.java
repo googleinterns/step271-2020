@@ -118,6 +118,13 @@ public class MeetingTimeServlet extends HttpServlet {
     response.getWriter().println(meetingTimeKey.toString());
   }
 
+  /** Send an error response JSON to the client code containing the status code and message 
+   * via response.getWriter.println(), and also set the status of the response to the status code.
+   * @param {HttpServletResponse} response - the servlet response 
+   * @param {int} status - the status code to be returned in the error JSON and set as as the status
+   * via response.setStatus
+   * @param {String} message - the error message
+   */
   private void sendErrorResponse(HttpServletResponse response, int status, String message) throws IOException {
     HashMap errorResponse = new HashMap<String, Object>() {{
       put("status", status);
@@ -125,6 +132,7 @@ public class MeetingTimeServlet extends HttpServlet {
     }};
     response.setStatus(status);
     String error = ServletUtil.convertToJson(errorResponse);
+    response.setContentType("application/json");
     response.getWriter().println(error);
     return;
   }
