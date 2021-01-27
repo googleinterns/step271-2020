@@ -7,8 +7,6 @@ import com.google.appengine.tools.development.testing.LocalServiceTestHelper;
 import com.google.appengine.tools.development.testing.LocalUserServiceTestConfig;
 import com.google.gson.Gson;
 import java.io.IOException;
-// import javax.servlet.annotation.WebServlet;
-// import javax.servlet.http.HttpServlet;
 import com.google.sps.servlets.LoginServlet;
 
 import static org.junit.Assert.assertEquals;
@@ -34,6 +32,8 @@ public class LoginServletTest {
   @Before
   public void setup() {
     helper.setUp();
+    helper.setEnvEmail("test@gmail.com");
+    helper.setEnvAuthDomain("gmail.com");
   }
 
   @After
@@ -91,8 +91,12 @@ public class LoginServletTest {
     Object logoutUrl = jsonObject.get("logoutUrl"); 
     assertEquals(logoutUrl, "/_ah/logout?continue\u003d%2Fmeeting-event.html");
 
+    // Check the userEmail key value 
+    Object userEmail = jsonObject.get("userEmail"); 
+    assertEquals(userEmail, "test@gmail.com"); 
+
     // Check number of key value pairs 
     int numKeys = jsonObject.keySet().size(); 
-    assertEquals(numKeys, 2);
+    assertEquals(numKeys, 3);
   }
 }
