@@ -42,9 +42,10 @@ public class LocationServletTest {
   private final String NOTE_A = "Good Pancakes!";
   private final String LAT_A = "33.0";
   private final String LNG_A = "150.0";
+  private final long INIT_VOTE_COUNT = 1;
   private final double LAT_A_VALUE = Double.parseDouble(LAT_A);
   private final double LNG_A_VALUE = Double.parseDouble(LNG_A);
-  private final Location LOCATION_A = new Location("Sushi Train", 15.0, 150.0, "I like sushi!");
+  private final Location LOCATION_A = new Location("Sushi Train", 15.0, 150.0, "I like sushi!", 1);
 
   private HttpServletRequest request;
   private HttpServletResponse response;
@@ -90,6 +91,7 @@ public class LocationServletTest {
     assertEquals(LAT_A_VALUE, result.getProperty("lat"));
     assertEquals(LNG_A_VALUE, result.getProperty("lng"));
     assertEquals(NOTE_A, result.getProperty("note"));
+    assertEquals(INIT_VOTE_COUNT, result.getProperty("voteCount"));
   }
 
   @Test
@@ -115,6 +117,7 @@ public class LocationServletTest {
     location.setProperty("lat", LOCATION_A.getLat());
     location.setProperty("lng", LOCATION_A.getLng());
     location.setProperty("note", LOCATION_A.getNote());
+    location.setProperty("voteCount", LOCATION_A.getVoteCount());
     ds.put(location);
 
     Gson gson = new Gson();

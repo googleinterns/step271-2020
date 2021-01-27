@@ -21,6 +21,8 @@ import org.jsoup.safety.Whitelist;
 @WebServlet("/location-data")
 public class LocationServlet extends HttpServlet {
 
+  private static final long INITIAL_VOTE_COUNT = 1;
+
  /** Responds with a JSON array containing location data. */
   @Override
   public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
@@ -41,7 +43,7 @@ public class LocationServlet extends HttpServlet {
     String note = Jsoup.clean(request.getParameter("note"), Whitelist.none());
     String title = Jsoup.clean(request.getParameter("title"), Whitelist.none());
 
-    Location location = new Location(title, lat, lng, note);
+    Location location = new Location(title, lat, lng, note, INITIAL_VOTE_COUNT);
     storeLocation(location);
   }
 
@@ -52,6 +54,7 @@ public class LocationServlet extends HttpServlet {
     locationEntity.setProperty("lat", location.getLat());
     locationEntity.setProperty("lng", location.getLng());
     locationEntity.setProperty("note", location.getNote());
+    locationEntity.setProperty("voteCount", location.getVoteCount());
 
     DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
     datastore.put(locationEntity);
@@ -69,8 +72,9 @@ public class LocationServlet extends HttpServlet {
       double lng = (double) entity.getProperty("lng");
       String title = (String) entity.getProperty("title");
       String note = (String) entity.getProperty("note");
+      long voteCount = (long) entity.getProperty("voteCount");
 
-      Location location = new Location(title, lat, lng, note);
+      Location location = new Location(title, lat, lng, note, voteCount);
       locations.add(location);
     }
     return locations;

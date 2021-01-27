@@ -8,15 +8,15 @@ public class Location {
   private final double lat;
   private final double lng;
   private final String note;
-  private int voteCount;
+  private long voteCount;
   private Collection<String> voters;
 
-  public Location(String title, double lat, double lng, String note) {
+  public Location(String title, double lat, double lng, String note, long voteCount) {
     this.title = title;
     this.lat = lat;
     this.lng = lng;
     this.note = note;
-    this.voteCount = 1;
+    this.voteCount = voteCount;
     voters = new HashSet<>();
   }
 
@@ -40,7 +40,7 @@ public class Location {
     return note;
   }
 
-  public int getVoteCount() {
+  public long getVoteCount() {
     return voteCount;
   }
 
