@@ -1,3 +1,13 @@
+/** Initialises the map. */
+function initMap() {
+  // Create the map object
+  let map = createMap();
+  
+  // Add the data from the database to the map
+  const fetchWrapper = new FetchWrapper();
+  fetchLocations(map, fetchWrapper);
+}
+
 /** Creates a map that allows users to add markers. */
 function createMap() {
   let map = new google.maps.Map(
@@ -7,9 +17,6 @@ function createMap() {
   map.addListener('click', (event) => {
     createLocationForEdit(map, event.latLng.lat(), event.latLng.lng());
   });
-
-  const fetchWrapper = new FetchWrapper();
-  fetchLocations(map, fetchWrapper);
   return map; 
 }
 
