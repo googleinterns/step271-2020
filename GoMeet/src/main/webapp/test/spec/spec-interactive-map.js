@@ -20,7 +20,8 @@ describe('Create location for edit', function() {
     let mapA;
 
     const fakeMarker = {lat: 10, lng: 15};
-    const markerConstructorSpy = spyOn(google.maps, 'Marker').and.returnValue(fakeMarker);
+    const markerConstructorSpy = spyOn(google.maps, 'Marker')
+        .and.returnValue(fakeMarker);
    
     const infowindowConstructorSpy = spyOn(google.maps, 'InfoWindow');
     const infowindow = jasmine.createSpyObj('InfoWindow', ['open']);
@@ -28,7 +29,8 @@ describe('Create location for edit', function() {
 
     const createdMarker = createLocationForEdit(mapA, LAT_A, LNG_A);
 
-    expect(google.maps.Marker).toHaveBeenCalledWith({position: {lat: LAT_A, lng: LNG_A}, map: mapA});
+    expect(google.maps.Marker).toHaveBeenCalledWith({position:
+        {lat: LAT_A, lng: LNG_A}, map: mapA});
     expect(createdMarker).toBe(fakeMarker);
   });
 });
@@ -93,7 +95,8 @@ describe('Post Location', function() {
 
     postLocation(TITLE_A, LAT_A, LNG_A, NOTE_A, mockedFetchWrapper);
 
-    expect(mockedFetchWrapper.doPost).toHaveBeenCalledWith('/location-data', expectedParams);
+    expect(mockedFetchWrapper.doPost).toHaveBeenCalledWith(
+        '/location-data', expectedParams);
   });
 });
 
@@ -108,7 +111,8 @@ describe ('Fetch Locations', function() {
         reject: reject
       };
     });
-    const response = new Response(JSON.stringify([{title: "Hello", lat: 10, lng: 15, note: "My Note"}]));
+    const response = new Response(JSON.stringify([{title: "Hello",
+        lat: 10, lng: 15, note: "My Note"}]));
     promiseHelper.resolve(response);
 
     let mockedFetchWrapper = new FetchWrapper();
@@ -123,6 +127,7 @@ describe ('Fetch Locations', function() {
     let fakeMap = {};
 
     await fetchLocations(fakeMap, mockedFetchWrapper);
-    expect(google.maps.Marker).toHaveBeenCalledWith({position: {lat: 10, lng: 15}, map: fakeMap});
+    expect(google.maps.Marker).toHaveBeenCalledWith(
+        {position: {lat: 10, lng: 15}, map: fakeMap});
   }); 
 });

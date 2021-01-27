@@ -20,7 +20,8 @@ function createLocationForEdit(map, lat, lng) {
       new google.maps.Marker({position: {lat: lat, lng: lng}, map: map});
 
   const infoWindow =
-      new google.maps.InfoWindow({content: buildInfoWindowInput(lat, lng, editLocation)});
+      new google.maps.InfoWindow({content: buildInfoWindowInput(lat, lng,
+         editLocation)});
 
   // When the user closes the editable info window, remove the marker.
   google.maps.event.addListener(infoWindow, 'closeclick', () => {
@@ -65,9 +66,10 @@ function buildInfoWindowInput(lat, lng, editLocation) {
   };
 
   const containerDiv = document.createElement('div');
-  containerDiv.append('Enter location title:', document.createElement('br'), titleTextbox,
-      document.createElement('br'), 'Enter note:', document.createElement('br'), noteTextbox,
-      document.createElement('br'), button);
+  containerDiv.append('Enter location title:', document.createElement('br'),
+      titleTextbox, document.createElement('br'), 'Enter note:',
+      document.createElement('br'), noteTextbox, document.createElement('br'),
+      button);
   return containerDiv;
 }
 
@@ -96,6 +98,7 @@ async function fetchLocations(map, fetchWrapper) {
   let response = await fetchWrapper.doGet('location-data');
   let json = await response.json();
   json.forEach(async (location) => {
-    await createLocationForDisplay(map, location.lat, location.lng, location.title);
+    await createLocationForDisplay(map, location.lat, location.lng,
+        location.title);
   });
 }
