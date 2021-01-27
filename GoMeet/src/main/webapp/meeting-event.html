@@ -3,12 +3,21 @@
   <head>
     <title>GoMeet</title>
     <link rel="stylesheet" href="style.css">
+    <script src="js/meeting-display.js"></script>
+    <script src="js/login-status.js"></script>
   </head>
-  <body>
+  <body onload="toggleMeetingDisplay()">
     <h1 class="center">GoMeet</h1>
-    <h2 id="meeting-name"></h2>
-    <div id="vote-meeting-times"></div>
-    <div id="vote-meeting-locations"></div>
-    <div id="votes-table"></div>
+    <p id='login-or-logout-prompt'></p>
+    <h2 id="meeting-title">Meeting Name:</h2>
+    <div id="vote-meeting-times">
+        <h3>Meeting times here</h3>
+    </div>
+    <div id="vote-meeting-locations">
+        <h3>Meeting locations here</h3>
+    </div>
+    <div id="votes-table">
+        <h3>Meeting votes here</h3>
+    </div>
   </body>
 </html>
