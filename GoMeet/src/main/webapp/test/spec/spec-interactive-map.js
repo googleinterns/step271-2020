@@ -3,7 +3,7 @@ describe('Create map', function() {
   it ('Should create and return a map object', function() {
     const mapConstructorSpy = spyOn(google.maps, 'Map');
     const mockedMap = jasmine.createSpyObj('Map', ['addListener']);
-    mapConstructorSpy.and.returnValue(mockedMap);
+    mapConstructorSpy.and.returnValue(mockedMap); 
 
     const createdMap = createMap();
 
@@ -21,7 +21,7 @@ describe('Create location for edit', function() {
 
     const fakeMarker = {lat: 10, lng: 15};
     const markerConstructorSpy = spyOn(google.maps, 'Marker').and.returnValue(fakeMarker);
-
+   
     const infowindowConstructorSpy = spyOn(google.maps, 'InfoWindow');
     const infowindow = jasmine.createSpyObj('InfoWindow', ['open']);
     infowindowConstructorSpy.and.returnValue(infowindow);
@@ -95,4 +95,34 @@ describe('Post Location', function() {
 
     expect(mockedFetchWrapper.doPost).toHaveBeenCalledWith('/location-data', expectedParams);
   });
+});
+
+/** Test for fetch locations. */
+describe ('Fetch Locations', function() {
+  it ('Should create a marker for the location returned', async function() {
+    // Set up fake promise to return 
+    let promiseHelper;
+    let fetchPromise = new Promise(function(resolve, reject) {
+      promiseHelper = {
+        resolve: resolve,
+        reject: reject
+      };
+    });
+    const response = new Response(JSON.stringify([{title: "Hello", lat: 10, lng: 15, note: "My Note"}]));
+    promiseHelper.resolve(response);
+
+    let mockedFetchWrapper = new FetchWrapper();
+    spyOn(mockedFetchWrapper, 'doGet').and.callFake(function() {
+      return fetchPromise});
+
+    // Set up mocks for Google MAPS API
+    const markerConstructorSpy = spyOn(google.maps, 'Marker');
+    const fakeMarker = jasmine.createSpyObj('Marker', ['addListener']);
+    markerConstructorSpy.and.returnValue(fakeMarker);
+    const infowindowConstructorSpy = spyOn(google.maps, 'InfoWindow');
+    let fakeMap = {};
+
+    await fetchLocations(fakeMap, mockedFetchWrapper);
+    expect(google.maps.Marker).toHaveBeenCalledWith({position: {lat: 10, lng: 15}, map: fakeMap});
+  }); 
 });

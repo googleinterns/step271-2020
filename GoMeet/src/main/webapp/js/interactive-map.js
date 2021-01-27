@@ -7,6 +7,9 @@ function createMap() {
   map.addListener('click', (event) => {
     createLocationForEdit(map, event.latLng.lat(), event.latLng.lng());
   });
+
+  const fetchWrapper = new FetchWrapper();
+  fetchLocations(map, fetchWrapper);
   return map; 
 }
 
@@ -25,6 +28,18 @@ function createLocationForEdit(map, lat, lng) {
   });
   infoWindow.open(map, editLocation);
   return editLocation;
+}
+
+/** Creates a marker that shows the location's information. */
+async function createLocationForDisplay(map, lat, lng, title) {
+  let displayLocation =
+      new google.maps.Marker({position: {lat: lat, lng: lng}, map: map});
+
+  const infoWindow = new google.maps.InfoWindow({content: title});
+  displayLocation.addListener('click', () => {
+    infoWindow.open(map, displayLocation);
+  });
+  return displayLocation;
 }
 
 /**
@@ -74,4 +89,13 @@ function validateTitle(title) {
   if (title === '') {
     throw (new Error(BLANK_FIELDS_ALERT));
   }
+}
+
+/** Fetches the location data. */
+async function fetchLocations(map, fetchWrapper) {
+  let response = await fetchWrapper.doGet('location-data');
+  let json = await response.json();
+  json.forEach(async (location) => {
+    await createLocationForDisplay(map, location.lat, location.lng, location.title);
+  });
 }
