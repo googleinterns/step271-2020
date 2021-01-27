@@ -1,3 +1,19 @@
 .center {
   text-align: center;
 }
+
+#meeting-title {
+  display: none;
+}
+
+#vote-meeting-times {
+  display: none;
+}
+
+#vote-meeting-locations {
+  display: none;
+}
+
+#votes-table {
+  display: none;
+}
