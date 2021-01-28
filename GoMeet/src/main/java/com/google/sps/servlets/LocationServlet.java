@@ -81,8 +81,9 @@ public class LocationServlet extends HttpServlet {
       String title = (String) entity.getProperty("title");
       String note = (String) entity.getProperty("note");
       long voteCount = (long) entity.getProperty("voteCount");
+      String keyString = KeyFactory.keyToString(entity.getKey());
 
-      Location location = new Location(title, lat, lng, note, voteCount);
+      Location location = new Location(title, lat, lng, note, voteCount, keyString);
       locations.add(location);
     }
     return locations;
