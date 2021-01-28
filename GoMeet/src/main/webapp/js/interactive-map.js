@@ -87,13 +87,6 @@ function postLocation(title, lat, lng, note) {
   MeetingLocationDAO.postLocation('/location-data', params);
 }
 
-/** Sends a POST request with the key for the location to update. */
-function postVote(keyString, fetchWrapper) {
-  const params = new URLSearchParams();
-  params.append('key', keyString);
-  fetchWrapper.doPost('/update-location-data', params);
-}
-
 /** 
  * Check if user input is valid. 
  * Throws an error if title in an invalid input.
@@ -115,11 +108,10 @@ async function fetchLocations(map) {
 
 /** Builds a HTML element to display the location's data and a vote button. */
 function buildInfoWindowVote(title, voteCount, note, keyString) {
-  let fetchWrapper = new FetchWrapper();
   const button = document.createElement('button');
   button.appendChild(document.createTextNode('VOTE'));
   button.onclick = () => {
-    postVote(keyString, fetchWrapper);
+    MeetingLocationDAO.updateLocation(keyString);
   };
 
   const containerDiv = document.createElement('div');

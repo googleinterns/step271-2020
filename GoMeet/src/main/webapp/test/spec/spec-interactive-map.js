@@ -76,23 +76,6 @@ describe('Build Info window input', function() {
   });
 });
 
-/** Test for Post Vote. */
-describe('Post Vote', function() {
-  const KEY_A = '12345';
-
-  it ('Should send the correct post request', function() {
-    let mockedFetchWrapper = new FetchWrapper();
-    spyOn(mockedFetchWrapper, 'doPost');
-    const expectedParams = new URLSearchParams();
-    expectedParams.append('key', KEY_A);
-
-    postVote(KEY_A, mockedFetchWrapper);
-
-    expect(mockedFetchWrapper.doPost).toHaveBeenCalledWith(
-        '/update-location-data', expectedParams);
-  });
-});
-
 /** Test for fetch locations. */
 describe ('Fetch Locations', function() {
   it ('Should create a marker for the location returned', async function() {
