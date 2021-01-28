@@ -2,13 +2,20 @@
 <html>
   <head>
     <title>GoMeet</title>
+    <script src="js/load-map.js"></script>
+    <script src="js/error-messages.js"></script>
+    <script src="js/interactive-map.js"></script>
+    <script src="js/fetch-wrapper.js"></script>
     <link rel="stylesheet" href="style.css">
   </head>
-  <body>
+  <body onload="createMap()">
     <h1 class="center">GoMeet</h1>
     <h2 id="meeting-name"></h2>
     <div id="vote-meeting-times"></div>
     <div id="vote-meeting-locations"></div>
+      <h2>Meeting Locations</h2>
+      <p>Click on the map to propose a new location.</p>
+      <div id="map"></div></br>
     <div id="votes-table"></div>
   </body>
 </html>
