@@ -49,7 +49,7 @@ public class MeetingTimeServlet extends HttpServlet {
     response.setContentType("application/json");
     String keyStr = request.getParameter(MeetingTimeFields.MEETING_TIME_ID);
     if (keyStr == null) {
-      sendErrorResponse(response, HttpServletResponse.SC_BAD_REQUEST, ErrorMessages.BAD_REQUEST_ERROR);
+      ServletUtil.sendErrorResponse(response, HttpServletResponse.SC_BAD_REQUEST, ErrorMessages.BAD_REQUEST_ERROR);
       return;
     }
 
@@ -66,13 +66,13 @@ public class MeetingTimeServlet extends HttpServlet {
       result = preparedQuery.asSingleEntity();
     } catch (PreparedQuery.TooManyResultsException e) {
       // there is more than the expected number of entities returned - non-unique key
-      sendErrorResponse(response, HttpServletResponse.SC_REQUEST_ENTITY_TOO_LARGE, ErrorMessages.TOO_MANY_RESULTS_ERROR);
+      ServletUtil.sendErrorResponse(response, HttpServletResponse.SC_REQUEST_ENTITY_TOO_LARGE, ErrorMessages.TOO_MANY_RESULTS_ERROR);
       return;
     }
 
     if (result == null) {
       // entity by the given key is not found
-      sendErrorResponse(response, HttpServletResponse.SC_NOT_FOUND, ErrorMessages.ENTITY_NOT_FOUND_ERROR);
+      ServletUtil.sendErrorResponse(response, HttpServletResponse.SC_NOT_FOUND, ErrorMessages.ENTITY_NOT_FOUND_ERROR);
       return;
     }
     
@@ -102,7 +102,7 @@ public class MeetingTimeServlet extends HttpServlet {
     String datetime = request.getParameter(MeetingTimeFields.DATETIME);
 
     if (datetime == null) {
-      sendErrorResponse(response, HttpServletResponse.SC_BAD_REQUEST, ErrorMessages.BAD_REQUEST_ERROR);
+      ServletUtil.sendErrorResponse(response, HttpServletResponse.SC_BAD_REQUEST, ErrorMessages.BAD_REQUEST_ERROR);
       return;
     }
 
@@ -116,24 +116,5 @@ public class MeetingTimeServlet extends HttpServlet {
     // return the key of the created entity
     response.setContentType("application/json");
     response.getWriter().println(meetingTimeKey.toString());
-  }
-
-  /** Send an error response JSON to the client code containing the status code and message 
-   * via response.getWriter.println(), and also set the status of the response to the status code.
-   * @param {HttpServletResponse} response - the servlet response 
-   * @param {int} status - the status code to be returned in the error JSON and set as as the status
-   * via response.setStatus
-   * @param {String} message - the error message
-   */
-  private void sendErrorResponse(HttpServletResponse response, int status, String message) throws IOException {
-    HashMap errorResponse = new HashMap<String, Object>() {{
-      put("status", status);
-      put("message", message);
-    }};
-    response.setStatus(status);
-    String error = ServletUtil.convertToJson(errorResponse);
-    response.setContentType("application/json");
-    response.getWriter().println(error);
-    return;
   }
 }
