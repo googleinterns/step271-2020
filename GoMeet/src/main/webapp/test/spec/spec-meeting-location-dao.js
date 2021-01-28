@@ -60,3 +60,21 @@ describe('New Location', function() {
     expect(receivedResponse).toEqual(KEY_STRING);
   });
 });
+
+/** Tests for updateLocation(). */
+describe('Update Location', function() {
+  const KEY_STRING = '1234';
+
+  it ('Should send a post request with the correct params', function() {
+    spyOn(window, 'fetch');
+
+    let expectedParams = new URLSearchParams();
+    expectedParams.append('key', KEY_STRING);
+
+    MeetingLocationDAO.updateLocation(KEY_STRING);
+
+    // Check if fetch was called with the right params.
+    expect(window.fetch).toHaveBeenCalledWith('/update-location-data',
+        {method: 'POST', body: expectedParams}); 
+  });
+});

@@ -1,13 +1,14 @@
 /** Data access object for the /location-data servlet. */
 class MeetingLocationDAO {
 
-  static endpoint = '/location-data'; 
+  static storingEndPoint = '/location-data'; 
+  static votingEndPoint = '/update-location-data';
   /**
    * Fetches the location data from the servlet.
    * Returns a JSON array of the location data.
    */
   static async fetchLocations() {
-    let locations = await fetch(this.endpoint).then((response) => response.json());
+    let locations = await fetch(this.storingEndPoint).then((response) => response.json());
     return locations;
   }
 
@@ -21,7 +22,14 @@ class MeetingLocationDAO {
     params.append('lat', lat);
     params.append('lng', lng);
     params.append('note', note);
-    let result = await fetch(this.endpoint, {method: 'POST', body: params}).then((response) => response.json());
+    let result = await fetch(this.storingEndPoint, {method: 'POST', body: params}).then((response) => response.json());
     return result;
+  }
+
+  /** Sends a request to the servlet to update a location entity's voteCount.*/
+  static async updateLocation(keyString) {
+    const params = new URLSearchParams();
+    params.append('key', keyString);
+    await fetch(this.votingEndPoint, {method: 'POST', body: params});
   }
 }
