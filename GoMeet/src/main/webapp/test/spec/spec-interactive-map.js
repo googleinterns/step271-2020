@@ -131,3 +131,25 @@ describe ('Fetch Locations', function() {
         {position: {lat: 10, lng: 15}, map: fakeMap});
   }); 
 });
+
+/** Test for building info window for voting. */
+describe ('Build Info Window Vote', function() {
+  const TITLE_A = 'Taco Place';
+  const COUNT_A = 2;
+  const NOTE_A = 'Tacos taste yum!';
+
+  it ('Should have one button', function() {
+    const infoWindowContent = buildInfoWindowVote(TITLE_A, COUNT_A, NOTE_A);
+    const childNodes = infoWindowContent.children;
+
+    let buttonCount = 0;
+    for (let i = 0; i < childNodes.length; i++) {
+      let childName = childNodes[i].tagName;
+      if (childName === 'BUTTON') {
+        buttonCount++;
+        buttonNode = childNodes[i];
+      }
+    }
+    expect(buttonCount).toBe(1);
+  });
+});

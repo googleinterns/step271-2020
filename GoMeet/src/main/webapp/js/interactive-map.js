@@ -39,11 +39,11 @@ function createLocationForEdit(map, lat, lng) {
 }
 
 /** Creates a marker that shows the location's information. */
-async function createLocationForDisplay(map, lat, lng, title) {
+async function createLocationForDisplay(map, lat, lng, title, voteCount, note) {
   let displayLocation =
       new google.maps.Marker({position: {lat: lat, lng: lng}, map: map});
 
-  const infoWindow = new google.maps.InfoWindow({content: title});
+  const infoWindow = new google.maps.InfoWindow({content: buildInfoWindowVote(title, voteCount, note)});
   displayLocation.addListener('click', () => {
     infoWindow.open(map, displayLocation);
   });
@@ -106,6 +106,19 @@ async function fetchLocations(map, fetchWrapper) {
   let json = await response.json();
   json.forEach(async (location) => {
     await createLocationForDisplay(map, location.lat, location.lng,
-        location.title);
+        location.title, location.voteCount, location.note);
   });
+}
+
+/** Builds a HTML element to display the location's data and a vote button. */
+function buildInfoWindowVote(title, voteCount, note) {
+  const button = document.createElement('button');
+  button.appendChild(document.createTextNode('VOTE'));
+
+  const containerDiv = document.createElement('div');
+  containerDiv.append('Location title: ', title, 
+      document.createElement('br'), 'Vote Count: ', voteCount, 
+      document.createElement('br'), 'Note: ', note,
+      document.createElement('br'), button);
+  return containerDiv;
 }
