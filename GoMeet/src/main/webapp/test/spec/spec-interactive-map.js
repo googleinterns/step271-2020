@@ -79,7 +79,8 @@ describe('Build Info window input', function() {
 /** Test for fetch locations. */
 describe ('Fetch Locations', function() {
   it ('Should create a marker for the location returned', async function() {
-    const LOCATIONS = [{title: 'Hamburger Place', lat: 10.0, lng: 15.0, note: 'I like Hambergers!'}];
+    const LOCATIONS =
+        [{title: 'Hamburger Place', lat: 10.0, lng: 15.0, note: 'I like Hamburgers!'}];
     spyOn(MeetingLocationDAO, 'fetchLocations').and.returnValue(LOCATIONS);
 
     // Set up mocks for Google MAPS API

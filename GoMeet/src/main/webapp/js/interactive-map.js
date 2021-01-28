@@ -38,11 +38,13 @@ function createLocationForEdit(map, lat, lng) {
 }
 
 /** Creates a marker that shows the location's information. */
-async function createLocationForDisplay(map, lat, lng, title, voteCount, note, keyString) {
+async function createLocationForDisplay(map, lat, lng, title, voteCount,
+    note, keyString) {
   let displayLocation =
       new google.maps.Marker({position: {lat: lat, lng: lng}, map: map});
 
-  const infoWindow = new google.maps.InfoWindow({content: buildInfoWindowVote(title, voteCount, note, keyString)});
+  const infoWindow = new google.maps.InfoWindow({content:
+     buildInfoWindowVote(title, voteCount, note, keyString)});
   displayLocation.addListener('click', () => {
     infoWindow.open(map, displayLocation);
   });
@@ -62,7 +64,8 @@ function buildInfoWindowInput(lat, lng, editLocation) {
   button.onclick = () => {
     try {
       validateTitle(titleTextbox.value);
-      MeetingLocationDAO.newLocation(titleTextbox.value, lat, lng, noteTextbox.value);
+      MeetingLocationDAO.newLocation(titleTextbox.value, lat, lng,
+          noteTextbox.value);
       editLocation.setMap(null);
     } catch (err) {
       alert(err.message);

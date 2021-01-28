@@ -8,7 +8,8 @@ class MeetingLocationDAO {
    * Returns a JSON array of the location data.
    */
   static async fetchLocations() {
-    let locations = await fetch(this.storingEndPoint).then((response) => response.json());
+    let locations = await fetch(this.storingEndPoint).then(
+        (response) => response.json());
     return locations;
   }
 
@@ -22,7 +23,8 @@ class MeetingLocationDAO {
     params.append('lat', lat);
     params.append('lng', lng);
     params.append('note', note);
-    let result = await fetch(this.storingEndPoint, {method: 'POST', body: params}).then((response) => response.json());
+    let result = await fetch(this.storingEndPoint, {method: 'POST', body: params})
+      .then((response) => response.json());
     return result;
   }
 

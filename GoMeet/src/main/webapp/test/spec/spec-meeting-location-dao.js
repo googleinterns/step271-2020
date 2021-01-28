@@ -2,7 +2,8 @@
 
 /** Tests for fetchLocations(). */
 describe ('Fetch Locations', function() {
-  let LOCATIONS = [{title: 'Sushi Place', lat: 22.0, lng: 32.0, note: 'I like Sushi!'}];
+  let LOCATIONS = [{title: 'Sushi Place', lat: 22.0, lng: 32.0,
+      note: 'I like Sushi!'}];
 
   it ('Should return the fetch response as a JSON object', async function() {
     // Set up fake promise to return 
@@ -45,7 +46,8 @@ describe('New Location', function() {
 
     spyOn(window, 'fetch').and.returnValue(fetchPromise);
 
-    let receivedResponse = await MeetingLocationDAO.newLocation(TITLE_A, LAT_A, LNG_A, NOTE_A);
+    let receivedResponse = await MeetingLocationDAO.newLocation(
+        TITLE_A, LAT_A, LNG_A, NOTE_A);
 
     let expectedParams = new URLSearchParams();
     expectedParams.append('title', TITLE_A);
@@ -54,7 +56,8 @@ describe('New Location', function() {
     expectedParams.append('note', NOTE_A);
 
     // Check if fetch was called with the right params.
-    expect(window.fetch).toHaveBeenCalledWith('/location-data', {method: 'POST', body: expectedParams});
+    expect(window.fetch).toHaveBeenCalledWith('/location-data',
+        {method: 'POST', body: expectedParams});
 
     // Check if the response was returned.
     expect(receivedResponse).toEqual(KEY_STRING);
