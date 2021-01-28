@@ -1,4 +1,4 @@
-/** Wraps the fetch function. */
+/** Data accesss object for meeting locations */
 class FetchWrapper {
 
   constructor() {};

@@ -4,8 +4,7 @@ function initMap() {
   let map = createMap();
   
   // Add the data from the database to the map
-  const fetchWrapper = new FetchWrapper();
-  fetchLocations(map, fetchWrapper);
+  fetchLocations(map);
 }
 
 /** Creates a map that allows users to add markers. */
@@ -55,8 +54,6 @@ async function createLocationForDisplay(map, lat, lng, title, voteCount, note, k
  * button.
  */
 function buildInfoWindowInput(lat, lng, editLocation) {
-  const fetchWrapper = new FetchWrapper();
-
   const titleTextbox = document.createElement('textarea');
   const noteTextbox = document.createElement('textarea');
 
@@ -65,7 +62,7 @@ function buildInfoWindowInput(lat, lng, editLocation) {
   button.onclick = () => {
     try {
       validateTitle(titleTextbox.value);
-      postLocation(titleTextbox.value, lat, lng, noteTextbox.value, fetchWrapper);
+      MeetingLocationDAO.newLocation(titleTextbox.value, lat, lng, noteTextbox.value);
       editLocation.setMap(null);
     } catch (err) {
       alert(err.message);
@@ -81,13 +78,13 @@ function buildInfoWindowInput(lat, lng, editLocation) {
 }
 
 /** Sends a POST request with the location data. */
-function postLocation(title, lat, lng, note, fetchWrapper) {
+function postLocation(title, lat, lng, note) {
   const params = new URLSearchParams();
   params.append('title', title);
   params.append('lat', lat);
   params.append('lng', lng);
   params.append('note', note);
-  fetchWrapper.doPost('/location-data', params);
+  MeetingLocationDAO.postLocation('/location-data', params);
 }
 
 /** Sends a POST request with the key for the location to update. */
@@ -108,9 +105,8 @@ function validateTitle(title) {
 }
 
 /** Fetches the location data. */
-async function fetchLocations(map, fetchWrapper) {
-  let response = await fetchWrapper.doGet('location-data');
-  let json = await response.json();
+async function fetchLocations(map) {
+  let json = await MeetingLocationDAO.fetchLocations();
   json.forEach(async (location) => {
     await createLocationForDisplay(map, location.lat, location.lng,
         location.title, location.voteCount, location.note, location.keyString);

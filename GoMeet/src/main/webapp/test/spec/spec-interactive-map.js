@@ -76,30 +76,6 @@ describe('Build Info window input', function() {
   });
 });
 
-/** Test for Post Location. */
-describe('Post Location', function() {
-  const TITLE_A = 'Krusty Krab';
-  const NOTE_A = 'Krabby Patty!';
-  const LAT_A = 10.0;
-  const LNG_A = 15.0;
-
-  it ('Should send the correct post request', function() {
-    let mockedFetchWrapper = new FetchWrapper();
-    spyOn(mockedFetchWrapper, 'doPost');
-
-    const expectedParams = new URLSearchParams();
-    expectedParams.append('title', TITLE_A);
-    expectedParams.append('lat', LAT_A);
-    expectedParams.append('lng', LNG_A);
-    expectedParams.append('note', NOTE_A);
-
-    postLocation(TITLE_A, LAT_A, LNG_A, NOTE_A, mockedFetchWrapper);
-
-    expect(mockedFetchWrapper.doPost).toHaveBeenCalledWith(
-        '/location-data', expectedParams);
-  });
-});
-
 /** Test for Post Vote. */
 describe('Post Vote', function() {
   const KEY_A = '12345';
@@ -120,21 +96,8 @@ describe('Post Vote', function() {
 /** Test for fetch locations. */
 describe ('Fetch Locations', function() {
   it ('Should create a marker for the location returned', async function() {
-    // Set up fake promise to return 
-    let promiseHelper;
-    let fetchPromise = new Promise(function(resolve, reject) {
-      promiseHelper = {
-        resolve: resolve,
-        reject: reject
-      };
-    });
-    const response = new Response(JSON.stringify([{title: "Hello",
-        lat: 10, lng: 15, note: "My Note"}]));
-    promiseHelper.resolve(response);
-
-    let mockedFetchWrapper = new FetchWrapper();
-    spyOn(mockedFetchWrapper, 'doGet').and.callFake(function() {
-      return fetchPromise});
+    const LOCATIONS = [{title: 'Hamburger Place', lat: 10.0, lng: 15.0, note: 'I like Hambergers!'}];
+    spyOn(MeetingLocationDAO, 'fetchLocations').and.returnValue(LOCATIONS);
 
     // Set up mocks for Google MAPS API
     const markerConstructorSpy = spyOn(google.maps, 'Marker');
@@ -143,9 +106,10 @@ describe ('Fetch Locations', function() {
     const infowindowConstructorSpy = spyOn(google.maps, 'InfoWindow');
     let fakeMap = {};
 
-    await fetchLocations(fakeMap, mockedFetchWrapper);
+    await fetchLocations(fakeMap);
+
     expect(google.maps.Marker).toHaveBeenCalledWith(
-        {position: {lat: 10, lng: 15}, map: fakeMap});
+        {position: {lat: 10.0, lng: 15.0}, map: fakeMap});
   }); 
 });
 
