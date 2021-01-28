@@ -15,6 +15,9 @@
 package com.google.sps.data;
 
 import com.google.gson.Gson;
+import java.io.IOException;
+import java.util.HashMap;
+import javax.servlet.http.HttpServletResponse;
 
 /** Class of utility functions shared by the servlets and their tests */
 public class ServletUtil {
@@ -27,6 +30,25 @@ public class ServletUtil {
     Gson gson = new Gson();
     String json = gson.toJson(object);
     return json;
+  }
+
+  /** Send an error response JSON to the client code containing the status code and message 
+   * via response.getWriter.println(), and also set the status of the response to the status code.
+   * @param {HttpServletResponse} response - the servlet response 
+   * @param {int} status - the status code to be returned in the error JSON and set as as the status
+   * via response.setStatus
+   * @param {String} message - the error message
+   */
+  public static void sendErrorResponse(HttpServletResponse response, int status, String message) throws IOException {
+    HashMap errorResponse = new HashMap<String, Object>() {{
+      put("status", status);
+      put("message", message);
+    }};
+    response.setStatus(status);
+    String error = ServletUtil.convertToJson(errorResponse);
+    response.setContentType("application/json");
+    response.getWriter().println(error);
+    return;
   }
 
   /**
