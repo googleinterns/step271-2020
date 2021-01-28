@@ -5,6 +5,8 @@ import com.google.appengine.api.datastore.DatastoreServiceFactory;
 import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.PreparedQuery;
 import com.google.appengine.api.datastore.Query;
+import com.google.appengine.api.datastore.Key;
+import com.google.appengine.api.datastore.KeyFactory;
 import main.java.com.google.sps.data.Location;
 import com.google.gson.Gson;
 import java.io.IOException;
@@ -37,18 +39,22 @@ public class LocationServlet extends HttpServlet {
 
   /** Accepts a POST request containing a new location. */
   @Override
-  public void doPost(HttpServletRequest request, HttpServletResponse response) {
+  public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
     double lat = Double.parseDouble(request.getParameter("lat"));
     double lng = Double.parseDouble(request.getParameter("lng"));
     String note = Jsoup.clean(request.getParameter("note"), Whitelist.none());
     String title = Jsoup.clean(request.getParameter("title"), Whitelist.none());
 
     Location location = new Location(title, lat, lng, note, INITIAL_VOTE_COUNT);
-    storeLocation(location);
+    String entityKeyString = storeLocation(location);
+
+    response.setContentType("application/json");
+    Gson gson = new Gson();
+    response.getWriter().println(gson.toJson(entityKeyString));
   }
 
   /** Stores a location in Datastore. */
-  private void storeLocation(Location location) {
+  private String storeLocation(Location location) {
     Entity locationEntity = new Entity("Location");
     locationEntity.setProperty("title", location.getTitle());
     locationEntity.setProperty("lat", location.getLat());
@@ -58,6 +64,8 @@ public class LocationServlet extends HttpServlet {
 
     DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
     datastore.put(locationEntity);
+    String keyString = KeyFactory.keyToString(locationEntity.getKey());
+    return keyString;
   }
 
   /** Gets the locations stored in Datastore. */

@@ -11,6 +11,8 @@ import com.google.appengine.api.datastore.Query;
 import com.google.appengine.api.datastore.PreparedQuery;
 import com.google.appengine.tools.development.testing.LocalDatastoreServiceTestConfig;
 import com.google.appengine.tools.development.testing.LocalServiceTestHelper;
+import com.google.appengine.api.datastore.KeyFactory;
+import com.google.appengine.api.datastore.Key;
 import main.java.com.google.sps.servlets.LocationServlet;
 import main.java.com.google.sps.data.Location;
 import com.google.gson.Gson;
@@ -69,13 +71,17 @@ public class LocationServletTest {
    * Tests if new location entity is accurately added to the Database.
    * Run this test twice to prove we're not leaking any state across tests.
    */
-  private void doPostTest() {
+  private void doPostTest() throws IOException {
     DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
    
     when(request.getParameter("title")).thenReturn(TITLE_A);
     when(request.getParameter("lat")).thenReturn(LAT_A);
     when(request.getParameter("lng")).thenReturn(LNG_A);
     when(request.getParameter("note")).thenReturn(NOTE_A);
+
+    StringWriter stringWriter = new StringWriter();
+    PrintWriter writer = new PrintWriter(stringWriter);
+    when(response.getWriter()).thenReturn(writer);
 
     new LocationServlet().doPost(request, response);
     
@@ -92,15 +98,20 @@ public class LocationServletTest {
     assertEquals(LNG_A_VALUE, result.getProperty("lng"));
     assertEquals(NOTE_A, result.getProperty("note"));
     assertEquals(INIT_VOTE_COUNT, result.getProperty("voteCount"));
+
+    // Check the entity's key was sent in the response.
+    Gson gson = new Gson();
+    String expectedJson = gson.toJson(KeyFactory.keyToString(result.getKey()));
+    assertTrue(stringWriter.toString().contains(expectedJson));
   }
 
   @Test
-  public void doPostTest1() {
+  public void doPostTest1() throws IOException {
     doPostTest();
   }
 
   @Test
-  public void doPostTest2() {
+  public void doPostTest2() throws IOException {
     doPostTest();
   }
 
