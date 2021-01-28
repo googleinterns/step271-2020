@@ -1,6 +1,9 @@
 class LoginStatus {
-  static async doGet(servlet) {
-    let promise = await fetch(servlet).then(response => response.json());
+  
+  static endpoint = '/user-status'; 
+
+  static async doGet() {
+    let promise = await fetch(LoginStatus.endpoint).then(response => response.json());
     return promise; 
   }
 }

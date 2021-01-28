@@ -37,7 +37,7 @@ describe ('toggleMeetingDisplay', function() {
   });
 
   it ('Should hide all the meeting details if the user is not logged in', async function() {
-    spyOn(LoginStatus, 'doGet').and.returnValue(new Promise((resolve, rejeect) => {
+    spyOn(LoginStatus, 'doGet').and.returnValue(new Promise((resolve, reject) => {
       resolve(LOGGED_OUT_RESPONSE);
     }));
 

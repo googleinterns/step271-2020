@@ -1,5 +1,5 @@
 function toggleMeetingDisplay() {
-  LoginStatus.doGet('/user-status').then((loginStatus) => {
+  LoginStatus.doGet().then((loginStatus) => {
     let meetingName = document.getElementById('meeting-title');
     let meetingTimes = document.getElementById('vote-meeting-times'); 
     let meetingLocations = document.getElementById('vote-meeting-locations'); 
@@ -17,7 +17,8 @@ function toggleMeetingDisplay() {
       meetingTimes.style.display = 'none';
       meetingLocations.style.display = 'none';
       votesTable.style.display = 'none';
-      let loginPrompt = '<p>You must be logged in to view the meeting event details</p>' + '<a href=' + loginStatus.loginUrl + '>Login</a>';
+      let loginPrompt = '<p>Please log in to view the meeting event details</p>'
+      + '<a href=' + loginStatus.loginUrl + '>Login</a>';
       document.getElementById('login-or-logout-prompt').innerHTML = loginPrompt;
     }
   });
