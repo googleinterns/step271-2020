@@ -13,7 +13,7 @@ function createMap() {
 /** Creates a marker that shows a textbox the user can edit. */
 function createLocationForEdit(map, lat, lng) {
  
-  editLocation =
+  const editLocation =
       new google.maps.Marker({position: {lat: lat, lng: lng}, map: map});
 
   const infoWindow =
