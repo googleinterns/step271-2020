@@ -62,40 +62,4 @@ public class LocationServlet extends HttpServlet {
   public void setDao(LocationDao locationDao) {
     this.locationDao = locationDao;
   }
-
-  /** Stores a location in Datastore. */
-  private String storeLocation(Location location) {
-    Entity locationEntity = new Entity("Location");
-    locationEntity.setProperty("title", location.getTitle());
-    locationEntity.setProperty("lat", location.getLat());
-    locationEntity.setProperty("lng", location.getLng());
-    locationEntity.setProperty("note", location.getNote());
-    locationEntity.setProperty("voteCount", location.getVoteCount());
-
-    DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
-    datastore.put(locationEntity);
-    String keyString = KeyFactory.keyToString(locationEntity.getKey());
-    return keyString;
-  }
-
-  /** Gets the locations stored in Datastore. */
-  private Collection<Location> getLocations() {
-    Collection<Location> locations = new ArrayList<>();
-    
-    DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
-    Query query = new Query("Location");
-    PreparedQuery results = datastore.prepare(query);
-    for (Entity entity : results.asIterable()) {
-      double lat = (double) entity.getProperty("lat");
-      double lng = (double) entity.getProperty("lng");
-      String title = (String) entity.getProperty("title");
-      String note = (String) entity.getProperty("note");
-      int voteCount = ((Long) entity.getProperty("voteCount")).intValue();
-      String keyString = KeyFactory.keyToString(entity.getKey());
-
-      Location location = new Location(title, lat, lng, note, voteCount, keyString);
-      locations.add(location);
-    }
-    return locations;
-  }
 }
