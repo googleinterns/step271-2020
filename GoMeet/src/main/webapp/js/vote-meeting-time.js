@@ -1,6 +1,21 @@
 let MAX_VOTES = 3; // users can vote up to MAX_VOTES times
 
 /**
+ * Function called on page load of meeting-event.html
+ * to fetch all relevant MeetingTime data from servlets 
+ * and generate voting form for the MeetingTimes.
+ */
+async function displayMeetingTimeForm(meetingTimeIds) {
+  // prepare for re-render: reset the 'meeting-times-table' table 
+  // to JUST the headers
+  let table = document.getElementById('meeting-times-table');
+  for (let i = table.rows.length - 1; i > 0; i--) {
+    table.deleteRow(i);
+  }
+  await fetchAndProcess(meetingTimeIds);
+}
+
+/**
  * Returns the logged in user's email from the LoginServlet, or
  * null if the user is not logged in.
  * @returns the email of the current logged in user.
