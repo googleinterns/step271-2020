@@ -8,7 +8,11 @@ import com.google.appengine.api.datastore.Query;
 import com.google.appengine.api.datastore.Key;
 import com.google.appengine.api.datastore.KeyFactory;
 import com.google.appengine.api.datastore.EntityNotFoundException;
+
+import main.java.com.google.sps.data.Dao;
 import main.java.com.google.sps.data.Location;
+import main.java.com.google.sps.data.LocationDao;
+
 import com.google.gson.Gson;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -23,12 +27,15 @@ import org.jsoup.safety.Whitelist;
 /** Handles fetching and saving location data. */
 @WebServlet("/update-location-data")
 public class UpdateLocationServlet extends HttpServlet {
+
+  private Dao<Location> locationDao = new LocationDao();
+
   /** Accepts a POST request with information about the location entity to add a vote to. */
   @Override
   public void doPost(HttpServletRequest request, HttpServletResponse response) {
     String keyString = request.getParameter("key");
     try {
-        updateLocation(keyString);
+      locationDao.update(keyString);
     } catch (EntityNotFoundException e) {
       // TODO: Send error for invalid input in the response.
       System.err.println("Entity not found"); 
@@ -43,5 +50,9 @@ public class UpdateLocationServlet extends HttpServlet {
     int currentCount = ((Long) location.getProperty("voteCount")).intValue();
     location.setProperty("voteCount", currentCount + 1);
     datastore.put(location);
+  }
+
+  public void setDao(LocationDao locationDao) {
+    this.locationDao = locationDao;
   }
 };

@@ -23,6 +23,10 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import main.java.com.google.sps.servlets.LocationServlet;
+import main.java.com.google.sps.data.Location;
+import main.java.com.google.sps.data.LocationDao;
+
 import java.beans.Transient;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -46,6 +50,7 @@ public class UpdateLocationServletTest {
 
   private HttpServletRequest request;
   private HttpServletResponse response;
+  private LocationDao mockedLocationDao;
   
   private final LocalServiceTestHelper helper =
       new LocalServiceTestHelper(new LocalDatastoreServiceTestConfig());
@@ -54,7 +59,8 @@ public class UpdateLocationServletTest {
   public void setUp() {
     helper.setUp();
     request = mock(HttpServletRequest.class);       
-    response = mock(HttpServletResponse.class);  
+    response = mock(HttpServletResponse.class);
+    mockedLocationDao = mock(LocationDao.class); 
   }
 
   @After
@@ -62,30 +68,20 @@ public class UpdateLocationServletTest {
     helper.tearDown();
   }
 
-  /** Tests if the entity's voteCount is updated. */
+  /** Tests if the keystring from the request is sent to the LocationDAO. */
   @Test
   public void doPostTest() {
-    // Set up the database
-    DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
-    Key entityKey = KeyFactory.createKey("Location", LOCATION_A.getTitle());
-    Entity location = new Entity("Location");
-
-    location.setProperty("title", LOCATION_A.getTitle());
-    location.setProperty("lat", LOCATION_A.getLat());
-    location.setProperty("lng", LOCATION_A.getLng());
-    location.setProperty("note", LOCATION_A.getNote());
-    location.setProperty("voteCount", LOCATION_A.getVoteCount());
-    ds.put(location);
-
-    String keyString = KeyFactory.keyToString(location.getKey());
-
+    // Set up request mock
+    String keyString =
+        KeyFactory.keyToString(KeyFactory.createKey("Location", LOCATION_A.getTitle()));
     when(request.getParameter("key")).thenReturn(keyString);
 
-    new UpdateLocationServlet().doPost(request, response);
-
+    UpdateLocationServlet servlet = new UpdateLocationServlet();
+    servlet.setDao(mockedLocationDao);
+    servlet.doPost(request, response);
+    
     try {
-      Entity retrievedLocation = ds.get(location.getKey());
-      assertEquals(2, ((Long) retrievedLocation.getProperty("voteCount")).intValue());
+      verify(mockedLocationDao, times(1)).update(keyString);
     } catch (EntityNotFoundException e) {
       fail();
     }
