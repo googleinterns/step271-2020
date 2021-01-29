@@ -49,13 +49,6 @@ import java.lang.reflect.Type;
 @RunWith(JUnit4.class)
 public class LocationServletTest {
   // Values to use for testing
-  private final String TITLE_A = "The Pancake Place";
-  private final String NOTE_A = "Good Pancakes!";
-  private final String LAT_A = "33.0";
-  private final String LNG_A = "150.0";
-  private final int INIT_VOTE_COUNT = 1;
-  private final double LAT_A_VALUE = Double.parseDouble(LAT_A);
-  private final double LNG_A_VALUE = Double.parseDouble(LNG_A);
   private final Location LOCATION_A = new Location("Sushi Train", 15.0, 150.0, "I like sushi!", 1);
 
   // Acceptable difference from original location's lat/lng.
