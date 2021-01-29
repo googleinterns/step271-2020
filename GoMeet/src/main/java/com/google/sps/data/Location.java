@@ -63,4 +63,22 @@ public class Location {
   public String getKeyString() {
     return keyString;
   }
+
+  @Override
+  public boolean equals(Object o) {
+    if (o == this) {
+      return true;
+    }
+    if (!(o instanceof Location)) {
+      return false;
+    }
+    Location otherLocation = (Location) o;
+    
+    return this.title.equals(otherLocation.getTitle()) &&
+        (Double.compare(this.lat, otherLocation.getLat()) == 0) &&
+        (Double.compare(this.lng, otherLocation.getLng()) == 0) &&
+        this.note.equals(otherLocation.getNote()) &&
+        ((this.keyString == otherLocation.getKeyString()) ||
+            this.keyString.equals(otherLocation.getKeyString()));
+  }
 }
