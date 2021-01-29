@@ -10,7 +10,7 @@ public interface Dao<T> {
 
   List<T> getAll();
 
-  void save(T t);
+  String save(T t);
 
   void update(String keyString);
 

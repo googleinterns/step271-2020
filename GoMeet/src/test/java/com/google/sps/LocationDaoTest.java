@@ -111,4 +111,27 @@ public class LocationDaoTest {
     
     assertEquals(2, result.size());
   }
+
+  /** Tests if a location is saved to datastore with the correct properties. */
+  @Test
+  public void saveTest() {
+    String keyString = ld.save(LOCATION_A);
+  
+    // Check location entity was added to Datastore
+    assertEquals(1, ds.prepare(new Query("Location")).countEntities(withLimit(10)));
+
+    Query query = new Query("Location");
+    PreparedQuery preparedQuery = ds.prepare(query);
+    Entity result = preparedQuery.asSingleEntity();
+
+    // Check the entity property values were assigned correctly
+    assertEquals(LOCATION_A.getTitle(), result.getProperty("title"));
+    assertEquals(LOCATION_A.getLat(), result.getProperty("lat"));
+    assertEquals(LOCATION_A.getLng(), result.getProperty("lng"));
+    assertEquals(LOCATION_A.getNote(), result.getProperty("note"));
+    assertEquals(LOCATION_A.getVoteCount(), result.getProperty("voteCount"));
+   
+    // Check if the key was returned
+    assertEquals(KeyFactory.keyToString(result.getKey()), keyString);
+  }
 }

@@ -50,9 +50,21 @@ public class LocationDao implements Dao<Location> {
     return locations;
   }
 
+  /** 
+   * Stores a new location on datastore.
+   * Returns the key string of the new entity.
+   */
   @Override
-  public void save(Location location) {
+  public String save(Location location) {
+    Entity entity = new Entity("Location");
+    entity.setProperty("title", location.getTitle());
+    entity.setProperty("lat", location.getLat());
+    entity.setProperty("lng", location.getLng());
+    entity.setProperty("note", location.getNote());
+    entity.setProperty("voteCount", location.getVoteCount());
+    ds.put(entity);
 
+    return KeyFactory.keyToString(entity.getKey());
   }
 
   @Override 
