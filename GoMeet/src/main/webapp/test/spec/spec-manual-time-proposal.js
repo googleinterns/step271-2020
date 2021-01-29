@@ -272,52 +272,76 @@ describe('getDatetimeNow', function() {
   })
 });
 
-// Tests for rectifyInputtedTime
-describe('rectifyInputtedTime', function() {
-  var inputElem = document.createElement('input');
-  inputElem.type = 'datetime-local';
-
+// Tests for verifyUniqueFutureTime
+describe('verifyUniqueFutureTime', function() {
   beforeEach(function() {
     jasmine.clock().install();
     jasmine.clock().mockDate(FAKE_NOW);
     spyOn(window, 'alert');
   });
 
-  it('clears the input field, does not add the input to the enteredTimes set, \
-      and alerts the user if the time entered is earlier than now', function() {
+  it('returns false, and does not add the input to the enteredTimes set \
+      if the time entered is earlier than now', function() {
     // create a date that is 24 hours (24*60*60*1000 milliseconds) earlier than FAKE_NOW
     let inputtedTime = new Date(FAKE_NOW.getTime() - 24*60*60*1000).toISOString();
-    inputElem.value = inputtedTime.substring(0, inputtedTime.length - 1); // trim the time zone data
-    rectifyInputtedTime(inputElem);
-    expect(inputElem.value).toEqual('');
-    expect(window.alert).toHaveBeenCalledWith(INVALID_TIME_ERROR);
-    expect(enteredTimes.has(inputElem.value)).toBe(false);
+    inputtedTime = inputtedTime.substring(0, inputtedTime.length - 1); // trim the time zone data
+    expect(verifyUniqueFutureTime(inputtedTime)).toBe(false);
+    expect(enteredTimes.has(inputtedTime)).toBe(false);
   });
 
-  it('clears the input field, does not add the input to the enteredTimes set, \
-      and alerts the user if the time entered is equal to now', function() {
+  it('returns false and does not add the input to the enteredTimes set, \
+      if the time entered is equal to now', function() {
     // create a date that is 24 hours (24*60*60*1000 milliseconds) earlier than FAKE_NOW
     let inputtedTime = new Date(FAKE_NOW.getTime() - 24*60*60*1000).toISOString();
-    inputElem.value = inputtedTime.substring(0, inputtedTime.length - 1);
-    rectifyInputtedTime(inputElem);
-    expect(inputElem.value).toEqual('');
-    expect(window.alert).toHaveBeenCalledWith(INVALID_TIME_ERROR);
-    expect(enteredTimes.has(inputElem.value)).toBe(false);
+    inputtedTime = inputtedTime.substring(0, inputtedTime.length - 1);
+    expect(verifyUniqueFutureTime(inputtedTime)).toBe(false);
+    expect(enteredTimes.has(inputtedTime)).toBe(false);
   });
 
-  it('does not clear the input field if the time entered is later than now, \
+  it('returns true if the time entered is later than now, \
       and adds the time to the enteredTimes set', function() {
     // create a date that is 24 hours (24*60*60*1000 milliseconds) later than FAKE_NOW
     let inputtedTime = new Date(FAKE_NOW.getTime() + 24*60*60*1000).toISOString();
-    inputElem.value = inputtedTime.substring(0, inputtedTime.length - 1);
-    rectifyInputtedTime(inputElem);
-    expect(inputElem.value).toEqual(inputtedTime.substring(0, inputtedTime.length - 1));
-    expect(window.alert).not.toHaveBeenCalled();
-    expect(enteredTimes.has(inputElem.value)).toBe(true);
+    inputtedTime = inputtedTime.substring(0, inputtedTime.length - 1);
+    expect(verifyUniqueFutureTime(inputtedTime)).toBe(true);
+    expect(enteredTimes.has(inputtedTime)).toBe(true);
   });
 
   afterEach(function() {
     jasmine.clock().uninstall();
     enteredTimes.clear();
   })
+});
+
+// Tests for rectifyInputtedTime
+describe('rectifyInputtedTime', function() {
+  var inputElem = document.createElement('input');
+  inputElem.type = 'datetime-local';
+
+  beforeEach(function() {
+    spyOn(window, 'alert');
+  });
+
+  it('clears the input field and alerts the user if verifyUniqueFutureTime is false', function() {
+    spyOn(window, 'verifyUniqueFutureTime').and.returnValue(false);
+    // set the value of the inputElem to a date so it's not empty
+    let value = new Date().toISOString();
+    value = value.substring(0, value.length - 1);
+    inputElem.value = value;
+    rectifyInputtedTime(inputElem);
+    // the inputElem value should have been reset
+    expect(inputElem.value).toEqual('');
+    expect(window.alert).toHaveBeenCalledWith(INVALID_TIME_ERROR);
+  });
+
+  it('does not clear the input field if verifyUniqueFutureTime is true', function() {
+    spyOn(window, 'verifyUniqueFutureTime').and.returnValue(true);
+    // set the value of the inputElem to a date so it's not empty
+    let value = new Date().toISOString();
+    value = value.substring(0, value.length - 1);
+    inputElem.value = value;
+    rectifyInputtedTime(inputElem);
+    expect(inputElem.value).toEqual(value); // value should have stayed the same
+    expect(window.alert).not.toHaveBeenCalled();
+  });
 });

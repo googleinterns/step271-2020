@@ -135,18 +135,33 @@ function getDatetimeNow() {
 
 /**
  * Clears the input field and alerts the user, if the user entered a time that 
- * is earlier than or equal to the date and time now.
+ * is earlier than or equal to the date and time now. See verifyUniqueFutureTime.
  * @param {Element} elem the input element where the user inputted the time
  */
 function rectifyInputtedTime(elem) {
-  let timeEntered = new Date(elem.value);
-  let now = new Date(getDatetimeNow());
-  // If the time entered has been entered before or is earlier than now
-  if (enteredTimes.has(elem.value) || !(timeEntered > now)) {
+  if (!verifyUniqueFutureTime(elem.value)) {
     elem.value = '';
     alert(INVALID_TIME_ERROR);
+  }
+}
+
+/**
+ * Verify that the time is a future time relative to 
+ * the time now, and it is unique (i.e. not in enteredTimes).
+ * If unique and in the future, add to the enteredTimes set, and
+ * return true, otherwise return false.
+ * @param {String} time The datetime string to be verified.
+ * @return true if the time is unique and in the future,
+ * otherwise false
+ */
+function verifyUniqueFutureTime(time) {
+  let timeEntered = new Date(time);
+  let now = new Date(getDatetimeNow());
+  if (enteredTimes.has(time) || !(timeEntered > now)) {
+    return false;
   } else {
-    enteredTimes.add(elem.value);
+    enteredTimes.add(time);
+    return true;
   }
 }
 
