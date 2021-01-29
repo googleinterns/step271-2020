@@ -1,5 +1,7 @@
 package main.java.com.google.sps.data;
 
+import com.google.appengine.api.datastore.EntityNotFoundException;
+
 import java.util.List;
 import java.util.Optional;
 
@@ -12,7 +14,7 @@ public interface Dao<T> {
 
   String save(T t);
 
-  void update(String keyString);
+  void update(String keyString) throws EntityNotFoundException;
 
   void delete(String keyString);  
 }

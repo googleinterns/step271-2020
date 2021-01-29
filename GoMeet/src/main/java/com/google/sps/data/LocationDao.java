@@ -7,6 +7,8 @@ import com.google.appengine.api.datastore.PreparedQuery;
 import com.google.appengine.api.datastore.Query;
 import com.google.appengine.api.datastore.Key;
 import com.google.appengine.api.datastore.KeyFactory;
+import com.google.appengine.api.datastore.EntityNotFoundException;
+
 import main.java.com.google.sps.data.Location;
 
 import java.util.List;
@@ -68,8 +70,12 @@ public class LocationDao implements Dao<Location> {
   }
 
   @Override 
-  public void update(String keyString) {
-
+  public void update(String keyString) throws EntityNotFoundException {
+    Key entityKey = KeyFactory.stringToKey(keyString);
+    Entity entity = ds.get(entityKey);
+    long currentCount = (long) entity.getProperty("voteCount");
+    entity.setProperty("voteCount", currentCount + 1);
+    ds.put(entity);
   }
 
   @Override

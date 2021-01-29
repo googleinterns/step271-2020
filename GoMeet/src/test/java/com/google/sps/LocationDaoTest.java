@@ -3,6 +3,7 @@ package test.java.com.google.sps;
 import static com.google.appengine.api.datastore.FetchOptions.Builder.withLimit;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
@@ -13,6 +14,8 @@ import com.google.appengine.tools.development.testing.LocalDatastoreServiceTestC
 import com.google.appengine.tools.development.testing.LocalServiceTestHelper;
 import com.google.appengine.api.datastore.KeyFactory;
 import com.google.appengine.api.datastore.Key;
+import com.google.appengine.api.datastore.EntityNotFoundException;
+
 import main.java.com.google.sps.servlets.LocationServlet;
 import main.java.com.google.sps.data.Location;
 import main.java.com.google.sps.data.LocationDao;
@@ -133,5 +136,36 @@ public class LocationDaoTest {
    
     // Check if the key was returned
     assertEquals(KeyFactory.keyToString(result.getKey()), keyString);
+  }
+
+  /** Tests that update() adds one to the entity's voteCount. */
+  @Test
+  public void updateTest() {
+    Entity location = new Entity("Location");
+    location.setProperty("title", LOCATION_A.getTitle());
+    location.setProperty("lat", LOCATION_A.getLat());
+    location.setProperty("lng", LOCATION_A.getLng());
+    location.setProperty("note", LOCATION_A.getNote());
+    location.setProperty("voteCount", LOCATION_A.getVoteCount());
+    ds.put(location);
+
+    String keyString = KeyFactory.keyToString(location.getKey());
+
+    try {
+      ld.update(keyString);
+      Entity retrievedLocation = ds.get(location.getKey());
+      assertEquals(2L, retrievedLocation.getProperty("voteCount"));
+    } catch (EntityNotFoundException e) {
+      fail();
+    }
+  }
+
+  /** Tests if an exception is thrown if the entity does not exist. */
+  @Test(expected = EntityNotFoundException.class)
+  public void updateTestNoEntity() throws Exception {
+    // Create a key that is not on the database
+    Key key = KeyFactory.createKey("Tacos", 12345);
+    String keyString = KeyFactory.keyToString(key);
+    ld.update(keyString);
   }
 }
