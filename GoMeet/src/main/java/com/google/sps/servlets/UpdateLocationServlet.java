@@ -42,16 +42,6 @@ public class UpdateLocationServlet extends HttpServlet {
     }
   }
 
-  /** Updates the location entity in datastore. */
-  private void updateLocation(String keyString) throws EntityNotFoundException {
-    DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
-    Key entityKey = KeyFactory.stringToKey(keyString);
-    Entity location = datastore.get(entityKey);
-    int currentCount = ((Long) location.getProperty("voteCount")).intValue();
-    location.setProperty("voteCount", currentCount + 1);
-    datastore.put(location);
-  }
-
   public void setDao(LocationDao locationDao) {
     this.locationDao = locationDao;
   }
