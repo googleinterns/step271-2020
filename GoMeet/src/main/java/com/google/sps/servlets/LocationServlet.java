@@ -1,13 +1,5 @@
 package main.java.com.google.sps.servlets;
 
-import com.google.appengine.api.datastore.DatastoreService;
-import com.google.appengine.api.datastore.DatastoreServiceFactory;
-import com.google.appengine.api.datastore.Entity;
-import com.google.appengine.api.datastore.PreparedQuery;
-import com.google.appengine.api.datastore.Query;
-import com.google.appengine.api.datastore.Key;
-import com.google.appengine.api.datastore.KeyFactory;
-
 import main.java.com.google.sps.data.Dao;
 import main.java.com.google.sps.data.Location;
 import main.java.com.google.sps.data.LocationDao;
