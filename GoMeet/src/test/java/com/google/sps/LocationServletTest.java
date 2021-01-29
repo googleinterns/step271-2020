@@ -30,6 +30,7 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 import org.junit.Assert;
 import org.junit.Before;
@@ -63,6 +64,7 @@ public class LocationServletTest {
 
   private HttpServletRequest request;
   private HttpServletResponse response;
+  private LocationDao mockedLocationDao;
 
   private final LocalServiceTestHelper helper =
       new LocalServiceTestHelper(new LocalDatastoreServiceTestConfig());
@@ -74,6 +76,7 @@ public class LocationServletTest {
     helper.setUp();
     request = mock(HttpServletRequest.class);       
     response = mock(HttpServletResponse.class);  
+    mockedLocationDao = mock(LocationDao.class);
   }
 
   @After
@@ -100,7 +103,6 @@ public class LocationServletTest {
 
     // Set up DAO mock
     String keyString = KeyFactory.keyToString(KeyFactory.createKey("Location", 123));
-    LocationDao mockedLocationDao = mock(LocationDao.class);
     when(mockedLocationDao.save((Location)notNull())).thenReturn(keyString);
 
     LocationServlet servlet = new LocationServlet();
@@ -124,26 +126,19 @@ public class LocationServletTest {
    */
   @Test
   public void doGetTest() throws IOException {
-    // Set up database
-    DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
-    Entity location = new Entity("Location");
-    location.setProperty("title", LOCATION_A.getTitle());
-    location.setProperty("lat", LOCATION_A.getLat());
-    location.setProperty("lng", LOCATION_A.getLng());
-    location.setProperty("note", LOCATION_A.getNote());
-    location.setProperty("voteCount", LOCATION_A.getVoteCount());
-    ds.put(location);
+    // Set up DAO mock
+    List<Location> listToReturn = new ArrayList<>(Arrays.asList(LOCATION_A));
+    when(mockedLocationDao.getAll()).thenReturn(listToReturn);
 
-    String keyString = KeyFactory.keyToString(location.getKey());
-
-    Gson gson = new Gson();
-    
+    // Set up response mock
     StringWriter stringWriter = new StringWriter();
     PrintWriter writer = new PrintWriter(stringWriter);
     when(response.getWriter()).thenReturn(writer);
 
-    new LocationServlet().doGet(request, response);
-    
+    LocationServlet servlet = new LocationServlet();
+    servlet.setDao(mockedLocationDao);
+    servlet.doGet(request, response);
+
     stringWriter.flush();
     String responseString = stringWriter.toString();
 
