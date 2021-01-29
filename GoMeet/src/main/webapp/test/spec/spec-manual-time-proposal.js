@@ -54,7 +54,6 @@ describe('addTimeInput', function () {
     var label = addedInputDiv.children.item(0);
     expect(label.tagName).toEqual('LABEL'); // Note: docs say that returned tagname is always upper case
     expect(label.htmlFor).toEqual(inputName);
-    expect(label.innerText).toEqual('New Time');
 
     var inputField = addedInputDiv.children.item(1);
     expect(inputField.tagName).toEqual('INPUT');
@@ -65,7 +64,6 @@ describe('addTimeInput', function () {
 
     var deleteButton = addedInputDiv.children.item(2);
     expect(deleteButton.tagName).toEqual('BUTTON');
-    expect(deleteButton.innerText).toEqual('-');
     expect(deleteButton.className).toEqual('delete-time-button');
     expect(deleteButton.onclick.toString()).toBe('function() {deleteTimeInput(document, inputField.name);}');
   });
