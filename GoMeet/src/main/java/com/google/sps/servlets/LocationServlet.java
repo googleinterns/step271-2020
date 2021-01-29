@@ -7,7 +7,11 @@ import com.google.appengine.api.datastore.PreparedQuery;
 import com.google.appengine.api.datastore.Query;
 import com.google.appengine.api.datastore.Key;
 import com.google.appengine.api.datastore.KeyFactory;
+
+import main.java.com.google.sps.data.Dao;
 import main.java.com.google.sps.data.Location;
+import main.java.com.google.sps.data.LocationDao;
+
 import com.google.gson.Gson;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -24,7 +28,8 @@ import org.jsoup.safety.Whitelist;
 public class LocationServlet extends HttpServlet {
 
   private static final int INITIAL_VOTE_COUNT = 1;
-
+  private Dao<Location> locationDao = new LocationDao();
+  
  /** Responds with a JSON array containing location data. */
   @Override
   public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
@@ -46,11 +51,15 @@ public class LocationServlet extends HttpServlet {
     String title = Jsoup.clean(request.getParameter("title"), Whitelist.none());
 
     Location location = new Location(title, lat, lng, note, INITIAL_VOTE_COUNT);
-    String entityKeyString = storeLocation(location);
+    String entityKeyString = locationDao.save(location);
 
     response.setContentType("application/json");
     Gson gson = new Gson();
     response.getWriter().println(gson.toJson(entityKeyString));
+  }
+
+  public void setDao(LocationDao locationDao) {
+    this.locationDao = locationDao;
   }
 
   /** Stores a location in Datastore. */

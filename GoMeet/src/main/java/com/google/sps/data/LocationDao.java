@@ -42,7 +42,7 @@ public class LocationDao implements Dao<Location> {
       double lng = (double) entity.getProperty("lng");
       String title = (String) entity.getProperty("title");
       String note = (String) entity.getProperty("note");
-      long voteCount = (long) entity.getProperty("voteCount");
+      int voteCount = ((Long) entity.getProperty("voteCount")).intValue();
       String keyString = KeyFactory.keyToString(entity.getKey()); 
       // TODO: Handle situation when one of these properties is missing
 
@@ -73,7 +73,7 @@ public class LocationDao implements Dao<Location> {
   public void update(String keyString) throws EntityNotFoundException {
     Key entityKey = KeyFactory.stringToKey(keyString);
     Entity entity = ds.get(entityKey);
-    long currentCount = (long) entity.getProperty("voteCount");
+    int currentCount = ((Long) entity.getProperty("voteCount")).intValue();
     entity.setProperty("voteCount", currentCount + 1);
     ds.put(entity);
   }

@@ -132,7 +132,7 @@ public class LocationDaoTest {
     assertEquals(LOCATION_A.getLat(), result.getProperty("lat"));
     assertEquals(LOCATION_A.getLng(), result.getProperty("lng"));
     assertEquals(LOCATION_A.getNote(), result.getProperty("note"));
-    assertEquals(LOCATION_A.getVoteCount(), result.getProperty("voteCount"));
+    assertEquals(LOCATION_A.getVoteCount(), ((Long) result.getProperty("voteCount")).intValue());
    
     // Check if the key was returned
     assertEquals(KeyFactory.keyToString(result.getKey()), keyString);
@@ -154,7 +154,7 @@ public class LocationDaoTest {
     try {
       ld.update(keyString);
       Entity retrievedLocation = ds.get(location.getKey());
-      assertEquals(2L, retrievedLocation.getProperty("voteCount"));
+      assertEquals(2, ((Long) retrievedLocation.getProperty("voteCount")).intValue());
     } catch (EntityNotFoundException e) {
       fail();
     }

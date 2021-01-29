@@ -74,6 +74,7 @@ public class Location {
     }
     Location otherLocation = (Location) o;
     
+    // TODO: Situation when one key string is null
     return this.title.equals(otherLocation.getTitle()) &&
         (Double.compare(this.lat, otherLocation.getLat()) == 0) &&
         (Double.compare(this.lng, otherLocation.getLng()) == 0) &&

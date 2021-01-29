@@ -13,8 +13,11 @@ import com.google.appengine.tools.development.testing.LocalDatastoreServiceTestC
 import com.google.appengine.tools.development.testing.LocalServiceTestHelper;
 import com.google.appengine.api.datastore.KeyFactory;
 import com.google.appengine.api.datastore.Key;
+
 import main.java.com.google.sps.servlets.LocationServlet;
 import main.java.com.google.sps.data.Location;
+import main.java.com.google.sps.data.LocationDao;
+
 import com.google.gson.Gson;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -35,6 +38,8 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
 import static org.mockito.Mockito.*;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 
 import com.google.gson.reflect.TypeToken;
 import java.lang.reflect.Type;
@@ -62,6 +67,8 @@ public class LocationServletTest {
   private final LocalServiceTestHelper helper =
       new LocalServiceTestHelper(new LocalDatastoreServiceTestConfig());
 
+  private Gson gson = new Gson();
+
   @Before
   public void setUp() {
     helper.setUp();
@@ -75,51 +82,40 @@ public class LocationServletTest {
   }
 
   /** 
-   * Tests if new location entity is accurately added to the Database.
-   * Run this test twice to prove we're not leaking any state across tests.
+   * Tests if the recieved requests is correctly sent to the LocationDAO
+   * and the key is sent in the response.
    */
-  private void doPostTest() throws IOException {
-    DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
-   
-    when(request.getParameter("title")).thenReturn(TITLE_A);
-    when(request.getParameter("lat")).thenReturn(LAT_A);
-    when(request.getParameter("lng")).thenReturn(LNG_A);
-    when(request.getParameter("note")).thenReturn(NOTE_A);
+  @Test
+  public void doPostTest() throws IOException {
+    // Set up request mock
+    when(request.getParameter("title")).thenReturn(LOCATION_A.getTitle());
+    when(request.getParameter("lat")).thenReturn(Double.toString(LOCATION_A.getLat()));
+    when(request.getParameter("lng")).thenReturn(Double.toString(LOCATION_A.getLng()));
+    when(request.getParameter("note")).thenReturn(LOCATION_A.getNote());
 
+    // Set up response mock writer
     StringWriter stringWriter = new StringWriter();
     PrintWriter writer = new PrintWriter(stringWriter);
     when(response.getWriter()).thenReturn(writer);
 
-    new LocationServlet().doPost(request, response);
+    // Set up DAO mock
+    String keyString = KeyFactory.keyToString(KeyFactory.createKey("Location", 123));
+    LocationDao mockedLocationDao = mock(LocationDao.class);
+    when(mockedLocationDao.save((Location)notNull())).thenReturn(keyString);
+
+    LocationServlet servlet = new LocationServlet();
+    servlet.setDao(mockedLocationDao);
+    servlet.doPost(request, response);
     
-    // Check location entity was added to Datastore
-    assertEquals(1, ds.prepare(new Query("Location")).countEntities(withLimit(10)));
-
-    Query query = new Query("Location");
-    PreparedQuery preparedQuery = ds.prepare(query);
-    Entity result = preparedQuery.asSingleEntity();
-
-    // Check the entity property values were assigned correctly
-    assertEquals(TITLE_A, result.getProperty("title"));
-    assertEquals(LAT_A_VALUE, result.getProperty("lat"));
-    assertEquals(LNG_A_VALUE, result.getProperty("lng"));
-    assertEquals(NOTE_A, result.getProperty("note"));
-    assertEquals(INIT_VOTE_COUNT, ((Long) result.getProperty("voteCount")).intValue());
+    // Check the mockedDao was called with the correct parameters
+    ArgumentCaptor<Location> captor = ArgumentCaptor.forClass(Location.class);
+    verify(mockedLocationDao, times(1)).save(captor.capture());
+    Location actual = captor.getValue();
+    assertEquals(LOCATION_A, actual);
 
     // Check the entity's key was sent in the response.
-    Gson gson = new Gson();
     String sentString = gson.fromJson(stringWriter.toString(), String.class);
-    assertEquals(KeyFactory.keyToString(result.getKey()), sentString);
-  }
-
-  @Test
-  public void doPostTest1() throws IOException {
-    doPostTest();
-  }
-
-  @Test
-  public void doPostTest2() throws IOException {
-    doPostTest();
+    assertEquals(keyString, sentString);
   }
 
   /** 
