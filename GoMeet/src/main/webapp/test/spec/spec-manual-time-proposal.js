@@ -220,19 +220,19 @@ describe('toggleDeleteButtons', function () {
   });
 
   it('changes the style.display property of all elements with the class \
-      name \'delete-time-button\' to \'inline\' if they are \'none\'', function() {
+      name \'delete-time-button\' to \'inline\' if \'display\' argument is true', function() {
     meetingTime1Button.style.display = 'none';
     meetingTime2Button.style.display = 'none';
-    toggleDeleteButtons(document);
+    toggleDeleteButtons(document, true);
     expect(meetingTime1Button.style.display).toEqual('inline');
     expect(meetingTime2Button.style.display).toEqual('inline');
   });
 
   it('changes the style.display property of all elements with the class \
-      name \'delete-time-button\' to \'none\' if they are not currently \'none\'', function() {
+      name \'delete-time-button\' to \'none\' if \'display\' argument is false', function() {
     meetingTime1Button.style.display = 'inline';
     meetingTime2Button.style.display = 'inline';
-    toggleDeleteButtons(document);
+    toggleDeleteButtons(document, false);
     expect(meetingTime1Button.style.display).toEqual('none');
     expect(meetingTime2Button.style.display).toEqual('none');
   });
@@ -243,8 +243,8 @@ describe('toggleDeleteButtons', function () {
     meetingTime2Button.style.display = 'none';
     meetingTime1Button.className = 'another-class';
     meetingTime2Button.className = 'another-class';
-    toggleDeleteButtons(document);
-    // The display style should not have changed
+    toggleDeleteButtons(document, true); 
+    // display argument = true, but style should not have changed
     expect(meetingTime1Button.style.display).toEqual('none');
     expect(meetingTime2Button.style.display).toEqual('none');
   });

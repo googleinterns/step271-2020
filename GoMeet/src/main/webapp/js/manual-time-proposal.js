@@ -29,7 +29,7 @@ function addTimeInput(document) {
   timeInputs++
   // Show delete buttons when it has reached 2 time inputs on the page
   if (timeInputs === 2) {
-    toggleDeleteButtons(document);
+    toggleDeleteButtons(document, true);
   }
   timeNameSuffix++
   
@@ -82,7 +82,7 @@ function deleteTimeInput(document, inputDivId) {
   timeInputs--; 
   // Hide delete buttons if they only have one time input left
   if (timeInputs === 1) {
-    toggleDeleteButtons(document);
+    toggleDeleteButtons(document, false);
   }
 }
 
@@ -95,15 +95,18 @@ function deleteTimeInput(document, inputDivId) {
  * If no buttons on the page were found with className 'delete-time-button',
  * this function will do nothing.
  * @param {Document} document the document that this function operates on.
+ * @param {boolean} display true if the buttons are to be displayed, false otherwise
  */
-function toggleDeleteButtons(document) {
+function toggleDeleteButtons(document, display) {
   let deleteButtons = document.getElementsByClassName('delete-time-button');
+  let displayValue;
+  if (display) {
+    displayValue = 'inline';
+  } else {
+    displayValue = 'none';
+  }
   for (let i = 0; i < deleteButtons.length; i++) {
-    if (deleteButtons[i].style.display === 'none') {
-      deleteButtons[i].style.display = 'inline';
-    } else {
-      deleteButtons[i].style.display = 'none';
-    }
+    deleteButtons[i].style.display = displayValue;
   }
 }
 
