@@ -109,8 +109,12 @@ function toggleDeleteButtons(document) {
 
 /**
  * Returns the ISO datestring of the local current date and time (hours and minutes),
- * with the time zone data trimmed.
- * Seconds and milliseconds are set to 0.
+ * with the time zone data trimmed. 
+ * The timezone data in the string returned by Date.toISOString() is always 'Z' 
+ * representing UTC time, meaning regardless of what Date() is initialised with,
+ * the time is assumed to be UTC time. 
+ * Seconds and milliseconds are set to 0, as that level of granularity is 
+ * not required for the purposes of this module.
  * @returns the ISO string in the format YYYY-MM-DDTHH:MM:00:00
  */
 function getDatetimeNow() {
