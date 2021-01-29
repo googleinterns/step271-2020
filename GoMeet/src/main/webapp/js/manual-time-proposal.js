@@ -52,13 +52,24 @@ function addTimeInput(document) {
   deleteButton.className = 'delete-time-button';
   deleteButton.onclick = function() {deleteTimeInput(document, inputField.name);}; 
   
-  let enclosingDiv = document.createElement('div');
+  let allChildren = [label, inputField, deleteButton];
+  let enclosingDiv = createEnclosingDiv(allChildren);
   enclosingDiv.id = inputField.name; // ID of div = name of input field, to faciliate deleting
-
-  enclosingDiv.appendChild(label);
-  enclosingDiv.appendChild(inputField);
-  enclosingDiv.appendChild(deleteButton);
   inputDiv.appendChild(enclosingDiv);
+}
+
+/**
+ * Creates a <div> element enclosing the child elements
+ * provided. Note that the children elements are appended to
+ * the <div> in the order they appear in the Array.
+ * @param {Array} children the array of child elements to append to
+ * the enclosing <div>, in order. 
+ * @returns the <div> element with all the child elements appended.
+ */
+function createEnclosingDiv(children) {
+  let enclosingDiv = document.createElement('div');
+  children.forEach(child => enclosingDiv.append(child));
+  return enclosingDiv;
 }
 
 /**
