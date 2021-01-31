@@ -24,4 +24,8 @@ public class ErrorMessages {
       "Entity not found";
   public static final String TOO_MANY_RESULTS_ERROR = 
       "Too many results returned";
+  public static final String BAD_POST_REQUEST_ERROR = 
+      "All parameters must be provided to create a new entity";
+  public static final String BAD_GET_REQUEST_ERROR = 
+      "A valid Id must be provided to fetch the entity";
 }
