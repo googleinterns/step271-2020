@@ -37,12 +37,13 @@ public class ServletUtil {
   /**
    * Converts HashMap to JSON object
    * @param hashMap the hashMap to be converted 
-   * @return a JSON object 
+   * @return a JSON string
    */
-  public static JSONObject convertMapToJson(HashMap<String, Object> hashMap) {
+  public static String convertMapToJson(HashMap<String, Object> hashMap) {
     JSONObject json = new JSONObject();
     json.putAll(hashMap);
-    return json; 
+    String jsonString = json.toString();
+    return jsonString; 
   }
 
   /** Send an error response JSON to the client code containing the status code and message 
@@ -58,7 +59,7 @@ public class ServletUtil {
       put("message", message);
     }};
     response.setStatus(status);
-    String error = ServletUtil.convertToJson(errorResponse);
+    String error = ServletUtil.convertMapToJson(errorResponse);
     response.setContentType("application/json");
     response.getWriter().println(error);
     return;
