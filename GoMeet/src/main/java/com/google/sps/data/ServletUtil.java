@@ -17,7 +17,9 @@ package com.google.sps.data;
 import com.google.gson.Gson;
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.Map;
 import javax.servlet.http.HttpServletResponse;
+import org.json.simple.JSONObject;
 
 /** Class of utility functions shared by the servlets and their tests */
 public class ServletUtil {
@@ -30,6 +32,17 @@ public class ServletUtil {
     Gson gson = new Gson();
     String json = gson.toJson(object);
     return json;
+  }
+
+  /**
+   * Converts HashMap to JSON object
+   * @param hashMap the hashMap to be converted 
+   * @return a JSON object 
+   */
+  public static JSONObject convertMapToJson(HashMap<String, Object> hashMap) {
+    JSONObject json = new JSONObject();
+    json.putAll(hashMap);
+    return json; 
   }
 
   /** Send an error response JSON to the client code containing the status code and message 
@@ -51,6 +64,25 @@ public class ServletUtil {
     return;
   }
 
+  /**
+   * Decodes the encoded URI by replacing the UTF-8 representation
+   * with the character representation
+   * @param encodedUri the URI to decode 
+   * @return the decoded URI
+   */
+  public static String decodeUri(String encodedUri) {
+    // Decode "%2C" to ","
+    encodedUri.replace("%2C", ",");
+
+    // Decode "%40" to "@"
+    encodedUri.replace("%40", "@");
+
+    // Decode "+" to " " (space)
+    encodedUri.replace("+", " "); 
+
+    return encodedUri;
+  }
+  
   /**
    * Private constructor 
    * Class should be instantiated
