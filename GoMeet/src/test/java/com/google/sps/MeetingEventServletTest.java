@@ -168,8 +168,6 @@ public final class MeetingEventServletTest {
     // Hardcod a meetingEvent entity in local datastore
     DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
     Entity fakeMeetingEvent = new Entity("MeetingEvent");
-    String fakeMeetingEventKey = fakeMeetingEvent.getKey().toString();
-    fakeMeetingEvent.setProperty(MeetingEventFields.MEETING_EVENT_ID, fakeMeetingEventKey);
     fakeMeetingEvent.setProperty(MeetingEventFields.MEETING_NAME, MEETING_NAME);
     fakeMeetingEvent.setProperty(MeetingEventFields.DURATION_MINS, DURATION_MINS);
     fakeMeetingEvent.setProperty(MeetingEventFields.DURATION_HOURS, DURATION_HOURS);
@@ -178,6 +176,7 @@ public final class MeetingEventServletTest {
     fakeMeetingEvent.setProperty(MeetingEventFields.MEETING_TIME_IDS, MEETING_TIME_IDS);
     fakeMeetingEvent.setProperty(MeetingEventFields.MEETING_LOCATION_IDS, MEETING_LOCATION_IDS);
     datastore.put(fakeMeetingEvent); // Stores to local datastore
+    String fakeMeetingEventKey = KeyFactory.keyToString(fakeMeetingEvent.getKey());
 
     // Add all data to hashmap, and convert to JSON
     HashMap<String, Object> fakeMeetingEventMap = new HashMap<String, Object>() {{
@@ -189,7 +188,6 @@ public final class MeetingEventServletTest {
       put(MeetingEventFields.MEETING_TIME_IDS, MEETING_TIME_IDS);
       put(MeetingEventFields.MEETING_LOCATION_IDS, MEETING_LOCATION_IDS);
     }};
-
     String fakeMeetingEventJson = ServletUtil.convertMapToJson(fakeMeetingEventMap); 
 
     // Fetch the entity
@@ -210,26 +208,24 @@ public final class MeetingEventServletTest {
   }
 
   @Test 
-  public void testDoGetMultipleEntitiesReturned() throws IOException {
-    // Hardcode two entities with identical MEETING_EVENT_ID in local datastore
-    DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
-
-    Entity fakeMeetingEvent1 = new Entity("MeetingEvent");
-    fakeMeetingEvent1.setProperty(MeetingEventFields.MEETING_EVENT_ID, MEETING_EVENT_ID);
-    datastore.put(fakeMeetingEvent1);
-
-    Entity fakeMeetingEvent2 = new Entity("MeetingEvent");
-    fakeMeetingEvent2.setProperty(MeetingEventFields.MEETING_EVENT_ID, MEETING_EVENT_ID);
-    datastore.put(fakeMeetingEvent2);
-
-    when(mockedRequest.getParameter(MeetingEventFields.MEETING_EVENT_ID)).thenReturn(MEETING_EVENT_ID); 
+  public void testDoGetInvalidKey() throws IOException {
+    when(mockedRequest.getParameter(MeetingEventFields.MEETING_EVENT_ID)).thenReturn("non-existent key");
     new MeetingEventServlet().doGet(mockedRequest, mockedResponse);
-    testBadRequest(HttpServletResponse.SC_REQUEST_ENTITY_TOO_LARGE, ErrorMessages.TOO_MANY_RESULTS_ERROR);
+    testBadRequest(HttpServletResponse.SC_BAD_REQUEST, ErrorMessages.INVALID_KEY_ERROR);
   }
 
-  @Test 
+  @Test
   public void testDoGetNoResults() throws IOException {
-    when(mockedRequest.getParameter(MeetingEventFields.MEETING_EVENT_ID)).thenReturn("non-existent key");
+    // Create a datastore entity, then delete. Trying to retrieve using this entity key would
+    // return no results.
+    DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
+    Entity fakeMeetingEvent = new Entity("MeetingEvent");
+    datastore.put(fakeMeetingEvent);
+    Key fakeMeetingEventKey = fakeMeetingEvent.getKey();
+    String fakeMeetingEventKeyStr = KeyFactory.keyToString(fakeMeetingEventKey);
+    datastore.delete(fakeMeetingEventKey);
+
+    when(mockedRequest.getParameter(MeetingEventFields.MEETING_EVENT_ID)).thenReturn(fakeMeetingEventKeyStr);
     new MeetingEventServlet().doGet(mockedRequest, mockedResponse);
     testBadRequest(HttpServletResponse.SC_NOT_FOUND, ErrorMessages.ENTITY_NOT_FOUND_ERROR);
   }

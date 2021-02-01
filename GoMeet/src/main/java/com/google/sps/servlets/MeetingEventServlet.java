@@ -3,14 +3,11 @@ package com.google.sps.servlets;
 import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
 import com.google.appengine.api.datastore.Entity;
+import com.google.appengine.api.datastore.EntityNotFoundException;
 import com.google.appengine.api.datastore.FetchOptions;
 import com.google.appengine.api.datastore.Key;
 import com.google.appengine.api.datastore.KeyFactory;
 import com.google.appengine.api.datastore.Query;
-import com.google.appengine.api.datastore.Query.FilterOperator;
-import com.google.appengine.api.datastore.Query.FilterPredicate;
-import com.google.appengine.api.datastore.PreparedQuery;
-import com.google.appengine.api.datastore.PreparedQuery.TooManyResultsException;
 import com.google.sps.data.ErrorMessages;
 import com.google.sps.data.MeetingEventFields;
 import com.google.sps.data.ServletUtil;
@@ -90,25 +87,24 @@ public class MeetingEventServlet extends HttpServlet {
       return;
     }
 
-    DatastoreService datastore = DatastoreServiceFactory.getDatastoreService(); 
-    FilterPredicate filter = new FilterPredicate(MeetingEventFields.MEETING_EVENT_ID, 
-        FilterOperator.EQUAL, meetingEventKey);  
-    Query query = new Query("MeetingEvent").setFilter(filter);
-    PreparedQuery preparedQuery = datastore.prepare(query);
-    
-    // Check that only one entity was found (meetingEventIds should be unique)
-    Entity result; 
+    Key key;
     try {
-      result = preparedQuery.asSingleEntity(); 
-    } catch (PreparedQuery.TooManyResultsException e) {
-      ServletUtil.sendErrorResponse(response, HttpServletResponse.SC_REQUEST_ENTITY_TOO_LARGE, ErrorMessages.TOO_MANY_RESULTS_ERROR);
-      return; 
+      key = KeyFactory.stringToKey(meetingEventKey);
+    } catch(IllegalArgumentException e) {
+      // The meetingEventKey is an invalid key
+      ServletUtil.sendErrorResponse(response, HttpServletResponse.SC_BAD_REQUEST, ErrorMessages.INVALID_KEY_ERROR);
+      return;
     }
 
-    // Check that an entity was found 
-    if (result == null) {
-      ServletUtil.sendErrorResponse(response, HttpServletResponse.SC_NOT_FOUND, 
-          ErrorMessages.ENTITY_NOT_FOUND_ERROR);
+    // Filter by Key
+    DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
+    Entity result;
+
+    try {
+      result = datastore.get(key);
+    } catch (EntityNotFoundException e) {
+      // Entity by the given key is not found
+      ServletUtil.sendErrorResponse(response, HttpServletResponse.SC_NOT_FOUND, ErrorMessages.ENTITY_NOT_FOUND_ERROR);
       return;
     }
 
