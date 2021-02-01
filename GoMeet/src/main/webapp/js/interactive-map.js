@@ -102,8 +102,8 @@ function validateTitle(title) {
 
 /** Fetches the location data. */
 async function fetchLocations(map, fetchWrapper) {
-  let response = await fetchWrapper.doGet('location-data');
-  let json = await response.json();
+  let json = await fetchWrapper.doGet('location-data').then(
+      response => response.json());
   json.forEach(async (location) => {
     await createLocationForDisplay(map, location.lat, location.lng,
         location.title);
