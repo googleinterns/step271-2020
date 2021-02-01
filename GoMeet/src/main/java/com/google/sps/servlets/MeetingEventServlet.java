@@ -58,8 +58,6 @@ public class MeetingEventServlet extends HttpServlet {
 
     // Create entity and store in Datastore 
     Entity meetingEvent = new Entity("MeetingEvent"); 
-    Key meetingEventKey = meetingEvent.getKey();
-    
     meetingEvent.setProperty(MeetingEventFields.MEETING_NAME, meetingName); 
     meetingEvent.setProperty(MeetingEventFields.DURATION_MINS, durationMins);
     meetingEvent.setProperty(MeetingEventFields.DURATION_HOURS, durationHours);
@@ -69,9 +67,13 @@ public class MeetingEventServlet extends HttpServlet {
     meetingEvent.setProperty(MeetingEventFields.MEETING_LOCATION_IDS, meetingLocationIds); 
     datastore.put(meetingEvent);
 
-    String keyStr = KeyFactory.keyToString(meetingEventKey);
-    response.setContentType("application/json"); 
-    response.getWriter().println(keyStr);
+    // Return a JSON string with the key of the created entity under the field 'meetingEventId'
+    String meetingEventKey = KeyFactory.keyToString(meetingEvent.getKey());
+    HashMap<String, Object> keyObj = new HashMap<String, Object>() {{
+      put(MeetingEventFields.MEETING_EVENT_ID, meetingEventKey); 
+    }};
+    response.setContentType("application/json");
+    response.getWriter().println(ServletUtil.convertMapToJson(keyObj));
   }
 
   /** Fetches a MeetingEvent entity from Datastore according to the entity ID in the query string */

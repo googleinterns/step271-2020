@@ -94,12 +94,12 @@ public final class MeetingEventServletTest {
 
     // Assert that exactly one entity was added 
     assertEquals(1, results.size());
-    
+
     Entity result = results.get(0);
-    Key resultKey = result.getKey();
-    String keyStr = KeyFactory.keyToString(resultKey); 
 
     // Check the entity property values were assigned correctly
+    String resultKey = KeyFactory.keyToString(result.getKey());
+    assertNotNull(resultKey);
     assertEquals(MEETING_NAME, result.getProperty(MeetingEventFields.MEETING_NAME)); 
     assertEquals(DURATION_MINS, result.getProperty(MeetingEventFields.DURATION_MINS)); 
     assertEquals(DURATION_HOURS, result.getProperty(MeetingEventFields.DURATION_HOURS)); 
@@ -108,9 +108,12 @@ public final class MeetingEventServletTest {
     assertEquals(MEETING_TIME_IDS, result.getProperty(MeetingEventFields.MEETING_TIME_IDS)); 
     assertEquals(MEETING_LOCATION_IDS, result.getProperty(MeetingEventFields.MEETING_LOCATION_IDS)); 
 
-    // Assert that the key is returned
+    // Assert that key is returned as a JSON string
+    HashMap<String, Object> keyObj = new HashMap<String, Object>() {{
+      put(MeetingEventFields.MEETING_EVENT_ID, resultKey);
+    }};
     writer.flush(); // writer may not have been flushed yet
-    assertTrue(stringWriter.toString().contains(keyStr));
+    assertTrue(stringWriter.toString().contains(ServletUtil.convertMapToJson(keyObj)));
   }
   
   @Test 
