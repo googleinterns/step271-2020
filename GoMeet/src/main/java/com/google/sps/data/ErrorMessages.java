@@ -14,7 +14,7 @@
 
 package com.google.sps.data;
 
-/** Names of fields of data in the Datastore MeetingTime entity */
+/** Error messages to be send as part of error responses from servlets. */
 public class ErrorMessages {
   public static final String BAD_REQUEST_ERROR = 
       "Datetime must both be provided for a new MeetingTime";
