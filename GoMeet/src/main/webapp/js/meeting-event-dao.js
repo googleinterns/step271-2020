@@ -61,10 +61,10 @@ class MeetingEventDAO {
     let meetingTimeIds = this.getMeetingTimeIds(meetingTimes); 
 
     // Encode the data to be sent in the query string
-    let urlString = Util.url({'meetingName': meetingName, 
+    let urlString = DAOUtils.url(MeetingEventDAO.endpoint, {'meetingName': meetingName, 
     'durationMins': durationMins, 'durationHours': durationHours, 
     'timeFindMethod': timeFindMethod, 'guestList': guestList, 
-    'meetingTimeIds': meetingTimeIds}, MeetingEventDAO.endpoint); 
+    'meetingTimeIds': meetingTimeIds}); 
 
     let responseInit = {method: 'POST'}
     let response = await fetch(urlString, responseInit).then((response) => response.json());
@@ -80,7 +80,7 @@ class MeetingEventDAO {
       throw new Error(INVALID_PARAM_TYPE); 
     }
 
-    let urlString = Util.url({'meetingEventId': meetingEventId}, MeetingEventDAO.endpoint);
+    let urlString = DAOUtils.url(MeetingEventDAO.endpoint, {'meetingEventId': meetingEventId});
     let results = await fetch(urlString).then((results) => results.json());
     return results;
   }
