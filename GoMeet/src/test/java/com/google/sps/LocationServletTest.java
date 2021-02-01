@@ -101,8 +101,8 @@ public class LocationServletTest {
 
     // Check the entity's key was sent in the response.
     Gson gson = new Gson();
-    String expectedJson = gson.toJson(KeyFactory.keyToString(result.getKey()));
-    assertTrue(stringWriter.toString().contains(expectedJson));
+    String sentString = gson.fromJson(stringWriter.toString(), String.class);
+    assertEquals(KeyFactory.keyToString(result.getKey()), sentString);
   }
 
   @Test
