@@ -17,3 +17,14 @@
 #votes-table {
   display: none;
 }
+
+#map {
+  height: 500px;
+}
+
+html,
+body {
+  height: 100%;
+  margin: 25px 25px;
+  padding: 0;
+}
