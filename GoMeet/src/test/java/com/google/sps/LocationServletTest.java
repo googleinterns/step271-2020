@@ -34,6 +34,9 @@ import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
 import static org.mockito.Mockito.*;
 
+import com.google.gson.reflect.TypeToken;
+import java.lang.reflect.Type;
+
 /** Tests for LocationServlet.java */
 @RunWith(JUnit4.class)
 public class LocationServletTest {
@@ -45,6 +48,10 @@ public class LocationServletTest {
   private final double LAT_A_VALUE = Double.parseDouble(LAT_A);
   private final double LNG_A_VALUE = Double.parseDouble(LNG_A);
   private final Location LOCATION_A = new Location("Sushi Train", 15.0, 150.0, "I like sushi!");
+
+  // Acceptable difference from original location's lat/lng.
+  // A difference of 0.00001 is roughly equivalent to one meter.
+  private final static double DELTA = 0.00001;
 
   private HttpServletRequest request;
   private HttpServletResponse response;
@@ -125,6 +132,18 @@ public class LocationServletTest {
     when(response.getWriter()).thenReturn(writer);
 
     new LocationServlet().doGet(request, response);
-    assertTrue(stringWriter.toString().contains(expectedJson));
+    
+    stringWriter.flush();
+    String responseString = stringWriter.toString();
+
+    Type locationListType = new TypeToken<ArrayList<Location>>(){}.getType();
+    ArrayList<Location> locationList = gson.fromJson(responseString, locationListType); 
+
+    Location printedLocation = locationList.get(0);
+    
+    assertEquals(LOCATION_A.getTitle(), printedLocation.getTitle());
+    assertEquals(LOCATION_A.getLat(), (double) printedLocation.getLat(), DELTA);
+    assertEquals(LOCATION_A.getLng(), (double) printedLocation.getLng(), DELTA);
+    assertEquals(LOCATION_A.getNote(), printedLocation.getNote());
   }
 }
