@@ -125,8 +125,7 @@ public class LocationServletTest {
     ds.put(location);
 
     Gson gson = new Gson();
-    String expectedJson = gson.toJson(new ArrayList<>(Arrays.asList(LOCATION_A)));
-
+    
     StringWriter stringWriter = new StringWriter();
     PrintWriter writer = new PrintWriter(stringWriter);
     when(response.getWriter()).thenReturn(writer);
