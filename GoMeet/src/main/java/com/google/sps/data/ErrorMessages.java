@@ -17,7 +17,7 @@ package com.google.sps.data;
 /** Names of fields of data in the Datastore MeetingTime entity */
 public class ErrorMessages {
   public static final String BAD_REQUEST_ERROR = 
-      "meetingId and datetime must both be provided for a new MeetingTime";
+      "Datetime must both be provided for a new MeetingTime";
   public static final String INVALID_KEY_ERROR = 
       "Invalid entity ID";
   public static final String ENTITY_NOT_FOUND_ERROR = 

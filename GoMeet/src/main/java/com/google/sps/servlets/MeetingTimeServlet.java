@@ -17,14 +17,11 @@ package com.google.sps.servlets;
 import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
 import com.google.appengine.api.datastore.Entity;
+import com.google.appengine.api.datastore.EntityNotFoundException;
 import com.google.appengine.api.datastore.FetchOptions;
 import com.google.appengine.api.datastore.Key;
 import com.google.appengine.api.datastore.KeyFactory;
 import com.google.appengine.api.datastore.Query;
-import com.google.appengine.api.datastore.Query.FilterOperator;
-import com.google.appengine.api.datastore.Query.FilterPredicate;
-import com.google.appengine.api.datastore.PreparedQuery;
-import com.google.appengine.api.datastore.PreparedQuery.TooManyResultsException;
 import com.google.sps.data.ErrorMessages;
 import com.google.sps.data.MeetingTimeFields;
 import com.google.sps.data.ServletUtil;
@@ -53,24 +50,22 @@ public class MeetingTimeServlet extends HttpServlet {
       return;
     }
 
-    // filter by Key
-    DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
-    FilterPredicate filter 
-        = new FilterPredicate(MeetingTimeFields.MEETING_TIME_ID, FilterOperator.EQUAL, keyStr);
-    Query query = new Query("MeetingTime").setFilter(filter);
-    PreparedQuery preparedQuery = datastore.prepare(query);
-
-    Entity result;
-    // Expecting only one entity to be returned, since keys should be unique
+    Key key;
     try {
-      result = preparedQuery.asSingleEntity();
-    } catch (PreparedQuery.TooManyResultsException e) {
-      // there is more than the expected number of entities returned - non-unique key
-      ServletUtil.sendErrorResponse(response, HttpServletResponse.SC_REQUEST_ENTITY_TOO_LARGE, ErrorMessages.TOO_MANY_RESULTS_ERROR);
+      key = KeyFactory.stringToKey(keyStr);
+    } catch(IllegalArgumentException e) {
+      // the keyStr is an invalid key
+      ServletUtil.sendErrorResponse(response, HttpServletResponse.SC_BAD_REQUEST, ErrorMessages.INVALID_KEY_ERROR);
       return;
     }
+    
+    // filter by Key
+    DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
+    Entity result;
 
-    if (result == null) {
+    try {
+      result = datastore.get(key);
+    } catch (EntityNotFoundException e) {
       // entity by the given key is not found
       ServletUtil.sendErrorResponse(response, HttpServletResponse.SC_NOT_FOUND, ErrorMessages.ENTITY_NOT_FOUND_ERROR);
       return;
@@ -90,7 +85,7 @@ public class MeetingTimeServlet extends HttpServlet {
     }};
 
     // return as JSON
-    String meetingTimeJson = ServletUtil.convertToJson(meetingTime);
+    String meetingTimeJson = ServletUtil.convertMapToJson(meetingTime);
     response.getWriter().println(meetingTimeJson);
   }
   
@@ -107,14 +102,17 @@ public class MeetingTimeServlet extends HttpServlet {
     }
 
     Entity meetingTime = new Entity("MeetingTime");
-    Key meetingTimeKey = meetingTime.getKey();
-    meetingTime.setProperty(MeetingTimeFields.MEETING_TIME_ID, meetingTimeKey.toString());
     meetingTime.setProperty(MeetingTimeFields.DATETIME, datetime);
     meetingTime.setProperty(MeetingTimeFields.VOTE_COUNT, 0); // initially votes are 0
     datastore.put(meetingTime);
+    String meetingTimeKey = KeyFactory.keyToString(meetingTime.getKey());
+
+    HashMap<String, Object> keyObj = new HashMap<String, Object>() {{
+      put(MeetingTimeFields.MEETING_TIME_ID, meetingTimeKey); // Send the key back under the field 'meetingTimeId'
+    }};
 
     // return the key of the created entity
     response.setContentType("application/json");
-    response.getWriter().println(meetingTimeKey.toString());
+    response.getWriter().println(ServletUtil.convertMapToJson(keyObj));
   }
 }

@@ -79,17 +79,19 @@ public final class MeetingTimeServletTest {
     // Assert that exactly one entity was added 
     assertEquals(1, results.size());
     Entity result = results.get(0);
-    Key resultKey = result.getKey();
 
     // Check the entity property values were assigned correctly
-    // Note that Key is not assigned yet in the testing environment of Local Datastore
-    assertNotNull(result.getProperty(MeetingTimeFields.MEETING_TIME_ID));
+    String resultKey = KeyFactory.keyToString(result.getKey());
+    assertNotNull(resultKey); 
     assertEquals(DATETIME_VAL, result.getProperty(MeetingTimeFields.DATETIME));
     assertEquals((long) 0, result.getProperty(MeetingTimeFields.VOTE_COUNT));
 
-    // Assert that key is returned
+    // Assert that key is returned in JSON Object
+    HashMap<String, Object> keyObj = new HashMap<String, Object>() {{
+      put(MeetingTimeFields.MEETING_TIME_ID, resultKey);
+    }};
     writer.flush(); // writer may not have been flushed yet
-    assertTrue(stringWriter.toString().contains(resultKey.toString()));
+    assertTrue(stringWriter.toString().contains(ServletUtil.convertMapToJson(keyObj)));
   }
   
   @Test 
@@ -102,7 +104,8 @@ public final class MeetingTimeServletTest {
       put("status", HttpServletResponse.SC_BAD_REQUEST);
       put("message", ErrorMessages.BAD_REQUEST_ERROR);
     }};
-    String errorJson = ServletUtil.convertToJson(errorResponse);
+    String errorJson = ServletUtil.convertMapToJson(errorResponse);
+
     // verify status code set
     verify(mockedResponse, times(1)).setStatus(HttpServletResponse.SC_BAD_REQUEST);
 
@@ -121,12 +124,11 @@ public final class MeetingTimeServletTest {
     // hardcode an entity in local datastore
     DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
     Entity fakeMeetingTime = new Entity("MeetingTime");
-    String fakeMeetingTimeKey = fakeMeetingTime.getKey().toString();
-    fakeMeetingTime.setProperty(MeetingTimeFields.MEETING_TIME_ID, fakeMeetingTimeKey);
     fakeMeetingTime.setProperty(MeetingTimeFields.DATETIME, DATETIME_VAL);
     fakeMeetingTime.setProperty(MeetingTimeFields.VOTE_COUNT, VOTE_COUNT_VAL);
     fakeMeetingTime.setProperty(MeetingTimeFields.VOTERS, VOTERS_VAL);
     datastore.put(fakeMeetingTime); // stores to local datastore
+    String fakeMeetingTimeKey = KeyFactory.keyToString(fakeMeetingTime.getKey());
 
     // add all data to hashmap, and convert to JSON
     HashMap<String, Object> fakeMeetingTimeMap = new HashMap<String, Object>() {{
@@ -134,7 +136,7 @@ public final class MeetingTimeServletTest {
       put(MeetingTimeFields.VOTE_COUNT, VOTE_COUNT_VAL);
       put(MeetingTimeFields.VOTERS, VOTERS_VAL);
     }};
-    String fakeMeetingTimeJson = ServletUtil.convertToJson(fakeMeetingTimeMap);
+    String fakeMeetingTimeJson = ServletUtil.convertMapToJson(fakeMeetingTimeMap);
 
     // fetch the entity
     when(mockedRequest.getParameter(MeetingTimeFields.MEETING_TIME_ID))
@@ -157,7 +159,7 @@ public final class MeetingTimeServletTest {
       put("status", HttpServletResponse.SC_BAD_REQUEST);
       put("message", ErrorMessages.BAD_REQUEST_ERROR);
     }};
-    String errorJson = ServletUtil.convertToJson(errorResponse);
+    String errorJson = ServletUtil.convertMapToJson(errorResponse);
     // verify error status code set
     verify(mockedResponse, times(1)).setStatus(HttpServletResponse.SC_BAD_REQUEST);
 
@@ -167,37 +169,36 @@ public final class MeetingTimeServletTest {
   }
   
   @Test 
-  public void testDoGetMultipleEntitiesReturned() throws IOException {
-    // hardcode two entities with identical MEETING_TIME_ID in local datastore
-    DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
-    Entity fakeMeetingTime1 = new Entity("MeetingTime");
-    fakeMeetingTime1.setProperty(MeetingTimeFields.MEETING_TIME_ID, MEETING_TIME_ID_VAL);
-    datastore.put(fakeMeetingTime1); // stores to local datastore
-    Entity fakeMeetingTime2 = new Entity("MeetingTime");
-    fakeMeetingTime2.setProperty(MeetingTimeFields.MEETING_TIME_ID, MEETING_TIME_ID_VAL);
-    datastore.put(fakeMeetingTime2);
-
-    // fetch the entity
-    when(mockedRequest.getParameter(MeetingTimeFields.MEETING_TIME_ID)).thenReturn(MEETING_TIME_ID_VAL); 
+  public void testDoGetInvalidKey() throws IOException {
+    when(mockedRequest.getParameter(MeetingTimeFields.MEETING_TIME_ID)).thenReturn("non-existent key");
     new MeetingTimeServlet().doGet(mockedRequest, mockedResponse);
 
     // check that error response was sent with appropriate details
     HashMap errorResponse = new HashMap<String, Object>() {{
-      put("status", HttpServletResponse.SC_REQUEST_ENTITY_TOO_LARGE);
-      put("message", ErrorMessages.TOO_MANY_RESULTS_ERROR);
+      put("status", HttpServletResponse.SC_BAD_REQUEST);
+      put("message", ErrorMessages.INVALID_KEY_ERROR);
     }};
-    String errorJson = ServletUtil.convertToJson(errorResponse);
+    String errorJson = ServletUtil.convertMapToJson(errorResponse);
     // verify error status code set
-    verify(mockedResponse, times(1)).setStatus(HttpServletResponse.SC_REQUEST_ENTITY_TOO_LARGE);
+    verify(mockedResponse, times(1)).setStatus(HttpServletResponse.SC_BAD_REQUEST);
 
-    // Assert that error reponse is returned
+    // Assert that error response is returned
     writer.flush(); // writer may not have been flushed yet
     assertTrue(stringWriter.toString().contains(errorJson));
   }
-  
-  @Test 
+
+  @Test
   public void testDoGetNoResults() throws IOException {
-    when(mockedRequest.getParameter(MeetingTimeFields.MEETING_TIME_ID)).thenReturn("non-existent key");
+    // Create a datastore entity, then delete. Trying to retrieve using this entity key would
+    // return no results.
+    DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
+    Entity fakeMeetingTime = new Entity("MeetingTime");
+    datastore.put(fakeMeetingTime);
+    Key fakeMeetingTimeKey = fakeMeetingTime.getKey();
+    String fakeMeetingTimeKeyStr = KeyFactory.keyToString(fakeMeetingTimeKey);
+    datastore.delete(fakeMeetingTimeKey);
+
+    when(mockedRequest.getParameter(MeetingTimeFields.MEETING_TIME_ID)).thenReturn(fakeMeetingTimeKeyStr);
     new MeetingTimeServlet().doGet(mockedRequest, mockedResponse);
 
     // check that error response was sent with appropriate details
@@ -205,7 +206,7 @@ public final class MeetingTimeServletTest {
       put("status", HttpServletResponse.SC_NOT_FOUND);
       put("message", ErrorMessages.ENTITY_NOT_FOUND_ERROR);
     }};
-    String errorJson = ServletUtil.convertToJson(errorResponse);
+    String errorJson = ServletUtil.convertMapToJson(errorResponse);
     // verify error status code set
     verify(mockedResponse, times(1)).setStatus(HttpServletResponse.SC_NOT_FOUND);
 
@@ -213,6 +214,7 @@ public final class MeetingTimeServletTest {
     writer.flush(); // writer may not have been flushed yet
     assertTrue(stringWriter.toString().contains(errorJson));
   }
+
   @After
   public void tearDown() {
     helper.tearDown();
