@@ -10,10 +10,10 @@ function toggleMeetingDisplay() {
       prompt = '<p>Please log in to view the meeting event details</p>'
       + '<a href=' + loginStatus.loginUrl + '>Login</a>';
     }
-    document.getElementById('meeting-title').style.display = style.valueOf();
-    document.getElementById('vote-meeting-times').style.display = style.valueOf();
-    document.getElementById('vote-meeting-locations').style.display = style.valueOf();
-    document.getElementById('votes-table').style.display = style.valueOf();
+    document.getElementById('meeting-title').style.display = style;
+    document.getElementById('vote-meeting-times').style.display = style;
+    document.getElementById('vote-meeting-locations').style.display = style;
+    document.getElementById('votes-table').style.display = style;
     document.getElementById('login-or-logout-prompt').innerHTML = prompt;
   });
 }
