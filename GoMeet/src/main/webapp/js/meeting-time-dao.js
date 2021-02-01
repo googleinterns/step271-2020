@@ -62,8 +62,8 @@ class MeetingTimeDAO {
       throw new Error(INVALID_PARAM_TYPE);
     }
 
-    // check that the datetime string is in the format: YYY-MM-DDTHH:MM
-    let format = new RegExp(/\d{4}-[01]\d-[0-3]\dT[0-2]\d:[0-5]\d/);
+    // check that the datetime string is in the format: YYYY-MM-DDTHH:MM
+    let format = new RegExp(/\d{4}-\d{2}-\d{2}T\d{2}:\d{2}/);
     if (!format.test(datetimeStr)) {
       throw new Error(INVALID_PARAM_VALUE);
     } 
