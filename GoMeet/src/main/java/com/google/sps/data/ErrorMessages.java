@@ -16,4 +16,6 @@ public class ErrorMessages {
       "All parameters must be provided to create a new entity";
   public static final String BAD_GET_REQUEST_ERROR = 
       "A valid Id must be provided to fetch the entity";
+  public static final String USER_HAS_VOTED_ERROR =
+      "The user has voted once already";
 }
