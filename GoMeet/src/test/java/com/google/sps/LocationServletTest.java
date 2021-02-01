@@ -138,6 +138,8 @@ public class LocationServletTest {
     Type locationListType = new TypeToken<ArrayList<Location>>(){}.getType();
     ArrayList<Location> locationList = gson.fromJson(responseString, locationListType); 
 
+    assertEquals(1, locationList.size());
+
     Location printedLocation = locationList.get(0);
     
     assertEquals(LOCATION_A.getTitle(), printedLocation.getTitle());
