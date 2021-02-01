@@ -5,6 +5,7 @@ import com.google.appengine.api.datastore.DatastoreServiceFactory;
 import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.FetchOptions;
 import com.google.appengine.api.datastore.Key;
+import com.google.appengine.api.datastore.KeyFactory;
 import com.google.appengine.api.datastore.Query;
 import com.google.appengine.api.datastore.Query.FilterOperator;
 import com.google.appengine.api.datastore.Query.FilterPredicate;
@@ -61,7 +62,7 @@ public class MeetingEventServlet extends HttpServlet {
     // Create entity and store in Datastore 
     Entity meetingEvent = new Entity("MeetingEvent"); 
     Key meetingEventKey = meetingEvent.getKey();
-    meetingEvent.setProperty(MeetingEventFields.MEETING_EVENT_ID, meetingEventKey.toString());
+    
     meetingEvent.setProperty(MeetingEventFields.MEETING_NAME, meetingName); 
     meetingEvent.setProperty(MeetingEventFields.DURATION_MINS, durationMins);
     meetingEvent.setProperty(MeetingEventFields.DURATION_HOURS, durationHours);
@@ -71,8 +72,9 @@ public class MeetingEventServlet extends HttpServlet {
     meetingEvent.setProperty(MeetingEventFields.MEETING_LOCATION_IDS, meetingLocationIds); 
     datastore.put(meetingEvent);
 
+    String keyStr = KeyFactory.keyToString(meetingEventKey);
     response.setContentType("application/json"); 
-    response.getWriter().println(meetingEventKey.toString());
+    response.getWriter().println(keyStr);
   }
 
   /** Fetches a MeetingEvent entity from Datastore according to the entity ID in the query string */

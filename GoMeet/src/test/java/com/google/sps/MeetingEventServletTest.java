@@ -94,12 +94,12 @@ public final class MeetingEventServletTest {
 
     // Assert that exactly one entity was added 
     assertEquals(1, results.size());
+    
     Entity result = results.get(0);
     Key resultKey = result.getKey();
+    String keyStr = KeyFactory.keyToString(resultKey); 
 
     // Check the entity property values were assigned correctly
-    // Note that Key is not assigned yet in the testing environment of Local Datastore
-    assertNotNull(result.getProperty(MeetingEventFields.MEETING_EVENT_ID));
     assertEquals(MEETING_NAME, result.getProperty(MeetingEventFields.MEETING_NAME)); 
     assertEquals(DURATION_MINS, result.getProperty(MeetingEventFields.DURATION_MINS)); 
     assertEquals(DURATION_HOURS, result.getProperty(MeetingEventFields.DURATION_HOURS)); 
@@ -110,7 +110,7 @@ public final class MeetingEventServletTest {
 
     // Assert that the key is returned
     writer.flush(); // writer may not have been flushed yet
-    assertTrue(stringWriter.toString().contains(resultKey.toString()));
+    assertTrue(stringWriter.toString().contains(keyStr));
   }
   
   @Test 
