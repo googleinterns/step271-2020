@@ -39,7 +39,7 @@ function createLocationForEdit(map, lat, lng) {
 }
 
 /** Creates a marker that shows the location's information. */
-async function createLocationForDisplay(map, lat, lng, title) {
+function createLocationForDisplay(map, lat, lng, title) {
   let displayLocation =
       new google.maps.Marker({position: {lat: lat, lng: lng}, map: map});
 
@@ -104,8 +104,8 @@ function validateTitle(title) {
 async function fetchLocations(map, fetchWrapper) {
   let json = await fetchWrapper.doGet('location-data').then(
       response => response.json());
-  json.forEach(async (location) => {
-    await createLocationForDisplay(map, location.lat, location.lng,
+  json.forEach((location) => {
+    createLocationForDisplay(map, location.lat, location.lng,
         location.title);
   });
 }
