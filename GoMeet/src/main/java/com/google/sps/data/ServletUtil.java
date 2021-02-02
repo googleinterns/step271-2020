@@ -72,16 +72,17 @@ public class ServletUtil {
    * @return the decoded URI
    */
   public static String decodeUri(String encodedUri) {
+    String result; 
     // Decode "%2C" to ","
-    encodedUri.replace("%2C", ",");
+    result = encodedUri.replace("%2C", ",");
 
     // Decode "%40" to "@"
-    encodedUri.replace("%40", "@");
+    result = result.replace("%40", "@");
 
     // Decode "+" to " " (space)
-    encodedUri.replace("+", " "); 
+    result = result.replace("+", " "); 
 
-    return encodedUri;
+    return result;
   }
   
   /**
