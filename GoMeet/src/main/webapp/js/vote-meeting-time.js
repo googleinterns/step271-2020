@@ -114,6 +114,7 @@ function generateVoteTimeForm(timeData, currentUser, votedTimes) {
     // Clicking on this button will cast a vote for this meeting time
     let voteFormCell = timeRow.insertCell(3);
     let voteButton = document.createElement('button');
+    voteButton.innerText = 'Vote Time'
     voteButton.id = time.id;
     voteButton.onclick = function() {voteTime(time.id, currentUser)};
     if (votedTimes.has(time.id)) {
