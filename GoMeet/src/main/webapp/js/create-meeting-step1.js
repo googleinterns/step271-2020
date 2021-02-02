@@ -39,3 +39,45 @@ function addGuest(doc) {
  function removeGuest(guest, doc) {
   doc.getElementById(guest).remove();
 }
+
+/**
+ * Checks whether all the email input elements on the document are valid
+ * Note: Server side checks will also be made to validate emails 
+ * @param {Document} doc the document object containing the email inputs
+ */
+function validateEmails(doc) {
+  const emailInputs = doc.querySelectorAll("input[type='email']");
+
+  for (let i = 0; i < emailInputs.length; i++) {
+    if (emailInputs.item(i).value === '') {
+      throw (new Error(BLANK_FIELDS_ALERT)); 
+    } else if (!isValidEmail(emailInputs.item(i))) {
+      throw (new Error(INVALID_EMAILS_ALERT)); 
+    }
+  }
+  return true; 
+}
+
+/**
+ * Checks whether the given email address is valid according to the 
+ * regular expression pattern 
+ * @param {input} emailInput the email address input to be validated 
+ */
+function isValidEmail(emailInput) {
+  return emailInput.checkValidity();
+}
+
+/**
+ * Saves the meeting name, host email and guest emails to session
+ * storage, and redirects to the next step in the create meeting sequence.
+ * @param {Document} doc the document object containing the user inputs
+ */
+ function saveStepOneToSessionStorage(doc) {
+  try {
+    if (validateEmails(doc) && saveMeeting()) {
+      location.href = 'create-meeting-step2.html';
+    }
+  } catch(err) {
+    alert(err.message);
+  }
+}

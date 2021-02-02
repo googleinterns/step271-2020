@@ -16,18 +16,47 @@
   <script src="../js/create-meeting-shared.js"></script>
   <script src="../js/create-meeting-step1.js"></script>
   <script src="../js/create-meeting-step2.js"></script>
-  <script src="../js/load-map.js"></script>
+  <script src="../js/meeting-display.js"></script>
+  <script src="../js/login-status.js"></script>
+  <script src="../js/load-map.js"></script> 
   <script src="../js/fetch-wrapper.js"></script>
   <script src="../js/interactive-map.js"></script>
+  <script src="../js/manual-time-proposal.js"></script>
+  <script src="../js/meeting-time-dao.js"></script>
   
   <!-- include spec files (files containing test code) here... -->
   <script src="spec/spec-create-meeting-step1.js"></script>
   <script src="spec/spec-create-meeting-shared.js"></script>
   <script src="spec/spec-create-meeting-step2.js"></script>
+  <script src="spec/spec-meeting-display.js"></script>
   <script src="spec/spec-interactive-map.js"></script>
+  <script src="spec/spec-manual-time-proposal.js"></script>
+  <script src="spec/spec-meeting-time-dao.js"></script>
 </head>
 <body>
   <ul id="guest-list"></ul>
+  <div id="login-or-logout-prompt"></div>
+  <div id="meeting-title">
+      <p>Meeting name</p>
+  </div>
+  <div id="vote-meeting-times">
+      <p>Meeting times</p>
+  </div>
+  <div id="vote-meeting-locations">
+      <p>Meeting locations</p>
+  </div> 
+  <div id="votes-table">
+      <p>Votes table</p>
+  </div> 
   <div id="map"></div></br>
+  <div style="display: none;" id="meeting-time-inputs"> <!-- hidden div for testing DOM manipulation only -->
+    <div id="meeting-time-1"> 
+      <!-- Mock div representing the one default meeting time input that 
+          create-meeting-step2-manual.html loads with -->
+      <label></label>
+      <input>
+      <button></button>
+    </div>
+  </div>
 </body>
 </html>
