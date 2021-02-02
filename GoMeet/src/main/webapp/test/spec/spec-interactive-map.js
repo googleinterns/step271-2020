@@ -119,6 +119,11 @@ describe('Post Vote', function() {
 
 /** Test for fetch locations. */
 describe ('Fetch Locations', function() {
+  const TITLE = 'My Location';
+  const NOTE = 'My Note';
+  const LAT = 10.0;
+  const LNG = 15.0;
+
   it ('Should create a marker for the location returned', async function() {
     // Set up fake promise to return 
     let promiseHelper;
@@ -128,8 +133,8 @@ describe ('Fetch Locations', function() {
         reject: reject
       };
     });
-    const response = new Response(JSON.stringify([{title: "Hello",
-        lat: 10, lng: 15, note: "My Note"}]));
+    const response = new Response(JSON.stringify([{title: TITLE,
+        lat: LAT, lng: LNG, note: NOTE}]));
     promiseHelper.resolve(response);
 
     let mockedFetchWrapper = new FetchWrapper();
@@ -152,16 +157,17 @@ describe ('Fetch Locations', function() {
     expect(google.maps.Marker).toHaveBeenCalledWith(
         {position: {lat: 10, lng: 15}, map: fakeMap});
 
-    // Check title and note was passed to the infowindow
+    // Check if the content passed to the infowindow constructor contains the
+    // title and note.
     let childNodes = returnedDiv.content.childNodes;
     let title = false;
     let note = false;
     for (let i = 0; i < childNodes.length; i++) {
       if (childNodes[i].textContent) {
         let text = childNodes[i].textContent;
-        if (text === 'Hello') {
+        if (text === TITLE) {
           title = true;
-        } else if (text === 'My Note') {
+        } else if (text === NOTE) {
           note = true;
         }
       }
