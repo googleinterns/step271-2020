@@ -67,7 +67,7 @@ async function fetchAndProcess(meetingTimeIds) {
     } else {
       time.id = meetingTimeIds[i]; // store the meetingId with the time to identify them later
       // add time Id to the votedTimes if logged in user has voted for it
-      if (time.voters.includes(currentUser)) {
+      if (time.voters !== null && time.voters.includes(currentUser)) {
         votedTimes.add(time.id);
       }
       timeData.push(time);
