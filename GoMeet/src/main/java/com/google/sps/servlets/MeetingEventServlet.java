@@ -9,6 +9,7 @@ import com.google.appengine.api.datastore.Key;
 import com.google.appengine.api.datastore.KeyFactory;
 import com.google.appengine.api.datastore.Query;
 import com.google.sps.data.ErrorMessages;
+import com.google.sps.data.MeetingEvent;
 import com.google.sps.data.MeetingEventFields;
 import com.google.sps.data.ServletUtil;
 import org.json.simple.JSONObject;
@@ -29,17 +30,16 @@ public class MeetingEventServlet extends HttpServlet {
   /** Creates a new meetingEvent entity and stores it to Datastore */
   @Override
   public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
-    DatastoreService datastore = DatastoreServiceFactory.getDatastoreService(); 
     String meetingName = request.getParameter(MeetingEventFields.MEETING_NAME);
-    String durationMins = request.getParameter(MeetingEventFields.DURATION_MINS); 
-    String durationHours = request.getParameter(MeetingEventFields.DURATION_HOURS); 
+    String durationMinsStr = request.getParameter(MeetingEventFields.DURATION_MINS); 
+    String durationHoursStr = request.getParameter(MeetingEventFields.DURATION_HOURS); 
     String timeFindMethod = request.getParameter(MeetingEventFields.TIME_FIND_METHOD);
     String guestListUri = request.getParameter(MeetingEventFields.GUEST_LIST); 
     String meetingTimeIdsUri = request.getParameter(MeetingEventFields.MEETING_TIME_IDS); 
     String meetingLocationIdsUri = request.getParameter(MeetingEventFields.MEETING_LOCATION_IDS); 
 
     // Check all properties are not null 
-    if (meetingName == null || durationMins == null || durationHours == null || 
+    if (meetingName == null || durationMinsStr == null || durationHoursStr == null || 
         timeFindMethod == null || guestListUri == null || meetingTimeIdsUri == null || 
         meetingLocationIdsUri == null) {
       ServletUtil.sendErrorResponse(response, HttpServletResponse.SC_BAD_REQUEST, 
@@ -47,28 +47,27 @@ public class MeetingEventServlet extends HttpServlet {
       return;
     }
 
+    int durationMins = Integer.parseInt(durationMinsStr); 
+    int durationHours = Integer.parseInt(durationHoursStr); 
+
     // guestListStr, meetingTimeIdsStr and meetingLocationIdsStr are sent by the request 
-    // as a single string with each element deliminated by a comma 
+    // as an encoded URI
     String guestListStr = ServletUtil.decodeUri(guestListUri);
     String meetingTimeIdsStr = ServletUtil.decodeUri(meetingTimeIdsUri);
     String meetingLocationIdsStr = ServletUtil.decodeUri(meetingLocationIdsUri);
+
+    // Each element in the decoded list is deliminated by a comma 
     List<String> guestList = Arrays.asList(guestListStr.split(",")); 
     List<String> meetingTimeIds = Arrays.asList(meetingTimeIdsStr.split(",")); 
     List<String> meetingLocationIds = Arrays.asList(meetingLocationIdsStr.split(","));
 
-    // Create entity and store in Datastore 
-    Entity meetingEvent = new Entity("MeetingEvent"); 
-    meetingEvent.setProperty(MeetingEventFields.MEETING_NAME, meetingName); 
-    meetingEvent.setProperty(MeetingEventFields.DURATION_MINS, durationMins);
-    meetingEvent.setProperty(MeetingEventFields.DURATION_HOURS, durationHours);
-    meetingEvent.setProperty(MeetingEventFields.TIME_FIND_METHOD, timeFindMethod);
-    meetingEvent.setProperty(MeetingEventFields.GUEST_LIST, guestList);
-    meetingEvent.setProperty(MeetingEventFields.MEETING_TIME_IDS, meetingTimeIds);
-    meetingEvent.setProperty(MeetingEventFields.MEETING_LOCATION_IDS, meetingLocationIds); 
-    datastore.put(meetingEvent);
+    MeetingEvent meetingEvent = new MeetingEvent(meetingName, durationMins, durationHours, 
+        timeFindMethod, guestList, meetingTimeIds, meetingLocationIds);
+    
+    // Create a meeting event entity and store it to Datastore
+    String meetingEventKey = storeMeeting(meetingEvent); 
 
     // Return a JSON string with the key of the created entity under the field 'meetingEventId'
-    String meetingEventKey = KeyFactory.keyToString(meetingEvent.getKey());
     HashMap<String, Object> keyObj = new HashMap<String, Object>() {{
       put(MeetingEventFields.MEETING_EVENT_ID, meetingEventKey); 
     }};
@@ -111,8 +110,8 @@ public class MeetingEventServlet extends HttpServlet {
     }
 
     String meetingName = (String) result.getProperty(MeetingEventFields.MEETING_NAME); 
-    String durationMins = (String) result.getProperty(MeetingEventFields.DURATION_MINS); 
-    String durationHours = (String) result.getProperty(MeetingEventFields.DURATION_HOURS); 
+    int durationMins = ((Long) result.getProperty(MeetingEventFields.DURATION_MINS)).intValue(); 
+    int durationHours = ((Long) result.getProperty(MeetingEventFields.DURATION_HOURS)).intValue(); 
     String timeFindMethod = (String) result.getProperty(MeetingEventFields.TIME_FIND_METHOD); 
     List guestList = (ArrayList) result.getProperty(MeetingEventFields.GUEST_LIST); 
     List meetingTimeIds = (ArrayList) result.getProperty(MeetingEventFields.MEETING_TIME_IDS); 
@@ -129,5 +128,21 @@ public class MeetingEventServlet extends HttpServlet {
 
     String meetingEventJson = ServletUtil.convertMapToJson(meetingEvent);
     response.getWriter().println(meetingEventJson);
+  }
+
+  /** Creates a MeetingEvent entity and stores it in Datastore */
+  private String storeMeeting(MeetingEvent event) {
+    DatastoreService datastore = DatastoreServiceFactory.getDatastoreService(); 
+    Entity meetingEvent = new Entity("MeetingEvent"); 
+    meetingEvent.setProperty(MeetingEventFields.MEETING_NAME, event.getMeetingName()); 
+    meetingEvent.setProperty(MeetingEventFields.DURATION_MINS, event.getDurationMins());
+    meetingEvent.setProperty(MeetingEventFields.DURATION_HOURS, event.getDurationHours());
+    meetingEvent.setProperty(MeetingEventFields.TIME_FIND_METHOD, event.getTimeFindMethod());
+    meetingEvent.setProperty(MeetingEventFields.GUEST_LIST, event.getGuestList());
+    meetingEvent.setProperty(MeetingEventFields.MEETING_TIME_IDS, event.getMeetingTimeIds());
+    meetingEvent.setProperty(MeetingEventFields.MEETING_LOCATION_IDS, event.getMeetingLocationIds());
+    datastore.put(meetingEvent);
+    String keyStr = KeyFactory.keyToString(meetingEvent.getKey());
+    return keyStr; 
   }
 }

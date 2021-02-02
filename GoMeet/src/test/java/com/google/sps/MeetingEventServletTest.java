@@ -48,8 +48,10 @@ public final class MeetingEventServletTest {
   // Hardcoded meetingEvent entity data 
   private final String MEETING_EVENT_ID = "qwerty12345";
   private final String MEETING_NAME = "Christmas Lunch"; 
-  private final String DURATION_MINS = "30"; 
-  private final String DURATION_HOURS = "1"; 
+  private final String DURATION_MINS_STR = "30"; 
+  private final String DURATION_HOURS_STR = "1"; 
+  private final int DURATION_MINS = 30; 
+  private final int DURATION_HOURS = 1; 
   private final String TIME_FIND_METHOD = "manual"; 
   private final String GUEST_LIST_STR = "guest1@email.com,guest2@email.com,guest3@email.com";
   private final String MEETING_TIME_IDS_STR = "abc123,def456,ghi789";
@@ -78,8 +80,8 @@ public final class MeetingEventServletTest {
     writer = new PrintWriter(stringWriter);
     when(mockedResponse.getWriter()).thenReturn(writer);
     when(mockedRequest.getParameter(MeetingEventFields.MEETING_NAME)).thenReturn(MEETING_NAME);
-    when(mockedRequest.getParameter(MeetingEventFields.DURATION_MINS)).thenReturn(DURATION_MINS);
-    when(mockedRequest.getParameter(MeetingEventFields.DURATION_HOURS)).thenReturn(DURATION_HOURS);
+    when(mockedRequest.getParameter(MeetingEventFields.DURATION_MINS)).thenReturn(DURATION_MINS_STR);
+    when(mockedRequest.getParameter(MeetingEventFields.DURATION_HOURS)).thenReturn(DURATION_HOURS_STR);
     when(mockedRequest.getParameter(MeetingEventFields.TIME_FIND_METHOD)).thenReturn(TIME_FIND_METHOD);
     when(mockedRequest.getParameter(MeetingEventFields.GUEST_LIST)).thenReturn(GUEST_LIST_STR);
     when(mockedRequest.getParameter(MeetingEventFields.MEETING_TIME_IDS)).thenReturn(MEETING_TIME_IDS_STR);
@@ -101,8 +103,8 @@ public final class MeetingEventServletTest {
     String resultKey = KeyFactory.keyToString(result.getKey());
     assertNotNull(resultKey);
     assertEquals(MEETING_NAME, result.getProperty(MeetingEventFields.MEETING_NAME)); 
-    assertEquals(DURATION_MINS, result.getProperty(MeetingEventFields.DURATION_MINS)); 
-    assertEquals(DURATION_HOURS, result.getProperty(MeetingEventFields.DURATION_HOURS)); 
+    assertEquals(DURATION_MINS, ((Long) result.getProperty(MeetingEventFields.DURATION_MINS)).intValue()); 
+    assertEquals(DURATION_HOURS, ((Long) result.getProperty(MeetingEventFields.DURATION_HOURS)).intValue()); 
     assertEquals(TIME_FIND_METHOD, result.getProperty(MeetingEventFields.TIME_FIND_METHOD)); 
     assertEquals(GUEST_LIST, result.getProperty(MeetingEventFields.GUEST_LIST)); 
     assertEquals(MEETING_TIME_IDS, result.getProperty(MeetingEventFields.MEETING_TIME_IDS)); 
