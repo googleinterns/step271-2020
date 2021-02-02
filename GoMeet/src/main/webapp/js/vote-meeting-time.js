@@ -160,5 +160,18 @@ function sortTimesbyVotes(timeData) {
  * and who is voting
  */
 async function voteTime(id, currentUser) {
-  await VoteMeetingTimeDAO.voteMeetingTime(id, currentUser);
+  let response = await VoteMeetingTimeDAO.voteMeetingTime(id, currentUser);
+  if ('status' in response && parseInt(response.status) !== 200) {
+    // NOTE: Error responses from the DAO are internal errors that the user cannot deal with, 
+    // so don't alert them, but also don't crash the program or stop execution either.
+    // Hence not throwing an error (which stops execution), but logging it.
+    console.error(
+      "ERROR " +
+        response.status +
+        " " +
+        response.message +
+        " - MeetingTimeId: " +
+        id
+    );
+  }
 }

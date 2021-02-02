@@ -275,13 +275,17 @@ describe('sortTimeByVotes', function() {
 
 // TESTS FOR voteTime
 describe('voteTime', function() {
+  const SUCCESS_RESPONSE = {status: 200};
+  var voteMeetingTimeSpy;
   beforeAll(function() {
-    spyOn(VoteMeetingTimeDAO, 'voteMeetingTime');
+    voteMeetingTimeSpy = spyOn(VoteMeetingTimeDAO, 'voteMeetingTime');
     spyOn(window, 'displayMeetingTimeForm');
+    spyOn(console, 'error');
   });
 
   it('calls VoteMeetingTimeDAO.voteMeetingTime with the \
       MeetingTimeId and currentUser', async function() {
+    voteMeetingTimeSpy.and.returnValue(SUCCESS_RESPONSE);
     await voteTime(MEETING_TIME_IDS[0], CURRENT_USER);
     expect(VoteMeetingTimeDAO.voteMeetingTime)
         .toHaveBeenCalledWith(MEETING_TIME_IDS[0], CURRENT_USER);
@@ -290,5 +294,21 @@ describe('voteTime', function() {
   it('calls displayMeetingTimeForm to re-render the page', async function() {
     await voteTime(MEETING_TIME_IDS[0], CURRENT_USER);
     expect(window.displayMeetingTimeForm).toHaveBeenCalled();
+  });
+
+  it('logs any error responses received from the DAO without alerting the user', async function() {
+    voteMeetingTimeSpy.and.returnValue(ERROR_RESPONSE);
+    // Errors from the DAO are internal errors that the user cannot deal with, 
+    // so don't alert them, but also don't crash the program either
+    let nonExistentMeetingId = 'non-existent-key';
+    await voteTime(nonExistentMeetingId, CURRENT_USER);
+    expect(console.error).toHaveBeenCalledWith(
+      'ERROR ' +
+      ERROR_RESPONSE.status +
+      ' ' +
+      ERROR_RESPONSE.message +
+      ' - MeetingTimeId: ' +
+      nonExistentMeetingId
+    );
   });
 });
