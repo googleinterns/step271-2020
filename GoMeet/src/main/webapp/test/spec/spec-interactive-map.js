@@ -140,12 +140,34 @@ describe ('Fetch Locations', function() {
     const markerConstructorSpy = spyOn(google.maps, 'Marker');
     const fakeMarker = jasmine.createSpyObj('Marker', ['addListener']);
     markerConstructorSpy.and.returnValue(fakeMarker);
-    const infowindowConstructorSpy = spyOn(google.maps, 'InfoWindow');
+    let returnedDiv;
+    const infowindowConstructorSpy = spyOn(google.maps, 'InfoWindow').and.callFake(function(div) {
+      returnedDiv = div;
+    })
     let fakeMap = {};
 
     await fetchLocations(fakeMap, mockedFetchWrapper);
+
+    // Check marker was called with the correct coordinates
     expect(google.maps.Marker).toHaveBeenCalledWith(
         {position: {lat: 10, lng: 15}, map: fakeMap});
+
+    // Check title and note was passed to the infowindow
+    let childNodes = returnedDiv.content.childNodes;
+    let title = false;
+    let note = false;
+    for (let i = 0; i < childNodes.length; i++) {
+      if (childNodes[i].textContent) {
+        let text = childNodes[i].textContent;
+        if (text === 'Hello') {
+          title = true;
+        } else if (text === 'My Note') {
+          note = true;
+        }
+      }
+    }
+    expect(title).toBe(true);
+    expect(note).toBe(true);
   }); 
 });
 
