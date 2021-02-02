@@ -4,10 +4,10 @@ let MAX_VOTES = 3; // users can vote up to MAX_VOTES times
  * Function called on page load of meeting-event.html
  * to fetch all relevant MeetingTime data from servlets 
  * and generate voting form for the MeetingTimes.
- * @param meetingTimeIds The IDs of the MeetingTime entities
- * associated with the meeting to be displayed.
  */
-async function displayMeetingTimeForm(meetingTimeIds) {
+async function displayMeetingTimeForm() {
+  let meetingTimeIds; // TODO: Call Vivian's function to retrieve IDs
+  
   // prepare for re-render: reset the 'meeting-times-table' table 
   // to JUST the headers
   let table = document.getElementById('meeting-times-table');
@@ -174,4 +174,6 @@ async function voteTime(id, currentUser) {
         id
     );
   }
+  // Re-render the form to update the votes
+  await displayMeetingTimeForm();
 }

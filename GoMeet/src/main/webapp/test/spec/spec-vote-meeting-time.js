@@ -292,6 +292,7 @@ describe('voteTime', function() {
   });
 
   it('calls displayMeetingTimeForm to re-render the page', async function() {
+    voteMeetingTimeSpy.and.returnValue(SUCCESS_RESPONSE);
     await voteTime(MEETING_TIME_IDS[0], CURRENT_USER);
     expect(window.displayMeetingTimeForm).toHaveBeenCalled();
   });
