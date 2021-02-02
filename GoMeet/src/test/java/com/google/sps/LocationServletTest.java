@@ -44,7 +44,7 @@ public class LocationServletTest {
   private final String NOTE_A = "Good Pancakes!";
   private final String LAT_A = "33.0";
   private final String LNG_A = "150.0";
-  private final long INIT_VOTE_COUNT = 1;
+  private final int INIT_VOTE_COUNT = 1;
   private final double LAT_A_VALUE = Double.parseDouble(LAT_A);
   private final double LNG_A_VALUE = Double.parseDouble(LNG_A);
   private final Location LOCATION_A = new Location("Sushi Train", 15.0, 150.0, "I like sushi!", 1);
@@ -97,7 +97,7 @@ public class LocationServletTest {
     assertEquals(LAT_A_VALUE, result.getProperty("lat"));
     assertEquals(LNG_A_VALUE, result.getProperty("lng"));
     assertEquals(NOTE_A, result.getProperty("note"));
-    assertEquals(INIT_VOTE_COUNT, result.getProperty("voteCount"));
+    assertEquals(INIT_VOTE_COUNT, ((Long) result.getProperty("voteCount")).intValue());
 
     // Check the entity's key was sent in the response.
     Gson gson = new Gson();

@@ -23,7 +23,7 @@ import org.jsoup.safety.Whitelist;
 @WebServlet("/location-data")
 public class LocationServlet extends HttpServlet {
 
-  private static final long INITIAL_VOTE_COUNT = 1;
+  private static final int INITIAL_VOTE_COUNT = 1;
 
  /** Responds with a JSON array containing location data. */
   @Override
@@ -80,7 +80,7 @@ public class LocationServlet extends HttpServlet {
       double lng = (double) entity.getProperty("lng");
       String title = (String) entity.getProperty("title");
       String note = (String) entity.getProperty("note");
-      long voteCount = (long) entity.getProperty("voteCount");
+      int voteCount = ((Long) entity.getProperty("voteCount")).intValue();
       String keyString = KeyFactory.keyToString(entity.getKey());
 
       Location location = new Location(title, lat, lng, note, voteCount, keyString);

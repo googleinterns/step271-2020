@@ -8,11 +8,11 @@ public class Location {
   private final double lat;
   private final double lng;
   private final String note;
-  private long voteCount;
+  private int voteCount;
   private Collection<String> voters;
   private String keyString;
 
-  public Location(String title, double lat, double lng, String note, long voteCount) {
+  public Location(String title, double lat, double lng, String note, int voteCount) {
     this.title = title;
     this.lat = lat;
     this.lng = lng;
@@ -22,7 +22,7 @@ public class Location {
     this.keyString = null;
   }
 
-  public Location(String title, double lat, double lng, String note, long voteCount, String keyString) {
+  public Location(String title, double lat, double lng, String note, int voteCount, String keyString) {
     this.title = title;
     this.lat = lat;
     this.lng = lng;
@@ -52,7 +52,7 @@ public class Location {
     return note;
   }
 
-  public long getVoteCount() {
+  public int getVoteCount() {
     return voteCount;
   }
 

@@ -85,7 +85,7 @@ public class UpdateLocationServletTest {
 
     try {
       Entity retrievedLocation = ds.get(location.getKey());
-      assertEquals(2L, retrievedLocation.getProperty("voteCount"));
+      assertEquals(2, ((Long) retrievedLocation.getProperty("voteCount")).intValue());
     } catch (EntityNotFoundException e) {
       fail();
     }
