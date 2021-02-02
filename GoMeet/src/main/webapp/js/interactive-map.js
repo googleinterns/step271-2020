@@ -23,7 +23,7 @@ function createMap() {
 /** Creates a marker that shows a textbox the user can edit. */
 function createLocationForEdit(map, lat, lng) {
  
-  editLocation =
+  const editLocation =
       new google.maps.Marker({position: {lat: lat, lng: lng}, map: map});
 
   const infoWindow =
@@ -39,7 +39,7 @@ function createLocationForEdit(map, lat, lng) {
 }
 
 /** Creates a marker that shows the location's information. */
-async function createLocationForDisplay(map, lat, lng, title, voteCount, note, keyString) {
+function createLocationForDisplay(map, lat, lng, title, voteCount, note, keyString) {
   let displayLocation =
       new google.maps.Marker({position: {lat: lat, lng: lng}, map: map});
 
@@ -111,8 +111,8 @@ function validateTitle(title) {
 async function fetchLocations(map, fetchWrapper) {
   let response = await fetchWrapper.doGet('location-data');
   let json = await response.json();
-  json.forEach(async (location) => {
-    await createLocationForDisplay(map, location.lat, location.lng,
+  json.forEach((location) => {
+    createLocationForDisplay(map, location.lat, location.lng,
         location.title, location.voteCount, location.note, location.keyString);
   });
 }

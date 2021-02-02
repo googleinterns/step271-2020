@@ -4,8 +4,7 @@ class FetchWrapper {
   constructor() {};
 
   async doPost(servlet, params) {
-    let response = await fetch(servlet, {method: 'POST', body: params});
-    return response;
+    return await fetch(servlet, {method: 'POST', body: params});
   }
 
   async doGet(servlet) {

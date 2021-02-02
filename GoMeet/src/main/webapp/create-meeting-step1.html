@@ -5,6 +5,8 @@
     <title>GoMeet Create Meeting Step 1</title>
     <link rel="stylesheet" href="style.css">
     <script src="js/create-meeting-step1.js"></script>
+    <script src="js/error-messages.js"></script>
+    <script src="js/create-meeting-shared.js"></script>
   </head>
   <body onload="addGuest(document);">
     <h1 class="center">GoMeet</h1>
@@ -22,6 +24,6 @@
     <p>Please enter guests' emails to invite them to the meeting</p>
     <ul id="guest-list"></ul>
     <button onclick="addGuest(document)">Add another guest</button>
-    <button onclick="location.href='create-meeting-step2.html'">Next</button>
+    <button onclick="saveStepOneToSessionStorage(document)">Next</button>
   </body>
 </html>

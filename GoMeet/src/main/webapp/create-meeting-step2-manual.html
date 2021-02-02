@@ -4,7 +4,27 @@
   <head>
     <meta charset="UTF-8">
     <title>Create Meeting</title>
+    <script src="js/error-messages.js"></script>
+    <script src="js/create-meeting-shared.js"></script>
+    <script src="js/manual-time-proposal.js"></script>
   </head>
-  <body>
+  <body onload="setMinDatetime(document)"> <!-- set the minimum date that users can enter in 'meeting-time-1' input -->
+    <div>
+      <h2>Step 2</h2>
+      <h2>Find a Meeting Time</h2>
+      <h2>Manually suggest meeting times</h2>
+    </div>
+    <div id="meeting-time-inputs">
+      <div id="meeting-time-1">
+        <label for="meeting-time-1">New time</label>
+        <input type="datetime-local" name="meeting-time-1" onchange="rectifyInputtedTime(this)">
+        <!-- delete button for the time input - hidden until there is more than 1 time -->
+        <button onclick="deleteTimeInput(document, 'meeting-time-1')" class="delete-time-button" style="display:none">-</button>
+      </div>
+    </div>
+    <div>
+      <button onclick="addTimeInput(document)">+</button>
+    </div>
+    <button onclick="saveTimes()">Next</button>
   </body>
 </html>
