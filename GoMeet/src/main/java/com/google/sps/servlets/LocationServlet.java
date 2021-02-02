@@ -5,6 +5,8 @@ import com.google.appengine.api.datastore.DatastoreServiceFactory;
 import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.PreparedQuery;
 import com.google.appengine.api.datastore.Query;
+import com.google.appengine.api.datastore.Key;
+import com.google.appengine.api.datastore.KeyFactory;
 import main.java.com.google.sps.data.Location;
 import com.google.gson.Gson;
 import java.io.IOException;
@@ -21,6 +23,8 @@ import org.jsoup.safety.Whitelist;
 @WebServlet("/location-data")
 public class LocationServlet extends HttpServlet {
 
+  private static final int INITIAL_VOTE_COUNT = 1;
+
  /** Responds with a JSON array containing location data. */
   @Override
   public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
@@ -35,26 +39,33 @@ public class LocationServlet extends HttpServlet {
 
   /** Accepts a POST request containing a new location. */
   @Override
-  public void doPost(HttpServletRequest request, HttpServletResponse response) {
+  public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
     double lat = Double.parseDouble(request.getParameter("lat"));
     double lng = Double.parseDouble(request.getParameter("lng"));
     String note = Jsoup.clean(request.getParameter("note"), Whitelist.none());
     String title = Jsoup.clean(request.getParameter("title"), Whitelist.none());
 
-    Location location = new Location(title, lat, lng, note);
-    storeLocation(location);
+    Location location = new Location(title, lat, lng, note, INITIAL_VOTE_COUNT);
+    String entityKeyString = storeLocation(location);
+
+    response.setContentType("application/json");
+    Gson gson = new Gson();
+    response.getWriter().println(gson.toJson(entityKeyString));
   }
 
   /** Stores a location in Datastore. */
-  private void storeLocation(Location location) {
+  private String storeLocation(Location location) {
     Entity locationEntity = new Entity("Location");
     locationEntity.setProperty("title", location.getTitle());
     locationEntity.setProperty("lat", location.getLat());
     locationEntity.setProperty("lng", location.getLng());
     locationEntity.setProperty("note", location.getNote());
+    locationEntity.setProperty("voteCount", location.getVoteCount());
 
     DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
     datastore.put(locationEntity);
+    String keyString = KeyFactory.keyToString(locationEntity.getKey());
+    return keyString;
   }
 
   /** Gets the locations stored in Datastore. */
@@ -69,8 +80,10 @@ public class LocationServlet extends HttpServlet {
       double lng = (double) entity.getProperty("lng");
       String title = (String) entity.getProperty("title");
       String note = (String) entity.getProperty("note");
+      int voteCount = ((Long) entity.getProperty("voteCount")).intValue();
+      String keyString = KeyFactory.keyToString(entity.getKey());
 
-      Location location = new Location(title, lat, lng, note);
+      Location location = new Location(title, lat, lng, note, voteCount, keyString);
       locations.add(location);
     }
     return locations;

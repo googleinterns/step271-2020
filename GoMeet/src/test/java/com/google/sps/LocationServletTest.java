@@ -11,6 +11,8 @@ import com.google.appengine.api.datastore.Query;
 import com.google.appengine.api.datastore.PreparedQuery;
 import com.google.appengine.tools.development.testing.LocalDatastoreServiceTestConfig;
 import com.google.appengine.tools.development.testing.LocalServiceTestHelper;
+import com.google.appengine.api.datastore.KeyFactory;
+import com.google.appengine.api.datastore.Key;
 import main.java.com.google.sps.servlets.LocationServlet;
 import main.java.com.google.sps.data.Location;
 import com.google.gson.Gson;
@@ -45,9 +47,10 @@ public class LocationServletTest {
   private final String NOTE_A = "Good Pancakes!";
   private final String LAT_A = "33.0";
   private final String LNG_A = "150.0";
+  private final int INIT_VOTE_COUNT = 1;
   private final double LAT_A_VALUE = Double.parseDouble(LAT_A);
   private final double LNG_A_VALUE = Double.parseDouble(LNG_A);
-  private final Location LOCATION_A = new Location("Sushi Train", 15.0, 150.0, "I like sushi!");
+  private final Location LOCATION_A = new Location("Sushi Train", 15.0, 150.0, "I like sushi!", 1);
 
   // Acceptable difference from original location's lat/lng.
   // A difference of 0.00001 is roughly equivalent to one meter.
@@ -75,13 +78,17 @@ public class LocationServletTest {
    * Tests if new location entity is accurately added to the Database.
    * Run this test twice to prove we're not leaking any state across tests.
    */
-  private void doPostTest() {
+  private void doPostTest() throws IOException {
     DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
    
     when(request.getParameter("title")).thenReturn(TITLE_A);
     when(request.getParameter("lat")).thenReturn(LAT_A);
     when(request.getParameter("lng")).thenReturn(LNG_A);
     when(request.getParameter("note")).thenReturn(NOTE_A);
+
+    StringWriter stringWriter = new StringWriter();
+    PrintWriter writer = new PrintWriter(stringWriter);
+    when(response.getWriter()).thenReturn(writer);
 
     new LocationServlet().doPost(request, response);
     
@@ -97,15 +104,21 @@ public class LocationServletTest {
     assertEquals(LAT_A_VALUE, result.getProperty("lat"));
     assertEquals(LNG_A_VALUE, result.getProperty("lng"));
     assertEquals(NOTE_A, result.getProperty("note"));
+    assertEquals(INIT_VOTE_COUNT, ((Long) result.getProperty("voteCount")).intValue());
+
+    // Check the entity's key was sent in the response.
+    Gson gson = new Gson();
+    String sentString = gson.fromJson(stringWriter.toString(), String.class);
+    assertEquals(KeyFactory.keyToString(result.getKey()), sentString);
   }
 
   @Test
-  public void doPostTest1() {
+  public void doPostTest1() throws IOException {
     doPostTest();
   }
 
   @Test
-  public void doPostTest2() {
+  public void doPostTest2() throws IOException {
     doPostTest();
   }
 
@@ -118,11 +131,17 @@ public class LocationServletTest {
     // Set up database
     DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
     Entity location = new Entity("Location");
-    location.setProperty("title", LOCATION_A.getTitle());
-    location.setProperty("lat", LOCATION_A.getLat());
-    location.setProperty("lng", LOCATION_A.getLng());
-    location.setProperty("note", LOCATION_A.getNote());
+    location.setProperty("title", TITLE_A);
+    location.setProperty("lat", LAT_A_VALUE);
+    location.setProperty("lng", LNG_A_VALUE);
+    location.setProperty("note", NOTE_A);
+    location.setProperty("voteCount", INIT_VOTE_COUNT);
     ds.put(location);
+
+    String keyString = KeyFactory.keyToString(location.getKey());
+
+    Location expectedLocation =
+        new Location(TITLE_A, LAT_A_VALUE, LNG_A_VALUE, NOTE_A, INIT_VOTE_COUNT, keyString);
 
     Gson gson = new Gson();
     

@@ -100,8 +100,30 @@ describe('Post Location', function() {
   });
 });
 
+/** Test for Post Vote. */
+describe('Post Vote', function() {
+  const KEY_A = '12345';
+
+  it ('Should send the correct post request', function() {
+    let mockedFetchWrapper = new FetchWrapper();
+    spyOn(mockedFetchWrapper, 'doPost');
+    const expectedParams = new URLSearchParams();
+    expectedParams.append('key', KEY_A);
+
+    postVote(KEY_A, mockedFetchWrapper);
+
+    expect(mockedFetchWrapper.doPost).toHaveBeenCalledWith(
+        '/update-location-data', expectedParams);
+  });
+});
+
 /** Test for fetch locations. */
 describe ('Fetch Locations', function() {
+  const TITLE = 'My Location';
+  const NOTE = 'My Note';
+  const LAT = 10.0;
+  const LNG = 15.0;
+
   it ('Should create a marker for the location returned', async function() {
     // Set up fake promise to return 
     let promiseHelper;
@@ -111,8 +133,8 @@ describe ('Fetch Locations', function() {
         reject: reject
       };
     });
-    const response = new Response(JSON.stringify([{title: "Hello",
-        lat: 10, lng: 15, note: "My Note"}]));
+    const response = new Response(JSON.stringify([{title: TITLE,
+        lat: LAT, lng: LNG, note: NOTE}]));
     promiseHelper.resolve(response);
 
     let mockedFetchWrapper = new FetchWrapper();
@@ -123,11 +145,55 @@ describe ('Fetch Locations', function() {
     const markerConstructorSpy = spyOn(google.maps, 'Marker');
     const fakeMarker = jasmine.createSpyObj('Marker', ['addListener']);
     markerConstructorSpy.and.returnValue(fakeMarker);
-    const infowindowConstructorSpy = spyOn(google.maps, 'InfoWindow');
+    let returnedDiv;
+    const infowindowConstructorSpy = spyOn(google.maps, 'InfoWindow')
+        .and.callFake(function(div) {
+      returnedDiv = div;
+    })
     let fakeMap = {};
 
     await fetchLocations(fakeMap, mockedFetchWrapper);
+
+    // Check marker was called with the correct coordinates
     expect(google.maps.Marker).toHaveBeenCalledWith(
         {position: {lat: 10, lng: 15}, map: fakeMap});
+
+    // Check if the content passed to the infowindow constructor contains the
+    // title and note.
+    let titleText = returnedDiv.content.querySelector('#displayTitle').innerText;
+    let noteText = returnedDiv.content.querySelector('#displayNote').innerText;
+
+    expect(titleText).toBe(TITLE);
+    expect(noteText).toBe(NOTE);
   }); 
+});
+
+/** Test for building info window for voting. */
+describe ('Build Info Window Vote', function() {
+  const TITLE_A = 'Taco Place';
+  const COUNT_A = 2;
+  const NOTE_A = 'Tacos taste yum!';
+
+  it ('Should display correctly with inputted args and button', function() {
+    const infoWindowContent = buildInfoWindowVote(TITLE_A, COUNT_A, NOTE_A);
+    const childNodes = infoWindowContent.children;
+
+    // Check if there is a button.
+    let buttonCount = 0;
+    for (let i = 0; i < childNodes.length; i++) {
+      let childName = childNodes[i].tagName;
+      if (childName === 'BUTTON') {
+        buttonCount++;
+        buttonNode = childNodes[i];
+      }
+    }
+    expect(buttonCount).toBe(1);
+
+    // Check if the title and note are displayed.
+    let titleText = infoWindowContent.querySelector('#displayTitle').innerText;
+    let noteText = infoWindowContent.querySelector('#displayNote').innerText;
+
+    expect(titleText).toBe(TITLE_A);
+    expect(noteText).toBe(NOTE_A);
+  });
 });

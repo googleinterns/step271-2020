@@ -39,11 +39,11 @@ function createLocationForEdit(map, lat, lng) {
 }
 
 /** Creates a marker that shows the location's information. */
-function createLocationForDisplay(map, lat, lng, title) {
+function createLocationForDisplay(map, lat, lng, title, voteCount, note, keyString) {
   let displayLocation =
       new google.maps.Marker({position: {lat: lat, lng: lng}, map: map});
 
-  const infoWindow = new google.maps.InfoWindow({content: title});
+  const infoWindow = new google.maps.InfoWindow({content: buildInfoWindowVote(title, voteCount, note, keyString)});
   displayLocation.addListener('click', () => {
     infoWindow.open(map, displayLocation);
   });
@@ -90,6 +90,13 @@ function postLocation(title, lat, lng, note, fetchWrapper) {
   fetchWrapper.doPost('/location-data', params);
 }
 
+/** Sends a POST request with the key for the location to update. */
+function postVote(keyString, fetchWrapper) {
+  const params = new URLSearchParams();
+  params.append('key', keyString);
+  fetchWrapper.doPost('/update-location-data', params);
+}
+
 /** 
  * Check if user input is valid. 
  * Throws an error if title in an invalid input.
@@ -106,6 +113,32 @@ async function fetchLocations(map, fetchWrapper) {
   let json = await response.json();
   json.forEach((location) => {
     createLocationForDisplay(map, location.lat, location.lng,
-        location.title);
+        location.title, location.voteCount, location.note, location.keyString);
   });
+}
+
+/** Builds a HTML element to display the location's data and a vote button. */
+function buildInfoWindowVote(title, voteCount, note, keyString) {
+  let fetchWrapper = new FetchWrapper();
+
+  let titleContainer = document.createElement('span');
+  titleContainer.setAttribute('id', 'displayTitle');
+  titleContainer.innerText = title;
+
+  let noteContainer = document.createElement('span');
+  noteContainer.setAttribute('id', 'displayNote');
+  noteContainer.innerText = note;
+
+  const button = document.createElement('button');
+  button.appendChild(document.createTextNode('VOTE'));
+  button.onclick = () => {
+    postVote(keyString, fetchWrapper);
+  };
+
+  const containerDiv = document.createElement('div');
+  containerDiv.append('Location title: ', titleContainer, 
+      document.createElement('br'), 'Vote Count: ', voteCount, 
+      document.createElement('br'), 'Note: ', noteContainer,
+      document.createElement('br'), button);
+  return containerDiv;
 }
