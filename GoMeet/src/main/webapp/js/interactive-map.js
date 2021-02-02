@@ -120,6 +120,15 @@ async function fetchLocations(map, fetchWrapper) {
 /** Builds a HTML element to display the location's data and a vote button. */
 function buildInfoWindowVote(title, voteCount, note, keyString) {
   let fetchWrapper = new FetchWrapper();
+
+  let titleContainer = document.createElement('span');
+  titleContainer.setAttribute('id', 'displayTitle');
+  titleContainer.innerText = title;
+
+  let noteContainer = document.createElement('span');
+  noteContainer.setAttribute('id', 'displayNote');
+  noteContainer.innerText = note;
+
   const button = document.createElement('button');
   button.appendChild(document.createTextNode('VOTE'));
   button.onclick = () => {
@@ -127,9 +136,9 @@ function buildInfoWindowVote(title, voteCount, note, keyString) {
   };
 
   const containerDiv = document.createElement('div');
-  containerDiv.append('Location title: ', title, 
+  containerDiv.append('Location title: ', titleContainer, 
       document.createElement('br'), 'Vote Count: ', voteCount, 
-      document.createElement('br'), 'Note: ', note,
+      document.createElement('br'), 'Note: ', noteContainer,
       document.createElement('br'), button);
   return containerDiv;
 }

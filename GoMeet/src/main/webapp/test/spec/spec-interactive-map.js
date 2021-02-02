@@ -159,21 +159,11 @@ describe ('Fetch Locations', function() {
 
     // Check if the content passed to the infowindow constructor contains the
     // title and note.
-    let childNodes = returnedDiv.content.childNodes;
-    let title = false;
-    let note = false;
-    for (let i = 0; i < childNodes.length; i++) {
-      if (childNodes[i].textContent) {
-        let text = childNodes[i].textContent;
-        if (text === TITLE) {
-          title = true;
-        } else if (text === NOTE) {
-          note = true;
-        }
-      }
-    }
-    expect(title).toBe(true);
-    expect(note).toBe(true);
+    let titleText = returnedDiv.content.querySelector('#displayTitle').innerText;
+    let noteText = returnedDiv.content.querySelector('#displayNote').innerText;
+
+    expect(titleText).toBe(TITLE);
+    expect(noteText).toBe(NOTE);
   }); 
 });
 
@@ -183,10 +173,11 @@ describe ('Build Info Window Vote', function() {
   const COUNT_A = 2;
   const NOTE_A = 'Tacos taste yum!';
 
-  it ('Should have one button', function() {
+  it ('Should display correctly with inputted args and button', function() {
     const infoWindowContent = buildInfoWindowVote(TITLE_A, COUNT_A, NOTE_A);
     const childNodes = infoWindowContent.children;
 
+    // Check if there is a button.
     let buttonCount = 0;
     for (let i = 0; i < childNodes.length; i++) {
       let childName = childNodes[i].tagName;
@@ -196,5 +187,12 @@ describe ('Build Info Window Vote', function() {
       }
     }
     expect(buttonCount).toBe(1);
+
+    // Check if the title and note are displayed.
+    let titleText = infoWindowContent.querySelector('#displayTitle').innerText;
+    let noteText = infoWindowContent.querySelector('#displayNote').innerText;
+
+    expect(titleText).toBe(TITLE_A);
+    expect(noteText).toBe(NOTE_A);
   });
 });
