@@ -146,7 +146,8 @@ describe ('Fetch Locations', function() {
     const fakeMarker = jasmine.createSpyObj('Marker', ['addListener']);
     markerConstructorSpy.and.returnValue(fakeMarker);
     let returnedDiv;
-    const infowindowConstructorSpy = spyOn(google.maps, 'InfoWindow').and.callFake(function(div) {
+    const infowindowConstructorSpy = spyOn(google.maps, 'InfoWindow')
+        .and.callFake(function(div) {
       returnedDiv = div;
     })
     let fakeMap = {};
