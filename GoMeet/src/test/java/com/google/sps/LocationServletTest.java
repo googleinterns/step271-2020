@@ -2,6 +2,7 @@ package test.java.com.google.sps;
 
 import static com.google.appengine.api.datastore.FetchOptions.Builder.withLimit;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
@@ -11,10 +12,19 @@ import com.google.appengine.api.datastore.PreparedQuery;
 import com.google.appengine.tools.development.testing.LocalDatastoreServiceTestConfig;
 import com.google.appengine.tools.development.testing.LocalServiceTestHelper;
 import main.java.com.google.sps.servlets.LocationServlet;
+import main.java.com.google.sps.data.Location;
+import com.google.gson.Gson;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
+import java.beans.Transient;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.io.StringWriter;
+import java.util.ArrayList;
+import java.util.Arrays;
 
 import org.junit.Assert;
 import org.junit.Before;
@@ -23,6 +33,9 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
 import static org.mockito.Mockito.*;
+
+import com.google.gson.reflect.TypeToken;
+import java.lang.reflect.Type;
 
 /** Tests for LocationServlet.java */
 @RunWith(JUnit4.class)
@@ -34,6 +47,11 @@ public class LocationServletTest {
   private final String LNG_A = "150.0";
   private final double LAT_A_VALUE = Double.parseDouble(LAT_A);
   private final double LNG_A_VALUE = Double.parseDouble(LNG_A);
+  private final Location LOCATION_A = new Location("Sushi Train", 15.0, 150.0, "I like sushi!");
+
+  // Acceptable difference from original location's lat/lng.
+  // A difference of 0.00001 is roughly equivalent to one meter.
+  private final static double DELTA = 0.00001;
 
   private HttpServletRequest request;
   private HttpServletResponse response;
@@ -89,5 +107,44 @@ public class LocationServletTest {
   @Test
   public void doPostTest2() {
     doPostTest();
+  }
+
+  /** 
+   * Tests if stored locations are returned as a JSON string when there is 
+   * one location stored.
+   */
+  @Test
+  public void doGetTest() throws IOException {
+    // Set up database
+    DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
+    Entity location = new Entity("Location");
+    location.setProperty("title", LOCATION_A.getTitle());
+    location.setProperty("lat", LOCATION_A.getLat());
+    location.setProperty("lng", LOCATION_A.getLng());
+    location.setProperty("note", LOCATION_A.getNote());
+    ds.put(location);
+
+    Gson gson = new Gson();
+    
+    StringWriter stringWriter = new StringWriter();
+    PrintWriter writer = new PrintWriter(stringWriter);
+    when(response.getWriter()).thenReturn(writer);
+
+    new LocationServlet().doGet(request, response);
+    
+    stringWriter.flush();
+    String responseString = stringWriter.toString();
+
+    Type locationListType = new TypeToken<ArrayList<Location>>(){}.getType();
+    ArrayList<Location> locationList = gson.fromJson(responseString, locationListType); 
+
+    assertEquals(1, locationList.size());
+
+    Location printedLocation = locationList.get(0);
+    
+    assertEquals(LOCATION_A.getTitle(), printedLocation.getTitle());
+    assertEquals(LOCATION_A.getLat(), (double) printedLocation.getLat(), DELTA);
+    assertEquals(LOCATION_A.getLng(), (double) printedLocation.getLng(), DELTA);
+    assertEquals(LOCATION_A.getNote(), printedLocation.getNote());
   }
 }
