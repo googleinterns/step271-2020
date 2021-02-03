@@ -76,47 +76,6 @@ describe('Build Info window input', function() {
   });
 });
 
-/** Test for Post Location. */
-describe('Post Location', function() {
-  const TITLE_A = 'Krusty Krab';
-  const NOTE_A = 'Krabby Patty!';
-  const LAT_A = 10.0;
-  const LNG_A = 15.0;
-
-  it ('Should send the correct post request', function() {
-    let mockedFetchWrapper = new FetchWrapper();
-    spyOn(mockedFetchWrapper, 'doPost');
-
-    const expectedParams = new URLSearchParams();
-    expectedParams.append('title', TITLE_A);
-    expectedParams.append('lat', LAT_A);
-    expectedParams.append('lng', LNG_A);
-    expectedParams.append('note', NOTE_A);
-
-    postLocation(TITLE_A, LAT_A, LNG_A, NOTE_A, mockedFetchWrapper);
-
-    expect(mockedFetchWrapper.doPost).toHaveBeenCalledWith(
-        '/location-data', expectedParams);
-  });
-});
-
-/** Test for Post Vote. */
-describe('Post Vote', function() {
-  const KEY_A = '12345';
-
-  it ('Should send the correct post request', function() {
-    let mockedFetchWrapper = new FetchWrapper();
-    spyOn(mockedFetchWrapper, 'doPost');
-    const expectedParams = new URLSearchParams();
-    expectedParams.append('key', KEY_A);
-
-    postVote(KEY_A, mockedFetchWrapper);
-
-    expect(mockedFetchWrapper.doPost).toHaveBeenCalledWith(
-        '/update-location-data', expectedParams);
-  });
-});
-
 /** Test for fetch locations. */
 describe ('Fetch Locations', function() {
   const TITLE = 'My Location';
@@ -125,21 +84,9 @@ describe ('Fetch Locations', function() {
   const LNG = 15.0;
 
   it ('Should create a marker for the location returned', async function() {
-    // Set up fake promise to return 
-    let promiseHelper;
-    let fetchPromise = new Promise(function(resolve, reject) {
-      promiseHelper = {
-        resolve: resolve,
-        reject: reject
-      };
-    });
-    const response = new Response(JSON.stringify([{title: TITLE,
-        lat: LAT, lng: LNG, note: NOTE}]));
-    promiseHelper.resolve(response);
-
-    let mockedFetchWrapper = new FetchWrapper();
-    spyOn(mockedFetchWrapper, 'doGet').and.callFake(function() {
-      return fetchPromise});
+    const LOCATIONS =
+        [{title: TITLE, lat: LAT, lng: LNG, note: NOTE}];
+    spyOn(MeetingLocationDAO, 'fetchLocations').and.returnValue(LOCATIONS);
 
     // Set up mocks for Google MAPS API
     const markerConstructorSpy = spyOn(google.maps, 'Marker');
@@ -152,11 +99,11 @@ describe ('Fetch Locations', function() {
     })
     let fakeMap = {};
 
-    await fetchLocations(fakeMap, mockedFetchWrapper);
+    await fetchLocations(fakeMap);
 
     // Check marker was called with the correct coordinates
     expect(google.maps.Marker).toHaveBeenCalledWith(
-        {position: {lat: 10, lng: 15}, map: fakeMap});
+        {position: {lat: LAT, lng: LNG}, map: fakeMap});
 
     // Check if the content passed to the infowindow constructor contains the
     // title and note.

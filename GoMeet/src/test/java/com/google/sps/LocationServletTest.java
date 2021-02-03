@@ -131,17 +131,14 @@ public class LocationServletTest {
     // Set up database
     DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
     Entity location = new Entity("Location");
-    location.setProperty("title", TITLE_A);
-    location.setProperty("lat", LAT_A_VALUE);
-    location.setProperty("lng", LNG_A_VALUE);
-    location.setProperty("note", NOTE_A);
-    location.setProperty("voteCount", INIT_VOTE_COUNT);
+    location.setProperty("title", LOCATION_A.getTitle());
+    location.setProperty("lat", LOCATION_A.getLat());
+    location.setProperty("lng", LOCATION_A.getLng());
+    location.setProperty("note", LOCATION_A.getNote());
+    location.setProperty("voteCount", LOCATION_A.getVoteCount());
     ds.put(location);
 
     String keyString = KeyFactory.keyToString(location.getKey());
-
-    Location expectedLocation =
-        new Location(TITLE_A, LAT_A_VALUE, LNG_A_VALUE, NOTE_A, INIT_VOTE_COUNT, keyString);
 
     Gson gson = new Gson();
     
