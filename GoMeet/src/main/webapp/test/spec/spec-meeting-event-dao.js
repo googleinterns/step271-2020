@@ -5,11 +5,11 @@
  * @returns {Array} Array of <input> elements created
  */
 function createInputElems(arr) {
-  var inputElements = [];
+  let inputElements = [];
   for (let i = 0; i < arr.length; i++) {
-    var elem = document.createElement('input');
-    var name = Object.keys(arr[i])[0];
-    var value = arr[i][name];
+    let elem = document.createElement('input');
+    let name = Object.keys(arr[i])[0];
+    let value = arr[i][name];
     elem.name = name;
     elem.value = value;
     inputElements.push(elem);
@@ -19,8 +19,8 @@ function createInputElems(arr) {
 
 describe ('MeetingEventDAO - getter functions', function() {
   // Set up
-  var documentSpy;
-  var fakeSessionStorage = {};
+  let documentSpy;
+  let fakeSessionStorage = {};
   const MEETING_NAME = 'Christmas Lunch';
   const DURATION_MINS = '30'; 
   const DURATION_HOURS = '1'; 
@@ -37,7 +37,7 @@ describe ('MeetingEventDAO - getter functions', function() {
     // Hardcode some data to store to session storage
     // Note: getGuestList() should return all sessionStorage entries with the 
     // prefix 'guest-' regardless of the number. Same goes for getMeetingTimes()
-    var inputElemData = [
+    let inputElemData = [
       { 'meeting-name': MEETING_NAME },
       { 'meeting-host': HOST },
       { 'guest-1': GUEST_1 }, 
@@ -49,7 +49,7 @@ describe ('MeetingEventDAO - getter functions', function() {
       { 'meeting-time-4': TIME_2 }
     ];
     
-    var inputElements = createInputElems(inputElemData);
+    let inputElements = createInputElems(inputElemData);
     inputElements = new MockHTMLCollection(inputElements);
 
     // Mocks for external functions
@@ -83,7 +83,7 @@ describe ('MeetingEventDAO - getter functions', function() {
   });
 
   it ('Should get the meeting guest list from session storage', function() {
-    var result = MeetingEventDAO.getGuestList();
+    let result = MeetingEventDAO.getGuestList();
     expect(result.length).toBe(3); 
     expect(result[0]).toBe(HOST); 
     expect(result[1]).toBe(GUEST_1);
@@ -91,7 +91,7 @@ describe ('MeetingEventDAO - getter functions', function() {
   });
 
   it ('Should get the meeting times list from session storage', function() {
-    var result = MeetingEventDAO.getMeetingTimes(); 
+    let result = MeetingEventDAO.getMeetingTimes(); 
     expect(result.length).toBe(2); 
     expect(result[0]).toBe(TIME_1); 
     expect(result[1]).toBe(TIME_2);
