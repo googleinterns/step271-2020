@@ -5,13 +5,13 @@ import com.google.sps.data.ServletUtil;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Properties;
+import javax.mail.internet.AddressException;
+import javax.mail.internet.InternetAddress;
+import javax.mail.internet.MimeMessage;
 import javax.mail.Message;
 import javax.mail.MessagingException;
 import javax.mail.Session;
 import javax.mail.Transport;
-import javax.mail.internet.AddressException;
-import javax.mail.internet.InternetAddress;
-import javax.mail.internet.MimeMessage;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -68,10 +68,10 @@ public class EmailServlet extends HttpServlet {
       msg.setText("The meeting event ID is: " + meetingEventId); //TO DO: Find out what the meeting link should be
       Transport.send(msg);
     } catch (AddressException e) {
-      System.out.println("Address exception"); 
+      System.err.println("Address exception"); 
       return false;
     } catch (MessagingException e) {
-      System.out.println("Messaging exception"); 
+      System.err.println("Messaging exception"); 
       return false; 
     }
     return true;

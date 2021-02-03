@@ -4,11 +4,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.assertNotNull;
 import static org.mockito.Mockito.*;
-import org.mockito.MockedStatic;
-import org.mockito.Mockito;
-import static org.mockito.Mockito.atLeast;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
+
 import com.google.sps.data.ErrorMessages;
 import com.google.sps.data.ServletUtil;
 import com.google.sps.servlets.EmailServlet;
@@ -17,13 +13,15 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.HashMap;
 import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
 import org.junit.Test;
+import org.mockito.MockedStatic;
+import org.mockito.Mockito;
 
 /** Tests for EmailServlet.java */
 @RunWith(JUnit4.class)
