@@ -54,13 +54,13 @@ public class LocationDaoTest {
   private final LocalServiceTestHelper helper =
       new LocalServiceTestHelper(new LocalDatastoreServiceTestConfig());
   private DatastoreService ds;
-  private LocationDao ld;
+  private LocationDao locationDao;
 
   @Before
   public void setUp() {
     helper.setUp();
     ds = DatastoreServiceFactory.getDatastoreService();
-    ld = new LocationDao();
+    locationDao = new LocationDao();
   }
 
   @After
@@ -95,7 +95,7 @@ public class LocationDaoTest {
         new Location(LOCATION_A.getTitle(), LOCATION_A.getLat(), LOCATION_A.getLng(),
         LOCATION_A.getNote(), LOCATION_A.getVoteCount(), key1);
     
-    List<Location> result = ld.getAll(); 
+    List<Location> result = locationDao.getAll(); 
 
     assertEquals(updatedLocationA, result.get(0));
   }
@@ -110,7 +110,7 @@ public class LocationDaoTest {
     String key1 = addLocationToDatabase(LOCATION_A);
     String key2 = addLocationToDatabase(LOCATION_B);
 
-    List<Location> result = ld.getAll(); 
+    List<Location> result = locationDao.getAll(); 
     
     assertEquals(2, result.size());
   }
@@ -118,7 +118,7 @@ public class LocationDaoTest {
   /** Tests if a location is saved to datastore with the correct properties. */
   @Test
   public void saveTest() {
-    String keyString = ld.save(LOCATION_A);
+    String keyString = locationDao.save(LOCATION_A);
   
     // Check location entity was added to Datastore
     assertEquals(1, ds.prepare(new Query("Location")).countEntities(withLimit(10)));
@@ -152,7 +152,7 @@ public class LocationDaoTest {
     String keyString = KeyFactory.keyToString(location.getKey());
 
     try {
-      ld.update(keyString);
+      locationDao.update(keyString);
       Entity retrievedLocation = ds.get(location.getKey());
       assertEquals(2, ((Long) retrievedLocation.getProperty("voteCount")).intValue());
     } catch (EntityNotFoundException e) {
@@ -166,6 +166,6 @@ public class LocationDaoTest {
     // Create a key that is not on the database
     Key key = KeyFactory.createKey("Tacos", 12345);
     String keyString = KeyFactory.keyToString(key);
-    ld.update(keyString);
+    locationDao.update(keyString);
   }
 }
