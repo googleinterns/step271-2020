@@ -112,7 +112,8 @@ public class LocationDaoTest {
 
     List<Location> result = locationDao.getAll(); 
     
-    assertEquals(2, result.size());
+    assertTrue(result.contains(LOCATION_A));
+    assertTrue(result.contains(LOCATION_B));
   }
 
   /** Tests if a location is saved to datastore with the correct properties. */
