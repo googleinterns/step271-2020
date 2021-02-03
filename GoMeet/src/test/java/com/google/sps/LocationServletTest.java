@@ -36,6 +36,9 @@ import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
 import static org.mockito.Mockito.*;
 
+import com.google.gson.reflect.TypeToken;
+import java.lang.reflect.Type;
+
 /** Tests for LocationServlet.java */
 @RunWith(JUnit4.class)
 public class LocationServletTest {
@@ -44,10 +47,14 @@ public class LocationServletTest {
   private final String NOTE_A = "Good Pancakes!";
   private final String LAT_A = "33.0";
   private final String LNG_A = "150.0";
-  private final long INIT_VOTE_COUNT = 1;
+  private final int INIT_VOTE_COUNT = 1;
   private final double LAT_A_VALUE = Double.parseDouble(LAT_A);
   private final double LNG_A_VALUE = Double.parseDouble(LNG_A);
   private final Location LOCATION_A = new Location("Sushi Train", 15.0, 150.0, "I like sushi!", 1);
+
+  // Acceptable difference from original location's lat/lng.
+  // A difference of 0.00001 is roughly equivalent to one meter.
+  private final static double DELTA = 0.00001;
 
   private HttpServletRequest request;
   private HttpServletResponse response;
@@ -97,12 +104,12 @@ public class LocationServletTest {
     assertEquals(LAT_A_VALUE, result.getProperty("lat"));
     assertEquals(LNG_A_VALUE, result.getProperty("lng"));
     assertEquals(NOTE_A, result.getProperty("note"));
-    assertEquals(INIT_VOTE_COUNT, result.getProperty("voteCount"));
+    assertEquals(INIT_VOTE_COUNT, ((Long) result.getProperty("voteCount")).intValue());
 
     // Check the entity's key was sent in the response.
     Gson gson = new Gson();
-    String expectedJson = gson.toJson(KeyFactory.keyToString(result.getKey()));
-    assertTrue(stringWriter.toString().contains(expectedJson));
+    String sentString = gson.fromJson(stringWriter.toString(), String.class);
+    assertEquals(KeyFactory.keyToString(result.getKey()), sentString);
   }
 
   @Test
@@ -124,26 +131,36 @@ public class LocationServletTest {
     // Set up database
     DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
     Entity location = new Entity("Location");
-    location.setProperty("title", TITLE_A);
-    location.setProperty("lat", LAT_A_VALUE);
-    location.setProperty("lng", LNG_A_VALUE);
-    location.setProperty("note", NOTE_A);
-    location.setProperty("voteCount", INIT_VOTE_COUNT);
+    location.setProperty("title", LOCATION_A.getTitle());
+    location.setProperty("lat", LOCATION_A.getLat());
+    location.setProperty("lng", LOCATION_A.getLng());
+    location.setProperty("note", LOCATION_A.getNote());
+    location.setProperty("voteCount", LOCATION_A.getVoteCount());
     ds.put(location);
 
     String keyString = KeyFactory.keyToString(location.getKey());
 
-    Location expectedLocation =
-        new Location(TITLE_A, LAT_A_VALUE, LNG_A_VALUE, NOTE_A, INIT_VOTE_COUNT, keyString);
-
     Gson gson = new Gson();
-    String expectedJson = gson.toJson(new ArrayList<>(Arrays.asList(expectedLocation)));
-
+    
     StringWriter stringWriter = new StringWriter();
     PrintWriter writer = new PrintWriter(stringWriter);
     when(response.getWriter()).thenReturn(writer);
 
     new LocationServlet().doGet(request, response);
-    assertTrue(stringWriter.toString().contains(expectedJson));
+    
+    stringWriter.flush();
+    String responseString = stringWriter.toString();
+
+    Type locationListType = new TypeToken<ArrayList<Location>>(){}.getType();
+    ArrayList<Location> locationList = gson.fromJson(responseString, locationListType); 
+
+    assertEquals(1, locationList.size());
+
+    Location printedLocation = locationList.get(0);
+    
+    assertEquals(LOCATION_A.getTitle(), printedLocation.getTitle());
+    assertEquals(LOCATION_A.getLat(), (double) printedLocation.getLat(), DELTA);
+    assertEquals(LOCATION_A.getLng(), (double) printedLocation.getLng(), DELTA);
+    assertEquals(LOCATION_A.getNote(), printedLocation.getNote());
   }
 }

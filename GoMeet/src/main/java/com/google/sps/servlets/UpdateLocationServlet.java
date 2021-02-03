@@ -40,7 +40,7 @@ public class UpdateLocationServlet extends HttpServlet {
     DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
     Key entityKey = KeyFactory.stringToKey(keyString);
     Entity location = datastore.get(entityKey);
-    long currentCount = (long) location.getProperty("voteCount");
+    int currentCount = ((Long) location.getProperty("voteCount")).intValue();
     location.setProperty("voteCount", currentCount + 1);
     datastore.put(location);
   }

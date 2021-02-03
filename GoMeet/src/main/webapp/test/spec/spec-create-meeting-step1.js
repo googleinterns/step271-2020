@@ -1,4 +1,4 @@
-describe ("Add guest function", function() {
+describe ('addGuest', function() {
 
   beforeAll(function() {
     addGuest(document);
@@ -8,7 +8,7 @@ describe ("Add guest function", function() {
     removeGuest('guest-1', document); 
   });
 
-  it ("Should add one li element with 3 child nodes to the html page", function() {
+  it ('Should add one li element with 3 child nodes to the html page', function() {
     let listSize = document.getElementById('guest-list').childNodes.length; 
     expect(listSize).toBe(1); 
 
@@ -28,7 +28,7 @@ describe ("Add guest function", function() {
     expect(childThreeType).toBe("BUTTON"); 
   });
 
-  it ("Should add another guest to the list", function() {
+  it ('Should add another guest to the list', function() {
     addGuest(document); 
     let listSize = document.getElementById('guest-list').childNodes.length; 
     expect(listSize).toBe(2); 
@@ -36,9 +36,9 @@ describe ("Add guest function", function() {
   });
 });
 
-describe ("Remove guest function", function() {
+describe ('removeGuest', function() {
 
-  it ("Should remove one li element from the guest list", function() {
+  it ('Should remove one li element from the guest list', function() {
     addGuest(document);
     let guestList = document.getElementById('guest-list').childNodes;
     let firstGuestRemoveButton = guestList[0].childNodes[2]; 
@@ -47,7 +47,7 @@ describe ("Remove guest function", function() {
     expect(listSize).toBe(0); 
   });
 
-  it ("Should remove the specific li element that the remove button is a child node of", function() {
+  it ('Should remove the specific li element that the remove button is a child node of', function() {
     addGuest(document); 
     addGuest(document); 
     let guestOne = document.getElementById('guest-1'); 
@@ -67,5 +67,40 @@ describe ("Remove guest function", function() {
     expect(guestOne).toBeNull; 
     expect(guestTwo).toBeNull; 
     expect(numGuests).toBe(0); 
+  });
+});
+
+describe ('isValidEmail', function() {
+  it ('Should check if an email is valid', function() {
+    let emailInput = document.createElement('input'); 
+    emailInput.type = 'email';
+
+    // Checking valid email inputs 
+    emailInput.value = "name@address.com"; 
+    expect(isValidEmail(emailInput)).toBe(true);
+    emailInput.value = "name1@address.com";
+    expect(isValidEmail(emailInput)).toBe(true); 
+    emailInput.value = "name-1@address.com"
+    expect(isValidEmail(emailInput)).toBe(true); 
+    emailInput.value = "name-1@address"
+    expect(isValidEmail(emailInput)).toBe(true); 
+    emailInput.value = "name@address1"
+    expect(isValidEmail(emailInput)).toBe(true); 
+
+    // Checking invalid email inputs 
+    emailInput.value = "1@";
+    expect(isValidEmail(emailInput)).toBe(false); 
+    emailInput.value = "name_address_com";
+    expect(isValidEmail(emailInput)).toBe(false); 
+    emailInput.value = "@address.com";
+    expect(isValidEmail(emailInput)).toBe(false); 
+    emailInput.value = "name.com";
+    expect(isValidEmail(emailInput)).toBe(false); 
+    emailInput.value = "name.address.com";
+    expect(isValidEmail(emailInput)).toBe(false); 
+    emailInput.value = "name-address-com";
+    expect(isValidEmail(emailInput)).toBe(false); 
+    emailInput.value = "1@-";
+    expect(isValidEmail(emailInput)).toBe(false); 
   });
 });

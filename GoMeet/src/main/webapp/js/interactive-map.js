@@ -22,7 +22,7 @@ function createMap() {
 /** Creates a marker that shows a textbox the user can edit. */
 function createLocationForEdit(map, lat, lng) {
  
-  editLocation =
+  const editLocation =
       new google.maps.Marker({position: {lat: lat, lng: lng}, map: map});
 
   const infoWindow =
@@ -38,8 +38,7 @@ function createLocationForEdit(map, lat, lng) {
 }
 
 /** Creates a marker that shows the location's information. */
-async function createLocationForDisplay(map, lat, lng, title, voteCount,
-    note, keyString) {
+function createLocationForDisplay(map, lat, lng, title, voteCount, note, keyString) {
   let displayLocation =
       new google.maps.Marker({position: {lat: lat, lng: lng}, map: map});
 
@@ -103,14 +102,22 @@ function validateTitle(title) {
 /** Fetches the location data. */
 async function fetchLocations(map) {
   let json = await MeetingLocationDAO.fetchLocations();
-  json.forEach(async (location) => {
-    await createLocationForDisplay(map, location.lat, location.lng,
+  json.forEach((location) => {
+    createLocationForDisplay(map, location.lat, location.lng,
         location.title, location.voteCount, location.note, location.keyString);
   });
 }
 
 /** Builds a HTML element to display the location's data and a vote button. */
 function buildInfoWindowVote(title, voteCount, note, keyString) {
+  let titleContainer = document.createElement('span');
+  titleContainer.setAttribute('id', 'displayTitle');
+  titleContainer.innerText = title;
+
+  let noteContainer = document.createElement('span');
+  noteContainer.setAttribute('id', 'displayNote');
+  noteContainer.innerText = note;
+
   const button = document.createElement('button');
   button.appendChild(document.createTextNode('VOTE'));
   button.onclick = () => {
@@ -118,9 +125,9 @@ function buildInfoWindowVote(title, voteCount, note, keyString) {
   };
 
   const containerDiv = document.createElement('div');
-  containerDiv.append('Location title: ', title, 
+  containerDiv.append('Location title: ', titleContainer, 
       document.createElement('br'), 'Vote Count: ', voteCount, 
-      document.createElement('br'), 'Note: ', note,
+      document.createElement('br'), 'Note: ', noteContainer,
       document.createElement('br'), button);
   return containerDiv;
 }

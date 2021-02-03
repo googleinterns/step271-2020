@@ -3,7 +3,7 @@ describe('Create map', function() {
   it ('Should create and return a map object', function() {
     const mapConstructorSpy = spyOn(google.maps, 'Map');
     const mockedMap = jasmine.createSpyObj('Map', ['addListener']);
-    mapConstructorSpy.and.returnValue(mockedMap); 
+    mapConstructorSpy.and.returnValue(mockedMap);
 
     const createdMap = createMap();
 
@@ -78,22 +78,40 @@ describe('Build Info window input', function() {
 
 /** Test for fetch locations. */
 describe ('Fetch Locations', function() {
+  const TITLE = 'My Location';
+  const NOTE = 'My Note';
+  const LAT = 10.0;
+  const LNG = 15.0;
+
   it ('Should create a marker for the location returned', async function() {
     const LOCATIONS =
-        [{title: 'Hamburger Place', lat: 10.0, lng: 15.0, note: 'I like Hamburgers!'}];
+        [{title: TITLE, lat: LAT, lng: LNG, note: NOTE}];
     spyOn(MeetingLocationDAO, 'fetchLocations').and.returnValue(LOCATIONS);
 
     // Set up mocks for Google MAPS API
     const markerConstructorSpy = spyOn(google.maps, 'Marker');
     const fakeMarker = jasmine.createSpyObj('Marker', ['addListener']);
     markerConstructorSpy.and.returnValue(fakeMarker);
-    const infowindowConstructorSpy = spyOn(google.maps, 'InfoWindow');
+    let returnedDiv;
+    const infowindowConstructorSpy = spyOn(google.maps, 'InfoWindow')
+        .and.callFake(function(div) {
+      returnedDiv = div;
+    })
     let fakeMap = {};
 
     await fetchLocations(fakeMap);
 
+    // Check marker was called with the correct coordinates
     expect(google.maps.Marker).toHaveBeenCalledWith(
-        {position: {lat: 10.0, lng: 15.0}, map: fakeMap});
+        {position: {lat: LAT, lng: LNG}, map: fakeMap});
+
+    // Check if the content passed to the infowindow constructor contains the
+    // title and note.
+    let titleText = returnedDiv.content.querySelector('#displayTitle').innerText;
+    let noteText = returnedDiv.content.querySelector('#displayNote').innerText;
+
+    expect(titleText).toBe(TITLE);
+    expect(noteText).toBe(NOTE);
   }); 
 });
 
@@ -103,10 +121,11 @@ describe ('Build Info Window Vote', function() {
   const COUNT_A = 2;
   const NOTE_A = 'Tacos taste yum!';
 
-  it ('Should have one button', function() {
+  it ('Should display correctly with inputted args and button', function() {
     const infoWindowContent = buildInfoWindowVote(TITLE_A, COUNT_A, NOTE_A);
     const childNodes = infoWindowContent.children;
 
+    // Check if there is a button.
     let buttonCount = 0;
     for (let i = 0; i < childNodes.length; i++) {
       let childName = childNodes[i].tagName;
@@ -116,5 +135,12 @@ describe ('Build Info Window Vote', function() {
       }
     }
     expect(buttonCount).toBe(1);
+
+    // Check if the title and note are displayed.
+    let titleText = infoWindowContent.querySelector('#displayTitle').innerText;
+    let noteText = infoWindowContent.querySelector('#displayNote').innerText;
+
+    expect(titleText).toBe(TITLE_A);
+    expect(noteText).toBe(NOTE_A);
   });
 });
