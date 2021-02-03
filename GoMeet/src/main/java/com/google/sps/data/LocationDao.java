@@ -25,6 +25,7 @@ public class LocationDao implements Dao<Location> {
 
   @Override 
   public Optional<Location> get(String keyString) {
+    // TODO:
     return Optional.empty();
   }
 
@@ -69,6 +70,7 @@ public class LocationDao implements Dao<Location> {
     return KeyFactory.keyToString(entity.getKey());
   }
 
+  /** Increments the vote count of the location entity with the give keyString. */
   @Override 
   public void update(String keyString) throws EntityNotFoundException {
     Key entityKey = KeyFactory.stringToKey(keyString);
@@ -80,6 +82,6 @@ public class LocationDao implements Dao<Location> {
 
   @Override
   public void delete(String keyString) {
-
+    //TODO:
   }
 }
