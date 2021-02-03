@@ -39,6 +39,8 @@ public class LocationServlet extends HttpServlet {
   /** Accepts a POST request containing a new location. */
   @Override
   public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
+    // TODO: Send error response when there is already an entity with the same title in that meeting. 
+    // This to keep the Meeting+Title unique for each location entity.
     double lat = Double.parseDouble(request.getParameter("lat"));
     double lng = Double.parseDouble(request.getParameter("lng"));
     String note = Jsoup.clean(request.getParameter("note"), Whitelist.none());

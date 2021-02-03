@@ -66,7 +66,10 @@ public class Location {
 
   /** 
    * Checks if this location is equal to another location. 
-   * Locations are equal if they have the same title, lat, lng, note and key string.
+   * Locations are equal if they have the same title, lat, lng, note and the 
+   * key strings are not different.
+   * Note: Location entities are the same even if one key string is null.
+   * That is because locations' MeetingID+Title are unique.
    * @param o the object to compare this location to.
    */
   @Override
@@ -85,6 +88,8 @@ public class Location {
         (Double.compare(this.lng, otherLocation.getLng()) == 0) &&
         this.note.equals(otherLocation.getNote()) &&
         ((this.keyString == otherLocation.getKeyString()) ||
-            this.keyString.equals(otherLocation.getKeyString()));
+        this.keyString == null ||
+        otherLocation.getKeyString() == null ||
+        this.keyString.equals(otherLocation.getKeyString()));
   }
 }
