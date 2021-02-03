@@ -47,8 +47,7 @@ class VoteMeetingTimeDAO {
     let responseInit = {
       method: 'POST'
     }
-    let response = await fetch(urlString, responseInit);
-    let responseJson = await response.json();
-    return responseJson;
+    let response = await fetch(urlString, responseInit).then((response) => response.json());
+    return response;
   }
 }

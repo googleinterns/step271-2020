@@ -23,12 +23,14 @@ describe('VoteMeetingTimeDAO - voteMeetingTime', function () {
   };
 
   beforeEach(function () {
-    // On two consecutive calls, return:
-    // SUCCESS_RESPONSE on first call and ERROR_RESPONSE on second call
-    spyOn(window, 'fetch').and.returnValues(
-        new Response(JSON.stringify(SUCCESS_RESPONSE), RESPONSE_INIT),
-        new Response(JSON.stringify(ERROR_RESPONSE), RESPONSE_INIT)
-    );
+    spyOn(window, 'fetch').and.callFake(async function (url, init) {
+      if (url === VoteMeetingTimeDAO.endpoint + QUERY_STRING) {
+        return new Response(JSON.stringify(SUCCESS_RESPONSE));
+      } else {
+        // assumed all urls but the hardcoded one to be invalid
+        return new Response(JSON.stringify(ERROR_RESPONSE));
+      }
+    });
   });
 
   it('throws an exception if the meetingTimeId param is not provided', async function () {
@@ -77,17 +79,18 @@ describe('VoteMeetingTimeDAO - voteMeetingTime', function () {
     expect(errorMessage).toEqual(INVALID_PARAM_TYPE);
   });
 
-  it('when successful, returns a JSON string with the OK status code (200); \
-      and on failure, returns the JSON error response as returned from the server', async function () {
+  it('when successful, returns a JSON string with the OK status code (200)', async function () {
     let successResult = await VoteMeetingTimeDAO.voteMeetingTime(MEETING_TIME_ID, VOTER);
     expect(successResult).toEqual(SUCCESS_RESPONSE);
     expect(window.fetch)
         .toHaveBeenCalledWith(VoteMeetingTimeDAO.endpoint + QUERY_STRING, RESPONSE_INIT);
-    
+  });
+
+  it('on failure, returns the JSON error response as returned from the server', async function() {
     // If meetingTimeId is non-existent in datastore, an error response will be sent back
     let failResult = await VoteMeetingTimeDAO.voteMeetingTime(NON_EXISTENT_ID, VOTER);
     expect(failResult).toEqual(ERROR_RESPONSE);
     expect(window.fetch)
         .toHaveBeenCalledWith(VoteMeetingTimeDAO.endpoint + INVALID_DATA_QUERY_STRING, RESPONSE_INIT);
-  });
+  })
 });
