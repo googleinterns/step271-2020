@@ -2,23 +2,6 @@ class VoteMeetingTimeDAO {
   static endpoint = '/vote-meeting-time?'; // endpoint associated with this servlet
 
   /**
-   * Returns a URL string with the key value pairs
-   * as given in 'keyValues' encoded into a query string, in the format
-   * '/vote-meeting-time?key1=value1&key2=value2...'
-   * @param {Object} fieldValues the map of field to values representing the
-   * field-value pairs to be appended to the querystring.
-   * @returns the url at the /vote-meeting-time endpoint with the query string
-   * appended
-   */
-  static url(fieldValues) {
-    let queryString = new URLSearchParams();
-    for (const [field, value] of Object.entries(fieldValues)) {
-      queryString.append(field, value);
-    }
-    return VoteMeetingTimeDAO.endpoint + queryString.toString();
-  }
-
-  /**
    * Increments the number of votes associated with the MeetingTime
    * entity as identified by meetingTimeId, and adds the voter to the
    * collection of people that have voted for this meeting time.
@@ -40,7 +23,7 @@ class VoteMeetingTimeDAO {
     }
 
     // encode the data to be sent in the query string
-    let urlString = VoteMeetingTimeDAO.url({
+    let urlString = DAOUtils.url(VoteMeetingTimeDAO.endpoint, {
       'meetingTimeId': meetingTimeId,
       'voters': voter
     }); 
