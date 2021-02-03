@@ -16,6 +16,8 @@ import javax.servlet.http.HttpServletResponse;
 import org.jsoup.Jsoup;
 import org.jsoup.safety.Whitelist;
 
+import com.google.sps.data.ServletUtil;
+
 /** Handles fetching and saving location data. */
 @WebServlet("/location-data")
 public class LocationServlet extends HttpServlet {
@@ -29,8 +31,7 @@ public class LocationServlet extends HttpServlet {
     response.setContentType("application/json");
 
     List<Location> locations = locationDao.getAll();
-    Gson gson = new Gson();
-    String json = gson.toJson(locations);
+    String json = ServletUtil.convertToJson(locations);
 
     response.getWriter().println(json);
   }
@@ -47,8 +48,8 @@ public class LocationServlet extends HttpServlet {
     String entityKeyString = locationDao.save(location);
 
     response.setContentType("application/json");
-    Gson gson = new Gson();
-    response.getWriter().println(gson.toJson(entityKeyString));
+    String json = ServletUtil.convertToJson(entityKeyString);
+    response.getWriter().println(json);
   }
 
   public void setDao(LocationDao locationDao) {
