@@ -167,8 +167,12 @@ describe ('MeetingEventDAO - fetchMeetingEvent', function() {
 
 describe ('MeetingEventDAO - newMeetingEvent', function() {
   const MEETING_EVENT_ID = 'qwerty12345'; 
+  // Note that encodeURIComponenet encodes spaces to %20, 
+  // but URLSearchParam used in MeetingEventDAO class encodes 
+  // spaces to +. Therefore, just hardcode URLSearchParam result 
+  // and save as MEETING_NAME_URI constant.
   const MEETING_NAME = 'Christmas Lunch'; 
-  const MEETING_NAME_URI = 'Christmas+Lunch'; // space is encoded strangely
+  const MEETING_NAME_URI = 'Christmas+Lunch'; 
   const DURATION_MINS = '30'; 
   const DURATION_HOURS = '1'; 
   const TIME_FIND_METHOD = 'manual';
