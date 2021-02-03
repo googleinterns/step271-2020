@@ -64,6 +64,11 @@ public class Location {
     return keyString;
   }
 
+  /** 
+   * Checks if this location is equal to another location. 
+   * Locations are equal if they have the same title, lat, lng, note and key string.
+   * @param o the object to compare this location to.
+   */
   @Override
   public boolean equals(Object o) {
     if (o == this) {
