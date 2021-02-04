@@ -20,7 +20,6 @@ import com.google.sps.data.ErrorMessages;
 import com.google.sps.servlets.MeetingEventServlet;
 import com.google.sps.data.MeetingEventFields;
 import com.google.sps.data.ServletUtil;
-import test.java.com.google.sps.ServletTestUtil; 
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
@@ -40,6 +39,7 @@ import org.junit.Assert;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
 import org.junit.Test;
+import test.java.com.google.sps.ServletTestUtil; 
 
 /**
  * Tests for doGet and doPost of MeetingEventServlet
