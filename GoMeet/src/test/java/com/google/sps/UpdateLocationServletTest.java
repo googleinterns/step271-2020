@@ -90,6 +90,7 @@ public class UpdateLocationServletTest {
     
     try {
       verify(mockedLocationDao, times(1)).update(keyString);
+      verify(response, times(1)).setStatus(HttpServletResponse.SC_OK);
     } catch (EntityNotFoundException e) {
       fail();
     }

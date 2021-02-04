@@ -31,6 +31,7 @@ public class UpdateLocationServlet extends HttpServlet {
     String keyString = request.getParameter("key");
     try {
       locationDao.update(keyString);
+      response.setStatus(HttpServletResponse.SC_OK);
     } catch (EntityNotFoundException e) {
       ServletUtil.sendErrorResponse(
           response, HttpServletResponse.SC_BAD_REQUEST, ErrorMessages.ENTITY_NOT_FOUND_ERROR);
