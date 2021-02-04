@@ -22,21 +22,21 @@ class MeetingEventDAO {
   static getGuestList() {
     let guestList = [];
     guestList.push(sessionStorage.getItem('meeting-host')); 
-    let allKeys = Object.keys(sessionStorage); 
-    for (let i = 0; i < allKeys.length; i++) {
-      if (allKeys[i].includes('guest-')) {
-        guestList.push(sessionStorage.getItem(allKeys[i])); 
+
+    for (let i = 0; i < sessionStorage.length; i++) {
+      if (sessionStorage.key(i).includes('guest-')) {
+        guestList.push(sessionStorage.getItem(sessionStorage.key(i))); 
       }
     }
     return guestList; 
   }
 
   static getMeetingTimes() {
-    let meetingTimes = []; 
-    let allKeys = Object.keys(sessionStorage); 
-    for (let i = 0; i < allKeys.length; i++) {
-      if (allKeys[i].includes('meeting-time-')) {
-        meetingTimes.push(sessionStorage.getItem(allKeys[i]));
+    let meetingTimes = [];
+
+    for (let i = 0; i < sessionStorage.length; i++) {
+      if (sessionStorage.key(i).includes('meeting-time-')) {
+        meetingTimes.push(sessionStorage.getItem(sessionStorage.key(i))); 
       }
     }
     return meetingTimes; 

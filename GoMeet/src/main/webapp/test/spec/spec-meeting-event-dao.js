@@ -54,7 +54,10 @@ describe ('MeetingEventDAO - getter functions', function() {
 
     // Mocks for external functions
     spyOn(document, 'getElementsByTagName').and.returnValue(inputElementsMock); 
-    spyOn(Object, 'keys').and.returnValue(FAKE_KEYS); 
+    spyOnProperty(Storage.prototype, 'length', 'get').and.returnValue(FAKE_KEYS.length); 
+    spyOn(sessionStorage, 'key').and.callFake(function(i) {
+      return FAKE_KEYS[i]; 
+    });
     spyOn(sessionStorage, 'setItem').and.callFake(function(key,value) {
       fakeSessionStorage[key] = value;
     });
