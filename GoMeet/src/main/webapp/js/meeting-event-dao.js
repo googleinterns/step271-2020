@@ -45,7 +45,7 @@ class MeetingEventDAO {
   static async getMeetingTimeIds(meetingTimes) {
     let ids = [];
     for (let i = 0; i < meetingTimes.length; i++) {
-      let id = await newMeetingTime(meetingTimes[i]); 
+      let id = await MeetingTimeDAO.newMeetingTime(meetingTimes[i]); 
       ids.push(id.meetingTimeId); 
     }
     return ids; 
