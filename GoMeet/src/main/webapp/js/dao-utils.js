@@ -8,8 +8,7 @@ class DAOUtils {
    * @param {Object} fieldValues the map of field to values representing the
    * field-value pairs to be appended to the querystring, in the format:
    * {fieldName1: 'value', fieldName2: 'value'}
-   * @returns the url at the /vote-meeting-time endpoint with the query string
-   * appended
+   * @returns the url at the given endpoint with the query string appended
    */
   static url(endpoint, fieldValues) {
     let queryString = new URLSearchParams();
