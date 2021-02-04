@@ -50,10 +50,10 @@ describe ('MeetingEventDAO - getter functions', function() {
     ];
     
     let inputElements = createInputElems(inputElemData);
-    inputElements = new MockHTMLCollection(inputElements);
+    inputElementsMock = new MockHTMLCollection(inputElements);
 
     // Mocks for external functions
-    spyOn(document, 'getElementsByTagName').and.returnValue(inputElements); 
+    spyOn(document, 'getElementsByTagName').and.returnValue(inputElementsMock); 
     spyOn(Object, 'keys').and.returnValue(FAKE_KEYS); 
     spyOn(sessionStorage, 'setItem').and.callFake(function(key,value) {
       fakeSessionStorage[key] = value;
