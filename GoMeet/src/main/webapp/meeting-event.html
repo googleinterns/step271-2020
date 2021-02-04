@@ -4,18 +4,26 @@
     <title>GoMeet</title>
     <script src="js/load-map.js"></script>
     <script src="js/error-messages.js"></script>
+    <script src="js/meeting-location-dao.js"></script>
     <script src="js/interactive-map.js"></script>
-    <script src="js/fetch-wrapper.js"></script>
+    <script src="js/meeting-display.js"></script>
+    <script src="js/login-status.js"></script>
     <link rel="stylesheet" href="style.css">
   </head>
-  <body onload="createMap()">
+  <body onload="toggleMeetingDisplay(); initMap()">
     <h1 class="center">GoMeet</h1>
-    <h2 id="meeting-name"></h2>
-    <div id="vote-meeting-times"></div>
-    <div id="vote-meeting-locations"></div>
+    <p id='login-or-logout-prompt'></p>
+    <h2 id="meeting-title">Meeting Name:</h2>
+    <div id="vote-meeting-times">
+      <h3>Meeting times here</h3>
+    </div>
+    <div id="vote-meeting-locations">
       <h2>Meeting Locations</h2>
       <p>Click on the map to propose a new location.</p>
       <div id="map"></div></br>
-    <div id="votes-table"></div>
+    </div>
+    <div id="votes-table">
+      <h3>Meeting votes here</h3>
+    </div>
   </body>
 </html>

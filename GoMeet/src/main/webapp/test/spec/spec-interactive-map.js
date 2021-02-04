@@ -20,15 +20,17 @@ describe('Create location for edit', function() {
     let mapA;
 
     const fakeMarker = {lat: 10, lng: 15};
-    const markerConstructorSpy = spyOn(google.maps, 'Marker').and.returnValue(fakeMarker);
-
+    const markerConstructorSpy = spyOn(google.maps, 'Marker')
+        .and.returnValue(fakeMarker);
+   
     const infowindowConstructorSpy = spyOn(google.maps, 'InfoWindow');
     const infowindow = jasmine.createSpyObj('InfoWindow', ['open']);
     infowindowConstructorSpy.and.returnValue(infowindow);
 
     const createdMarker = createLocationForEdit(mapA, LAT_A, LNG_A);
 
-    expect(google.maps.Marker).toHaveBeenCalledWith({position: {lat: LAT_A, lng: LNG_A}, map: mapA});
+    expect(google.maps.Marker).toHaveBeenCalledWith({position:
+        {lat: LAT_A, lng: LNG_A}, map: mapA});
     expect(createdMarker).toBe(fakeMarker);
   });
 });
@@ -74,25 +76,71 @@ describe('Build Info window input', function() {
   });
 });
 
-/** Test for Post Location. */
-describe('Post Location', function() {
-  const TITLE_A = 'Krusty Krab';
-  const NOTE_A = 'Krabby Patty!';
-  const LAT_A = 10.0;
-  const LNG_A = 15.0;
+/** Test for fetch locations. */
+describe ('Fetch Locations', function() {
+  const TITLE = 'My Location';
+  const NOTE = 'My Note';
+  const LAT = 10.0;
+  const LNG = 15.0;
 
-  it ('Should send the correct post request', function() {
-    let mockedFetchWrapper = new FetchWrapper();
-    spyOn(mockedFetchWrapper, 'doPost');
+  it ('Should create a marker for the location returned', async function() {
+    const LOCATIONS =
+        [{title: TITLE, lat: LAT, lng: LNG, note: NOTE}];
+    spyOn(MeetingLocationDAO, 'fetchLocations').and.returnValue(LOCATIONS);
 
-    const expectedParams = new URLSearchParams();
-    expectedParams.append('title', TITLE_A);
-    expectedParams.append('lat', LAT_A);
-    expectedParams.append('lng', LNG_A);
-    expectedParams.append('note', NOTE_A);
+    // Set up mocks for Google MAPS API
+    const markerConstructorSpy = spyOn(google.maps, 'Marker');
+    const fakeMarker = jasmine.createSpyObj('Marker', ['addListener']);
+    markerConstructorSpy.and.returnValue(fakeMarker);
+    let returnedDiv;
+    const infowindowConstructorSpy = spyOn(google.maps, 'InfoWindow')
+        .and.callFake(function(div) {
+      returnedDiv = div;
+    })
+    let fakeMap = {};
 
-    postLocation(TITLE_A, LAT_A, LNG_A, NOTE_A, mockedFetchWrapper);
+    await fetchLocations(fakeMap);
 
-    expect(mockedFetchWrapper.doPost).toHaveBeenCalledWith('/location-data', expectedParams);
+    // Check marker was called with the correct coordinates
+    expect(google.maps.Marker).toHaveBeenCalledWith(
+        {position: {lat: LAT, lng: LNG}, map: fakeMap});
+
+    // Check if the content passed to the infowindow constructor contains the
+    // title and note.
+    let titleText = returnedDiv.content.querySelector('#displayTitle').innerText;
+    let noteText = returnedDiv.content.querySelector('#displayNote').innerText;
+
+    expect(titleText).toBe(TITLE);
+    expect(noteText).toBe(NOTE);
+  }); 
+});
+
+/** Test for building info window for voting. */
+describe ('Build Info Window Vote', function() {
+  const TITLE_A = 'Taco Place';
+  const COUNT_A = 2;
+  const NOTE_A = 'Tacos taste yum!';
+
+  it ('Should display correctly with inputted args and button', function() {
+    const infoWindowContent = buildInfoWindowVote(TITLE_A, COUNT_A, NOTE_A);
+    const childNodes = infoWindowContent.children;
+
+    // Check if there is a button.
+    let buttonCount = 0;
+    for (let i = 0; i < childNodes.length; i++) {
+      let childName = childNodes[i].tagName;
+      if (childName === 'BUTTON') {
+        buttonCount++;
+        buttonNode = childNodes[i];
+      }
+    }
+    expect(buttonCount).toBe(1);
+
+    // Check if the title and note are displayed.
+    let titleText = infoWindowContent.querySelector('#displayTitle').innerText;
+    let noteText = infoWindowContent.querySelector('#displayNote').innerText;
+
+    expect(titleText).toBe(TITLE_A);
+    expect(noteText).toBe(NOTE_A);
   });
 });

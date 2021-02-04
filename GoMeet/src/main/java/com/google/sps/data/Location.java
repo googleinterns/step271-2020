@@ -10,14 +10,26 @@ public class Location {
   private final String note;
   private int voteCount;
   private Collection<String> voters;
+  private String keyString;
 
-  public Location(String title, double lat, double lng, String note) {
+  public Location(String title, double lat, double lng, String note, int voteCount) {
     this.title = title;
     this.lat = lat;
     this.lng = lng;
     this.note = note;
-    this.voteCount = 1;
+    this.voteCount = voteCount;
     voters = new HashSet<>();
+    this.keyString = null;
+  }
+
+  public Location(String title, double lat, double lng, String note, int voteCount, String keyString) {
+    this.title = title;
+    this.lat = lat;
+    this.lng = lng;
+    this.note = note;
+    this.voteCount = voteCount;
+    voters = new HashSet<>();
+    this.keyString = keyString;
   }
 
   public void addVoter(String voter) {
@@ -46,5 +58,9 @@ public class Location {
 
   public Collection<String> getVoters() {
     return voters;
+  }
+
+  public String getKeyString() {
+    return keyString;
   }
 }

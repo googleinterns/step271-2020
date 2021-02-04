@@ -1,3 +1,12 @@
+/** Initialises the map. */
+function initMap() {
+  // Create the map object
+  let map = createMap();
+  
+  // Add the data from the database to the map
+  fetchLocations(map);
+}
+
 /** Creates a map that allows users to add markers. */
 function createMap() {
   let map = new google.maps.Map(
@@ -17,7 +26,8 @@ function createLocationForEdit(map, lat, lng) {
       new google.maps.Marker({position: {lat: lat, lng: lng}, map: map});
 
   const infoWindow =
-      new google.maps.InfoWindow({content: buildInfoWindowInput(lat, lng, editLocation)});
+      new google.maps.InfoWindow({content: buildInfoWindowInput(lat, lng,
+         editLocation)});
 
   // When the user closes the editable info window, remove the marker.
   google.maps.event.addListener(infoWindow, 'closeclick', () => {
@@ -27,13 +37,24 @@ function createLocationForEdit(map, lat, lng) {
   return editLocation;
 }
 
+/** Creates a marker that shows the location's information. */
+function createLocationForDisplay(map, lat, lng, title, voteCount, note, keyString) {
+  let displayLocation =
+      new google.maps.Marker({position: {lat: lat, lng: lng}, map: map});
+
+  const infoWindow = new google.maps.InfoWindow({content:
+     buildInfoWindowVote(title, voteCount, note, keyString)});
+  displayLocation.addListener('click', () => {
+    infoWindow.open(map, displayLocation);
+  });
+  return displayLocation;
+}
+
 /**
  * Builds and returns HTML elements that show an editable textbox and a submit
  * button.
  */
 function buildInfoWindowInput(lat, lng, editLocation) {
-  const fetchWrapper = new FetchWrapper();
-
   const titleTextbox = document.createElement('textarea');
   const noteTextbox = document.createElement('textarea');
 
@@ -42,7 +63,8 @@ function buildInfoWindowInput(lat, lng, editLocation) {
   button.onclick = () => {
     try {
       validateTitle(titleTextbox.value);
-      postLocation(titleTextbox.value, lat, lng, noteTextbox.value, fetchWrapper);
+      MeetingLocationDAO.newLocation(titleTextbox.value, lat, lng,
+          noteTextbox.value);
       editLocation.setMap(null);
     } catch (err) {
       alert(err.message);
@@ -50,20 +72,21 @@ function buildInfoWindowInput(lat, lng, editLocation) {
   };
 
   const containerDiv = document.createElement('div');
-  containerDiv.append('Enter location title:', document.createElement('br'), titleTextbox,
-      document.createElement('br'), 'Enter note:', document.createElement('br'), noteTextbox,
-      document.createElement('br'), button);
+  containerDiv.append('Enter location title:', document.createElement('br'),
+      titleTextbox, document.createElement('br'), 'Enter note:',
+      document.createElement('br'), noteTextbox, document.createElement('br'),
+      button);
   return containerDiv;
 }
 
 /** Sends a POST request with the location data. */
-function postLocation(title, lat, lng, note, fetchWrapper) {
+function postLocation(title, lat, lng, note) {
   const params = new URLSearchParams();
   params.append('title', title);
   params.append('lat', lat);
   params.append('lng', lng);
   params.append('note', note);
-  fetchWrapper.doPost('/location-data', params);
+  MeetingLocationDAO.postLocation('/location-data', params);
 }
 
 /** 
@@ -74,4 +97,37 @@ function validateTitle(title) {
   if (title === '') {
     throw (new Error(BLANK_FIELDS_ALERT));
   }
+}
+
+/** Fetches the location data. */
+async function fetchLocations(map) {
+  let json = await MeetingLocationDAO.fetchLocations();
+  json.forEach((location) => {
+    createLocationForDisplay(map, location.lat, location.lng,
+        location.title, location.voteCount, location.note, location.keyString);
+  });
+}
+
+/** Builds a HTML element to display the location's data and a vote button. */
+function buildInfoWindowVote(title, voteCount, note, keyString) {
+  let titleContainer = document.createElement('span');
+  titleContainer.setAttribute('id', 'displayTitle');
+  titleContainer.innerText = title;
+
+  let noteContainer = document.createElement('span');
+  noteContainer.setAttribute('id', 'displayNote');
+  noteContainer.innerText = note;
+
+  const button = document.createElement('button');
+  button.appendChild(document.createTextNode('VOTE'));
+  button.onclick = () => {
+    MeetingLocationDAO.updateLocation(keyString);
+  };
+
+  const containerDiv = document.createElement('div');
+  containerDiv.append('Location title: ', titleContainer, 
+      document.createElement('br'), 'Vote Count: ', voteCount, 
+      document.createElement('br'), 'Note: ', noteContainer,
+      document.createElement('br'), button);
+  return containerDiv;
 }
