@@ -45,7 +45,7 @@ public final class VoteMeetingTimeServletTest {
   // Hardcoded data
   private String MEETING_TIME_ID_VAL;
   private final String DATETIME_VAL = "2021-01-20T16:33";
-  private final long VOTE_COUNT_VAL = 2;
+  private final int VOTE_COUNT_VAL = 2;
   // Note that HashSets will be stored as Lists in the Datastore, 
   // but can be re-converted back to a set after fetch
   private final HashSet<String> VOTERS_VAL = new HashSet<String>(Arrays.asList("John Smith", "Bob Citizen"));
@@ -97,7 +97,7 @@ public final class VoteMeetingTimeServletTest {
     assertTrue(voters.containsAll(VOTERS_VAL));
 
     // vote count should be incremented by 1
-    Long voteCount = (long) meetingTime.getProperty(MeetingTimeFields.VOTE_COUNT);
+    int voteCount = ((Long) meetingTime.getProperty(MeetingTimeFields.VOTE_COUNT)).intValue();
     assertTrue(voteCount == VOTE_COUNT_VAL + 1);
 
     // HttpServletResponse.SC_OK status code should be returned
@@ -165,7 +165,7 @@ public final class VoteMeetingTimeServletTest {
     Entity meetingTime = getHardcodedEntity();
     meetingTime.setProperty(MeetingTimeFields.VOTERS, new ArrayList<String>());
     // set the vote count to be 0
-    meetingTime.setProperty(MeetingTimeFields.VOTE_COUNT, (long) 0);
+    meetingTime.setProperty(MeetingTimeFields.VOTE_COUNT, 0);
     datastore.put(meetingTime);
 
     when(mockedRequest.getParameter(MeetingTimeFields.MEETING_TIME_ID)).thenReturn(MEETING_TIME_ID_VAL); 
@@ -181,7 +181,7 @@ public final class VoteMeetingTimeServletTest {
     assertFalse(voters.containsAll(VOTERS_VAL));
 
     // vote count should be 1
-    Long voteCount = (long) updatedMeetingTime.getProperty(MeetingTimeFields.VOTE_COUNT);
+    int voteCount = ((Long) updatedMeetingTime.getProperty(MeetingTimeFields.VOTE_COUNT)).intValue();
     assertTrue(voteCount == 1);
 
     // HttpServletResponse.SC_OK status code should be returned
@@ -222,7 +222,7 @@ public final class VoteMeetingTimeServletTest {
       return false;
     }
     // vote count should be same as original value
-    Long voteCount = (long) meetingTime.getProperty(MeetingTimeFields.VOTE_COUNT);
+    int voteCount = ((Long) meetingTime.getProperty(MeetingTimeFields.VOTE_COUNT)).intValue();
     if (voteCount != VOTE_COUNT_VAL) {
       return false;
     }

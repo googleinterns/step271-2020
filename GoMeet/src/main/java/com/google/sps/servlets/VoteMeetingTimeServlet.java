@@ -83,7 +83,7 @@ public class VoteMeetingTimeServlet extends HttpServlet {
       return;
     }
 
-    Long currentVotes = (long) meetingTime.getProperty(MeetingTimeFields.VOTE_COUNT);
+    int currentVotes = ((Long) meetingTime.getProperty(MeetingTimeFields.VOTE_COUNT)).intValue();
     meetingTime.setProperty(MeetingTimeFields.VOTE_COUNT, currentVotes + 1);
     meetingTime.setProperty(MeetingTimeFields.VOTERS, voters);
     datastore.put(meetingTime);
