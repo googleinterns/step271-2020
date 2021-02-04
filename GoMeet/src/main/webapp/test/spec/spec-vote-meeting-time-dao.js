@@ -22,18 +22,15 @@ async function verifyErrorResponse(meetingTimeId, voter, expectedError) {
 describe('VoteMeetingTimeDAO - voteMeetingTime', function () {
   const MEETING_TIME_ID = 'abc123def456';
   const NON_EXISTENT_ID = 'non-existent-id';
-  const VOTER = 'John Citizen';
+  const VOTER = 'anna@test.com';
   const QUERY_STRING = 'meetingTimeId=' 
       + encodeURIComponent(MEETING_TIME_ID) 
       + '&voters=' 
-      // Note that encodeURIComponenet encodes spaces to %20, 
-      // but URLSearchParam used in VoteMeetingTimeDAO class encodes 
-      // spaces to +. So need to replace that here
-      + encodeURIComponent(VOTER).replace(/%20/g, '+');
+      + encodeURIComponent(VOTER);
   const INVALID_DATA_QUERY_STRING = 'meetingTimeId=' 
       + encodeURIComponent(NON_EXISTENT_ID) 
       + '&voters=' 
-      + encodeURI(VOTER).replace(/%20/g, '+');
+      + encodeURIComponent(VOTER);
   const RESPONSE_INIT = { // send to doPost not doGet
     method: 'POST'
   };
