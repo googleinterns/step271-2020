@@ -48,7 +48,8 @@ public final class VoteMeetingTimeServletTest {
   private final int VOTE_COUNT_VAL = 2;
   // Note that HashSets will be stored as Lists in the Datastore, 
   // but can be re-converted back to a set after fetch
-  private final HashSet<String> VOTERS_VAL = new HashSet<String>(Arrays.asList("John Smith", "Bob Citizen"));
+  private final HashSet<String> VOTERS_VAL = 
+      new HashSet<String>(Arrays.asList("John Smith", "Bob Citizen"));
   private final String NEW_VOTER = "Mark Person";
   private final String EXISTING_VOTER = "John Smith";
 
@@ -84,19 +85,22 @@ public final class VoteMeetingTimeServletTest {
    
   @Test
   public void testSuccessfulVoteTime() throws IOException {
-    when(mockedRequest.getParameter(MeetingTimeFields.MEETING_TIME_ID)).thenReturn(MEETING_TIME_ID_VAL); 
-    when(mockedRequest.getParameter(MeetingTimeFields.VOTERS)).thenReturn(NEW_VOTER);
+    when(mockedRequest.getParameter(MeetingTimeFields.MEETING_TIME_ID))
+        .thenReturn(MEETING_TIME_ID_VAL); 
+    when(mockedRequest.getParameter(MeetingTimeFields.VOTERS))
+        .thenReturn(NEW_VOTER);
     new VoteMeetingTimeServlet().doPost(mockedRequest, mockedResponse);
     
     // Check that the entity was updated as expected.
     Entity meetingTime = getHardcodedEntity();
 
-    // voters should now include NEW_VOTER, and the original voters
-    HashSet<String> voters = new HashSet<String>( (ArrayList<String>) meetingTime.getProperty(MeetingTimeFields.VOTERS));
+    // Voters should now include NEW_VOTER, and the original voters
+    HashSet<String> voters = 
+        new HashSet<String>((ArrayList<String>) meetingTime.getProperty(MeetingTimeFields.VOTERS));
     assertTrue(voters.contains(NEW_VOTER));
     assertTrue(voters.containsAll(VOTERS_VAL));
 
-    // vote count should be incremented by 1
+    // Vote count should be incremented by 1
     int voteCount = ((Long) meetingTime.getProperty(MeetingTimeFields.VOTE_COUNT)).intValue();
     assertTrue(voteCount == VOTE_COUNT_VAL + 1);
 
@@ -104,35 +108,39 @@ public final class VoteMeetingTimeServletTest {
     HashMap<String, Object> status = new HashMap<String, Object>() {{
       put("status", HttpServletResponse.SC_OK);
     }};
-    writer.flush(); // writer may not have been flushed yet
+    writer.flush(); // Writer may not have been flushed yet
     assertNotNull(stringWriter.toString()); 
     assertTrue(stringWriter.toString().contains(ServletUtil.convertMapToJson(status)));
   }
   
   @Test 
   public void testNullMeetingTimeId() throws IOException {
-    when(mockedRequest.getParameter(MeetingTimeFields.MEETING_TIME_ID)).thenReturn(null); // no ID provided
-    when(mockedRequest.getParameter(MeetingTimeFields.VOTERS)).thenReturn(NEW_VOTER);
+    when(mockedRequest.getParameter(MeetingTimeFields.MEETING_TIME_ID))
+        .thenReturn(null); // No ID provided
+    when(mockedRequest.getParameter(MeetingTimeFields.VOTERS))
+        .thenReturn(NEW_VOTER);
     new VoteMeetingTimeServlet().doPost(mockedRequest, mockedResponse);
 
-    // check that error response was sent with appropriate details
+    // Check that error response was sent with appropriate details
     testBadRequest(HttpServletResponse.SC_BAD_REQUEST, ErrorMessages.BAD_REQUEST_ERROR);
   }
 
   @Test
   public void testNullVoter() throws IOException {
-    when(mockedRequest.getParameter(MeetingTimeFields.MEETING_TIME_ID)).thenReturn(MEETING_TIME_ID_VAL); 
-    when(mockedRequest.getParameter(MeetingTimeFields.VOTERS)).thenReturn(null); // null voter
+    when(mockedRequest.getParameter(MeetingTimeFields.MEETING_TIME_ID))
+        .thenReturn(MEETING_TIME_ID_VAL); 
+    when(mockedRequest.getParameter(MeetingTimeFields.VOTERS))
+        .thenReturn(null); // Null voter
     new VoteMeetingTimeServlet().doPost(mockedRequest, mockedResponse);
 
-    // check that error response was sent with appropriate details
+    // Check that error response was sent with appropriate details
     testBadRequest(HttpServletResponse.SC_BAD_REQUEST, ErrorMessages.BAD_REQUEST_ERROR);
   }
 
   @Test
   public void testNoEntitiesFound() throws IOException {
-    // Create a datastore entity, then delete. Trying to retrieve using this entity key would
-    // return no results.
+    // Create a datastore entity, then delete. Trying to retrieve using this entity key 
+    // would return no results.
     DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
     Entity fakeMeetingTime = new Entity("MeetingTime");
     datastore.put(fakeMeetingTime);
@@ -140,55 +148,62 @@ public final class VoteMeetingTimeServletTest {
     String fakeMeetingTimeKeyStr = KeyFactory.keyToString(fakeMeetingTimeKey);
     datastore.delete(fakeMeetingTimeKey);
 
-    when(mockedRequest.getParameter(MeetingTimeFields.MEETING_TIME_ID)).thenReturn(fakeMeetingTimeKeyStr);
-    when(mockedRequest.getParameter(MeetingTimeFields.VOTERS)).thenReturn(NEW_VOTER);
+    when(mockedRequest.getParameter(MeetingTimeFields.MEETING_TIME_ID))
+        .thenReturn(fakeMeetingTimeKeyStr);
+    when(mockedRequest.getParameter(MeetingTimeFields.VOTERS))
+        .thenReturn(NEW_VOTER);
     new VoteMeetingTimeServlet().doPost(mockedRequest, mockedResponse);
 
-    // check that error response was sent with appropriate details
+    // Check that error response was sent with appropriate details
     testBadRequest(HttpServletResponse.SC_NOT_FOUND, ErrorMessages.ENTITY_NOT_FOUND_ERROR);
   }
 
   @Test
   public void testUserHasVoted() throws IOException {
-    when(mockedRequest.getParameter(MeetingTimeFields.MEETING_TIME_ID)).thenReturn(MEETING_TIME_ID_VAL); 
-    when(mockedRequest.getParameter(MeetingTimeFields.VOTERS)).thenReturn(EXISTING_VOTER);
+    when(mockedRequest.getParameter(MeetingTimeFields.MEETING_TIME_ID))
+        .thenReturn(MEETING_TIME_ID_VAL); 
+    when(mockedRequest.getParameter(MeetingTimeFields.VOTERS))
+        .thenReturn(EXISTING_VOTER);
     new VoteMeetingTimeServlet().doPost(mockedRequest, mockedResponse);
     
-    // check that error response was sent with appropriate details
+    // Check that error response was sent with appropriate details
     testBadRequest(HttpServletResponse.SC_CONFLICT, ErrorMessages.USER_HAS_VOTED_ERROR);
   }
 
-  /** Voter is the first voter - there were no past voters for the meeting time */
+  // Voter is the first voter - there were no past voters for the meeting time 
   @Test
   public void testFirstVoter() throws IOException {
-    // set the voters list in the hardcoded entity to be an empty list
+    // Set the voters list in the hardcoded entity to be an empty list
     Entity meetingTime = getHardcodedEntity();
     meetingTime.setProperty(MeetingTimeFields.VOTERS, new ArrayList<String>());
-    // set the vote count to be 0
+    // Set the vote count to be 0
     meetingTime.setProperty(MeetingTimeFields.VOTE_COUNT, 0);
     datastore.put(meetingTime);
 
-    when(mockedRequest.getParameter(MeetingTimeFields.MEETING_TIME_ID)).thenReturn(MEETING_TIME_ID_VAL); 
-    when(mockedRequest.getParameter(MeetingTimeFields.VOTERS)).thenReturn(NEW_VOTER);
+    when(mockedRequest.getParameter(MeetingTimeFields.MEETING_TIME_ID))
+        .thenReturn(MEETING_TIME_ID_VAL); 
+    when(mockedRequest.getParameter(MeetingTimeFields.VOTERS))
+        .thenReturn(NEW_VOTER);
     new VoteMeetingTimeServlet().doPost(mockedRequest, mockedResponse);
 
     // Check that the entity was updated as expected.
-    Entity updatedMeetingTime = getHardcodedEntity();
+    Entity updatedTime = getHardcodedEntity();
 
-    // voters should now JUST include NEW_VOTER, and NOT the original voters
-    HashSet<String> voters = new HashSet<String>( (ArrayList<String>) updatedMeetingTime.getProperty(MeetingTimeFields.VOTERS));
+    // Voters should now JUST include NEW_VOTER, and NOT the original voters
+    HashSet<String> voters = 
+        new HashSet<String>((ArrayList<String>) updatedTime.getProperty(MeetingTimeFields.VOTERS));
     assertTrue(voters.contains(NEW_VOTER));
     assertFalse(voters.containsAll(VOTERS_VAL));
 
-    // vote count should be 1
-    int voteCount = ((Long) updatedMeetingTime.getProperty(MeetingTimeFields.VOTE_COUNT)).intValue();
+    // Vote count should be 1
+    int voteCount = ((Long) updatedTime.getProperty(MeetingTimeFields.VOTE_COUNT)).intValue();
     assertTrue(voteCount == 1);
 
     // HttpServletResponse.SC_OK status code should be returned
     HashMap<String, Object> status = new HashMap<String, Object>() {{
       put("status", HttpServletResponse.SC_OK);
     }};
-    writer.flush(); // writer may not have been flushed yet
+    writer.flush(); // Writer may not have been flushed yet
     assertNotNull(stringWriter.toString());
     assertTrue(stringWriter.toString().contains(ServletUtil.convertMapToJson(status)));
   }
@@ -216,12 +231,13 @@ public final class VoteMeetingTimeServletTest {
    */
   private boolean checkNothingModified() {
     Entity meetingTime = getHardcodedEntity();
-    // voters should just include the original voters
-    HashSet<String> voters = new HashSet<String>( (ArrayList<String>) meetingTime.getProperty(MeetingTimeFields.VOTERS));
+    // Voters should just include the original voters
+    HashSet<String> voters = 
+        new HashSet<String>((ArrayList<String>) meetingTime.getProperty(MeetingTimeFields.VOTERS));
     if (voters.contains(NEW_VOTER) || !voters.containsAll(VOTERS_VAL)) {
       return false;
     }
-    // vote count should be same as original value
+    // Vote count should be same as original value
     int voteCount = ((Long) meetingTime.getProperty(MeetingTimeFields.VOTE_COUNT)).intValue();
     if (voteCount != VOTE_COUNT_VAL) {
       return false;
@@ -230,8 +246,8 @@ public final class VoteMeetingTimeServletTest {
   }
 
   /**
-   * Verfies the expected behaviour on a bad request, and that the expected error response containing the 
-   * status code and errorMessage was sent by VoteMeetingTimeServlet
+   * Verfies the expected behaviour on a bad request, and that the expected error response 
+   * containing the status code and errorMessage was sent by VoteMeetingTimeServlet
    * @param {int} status The error status code to be sent, and what response status is set to 
    * via response.setStatus()
    * @param {String} errorMessage The error message to be sent 
