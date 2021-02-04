@@ -131,3 +131,29 @@ function buildInfoWindowVote(title, voteCount, note, keyString) {
       document.createElement('br'), button);
   return containerDiv;
 }
+
+/** Creates a list element that represents a location. */
+function createPopularLocationElement(location) {
+  const liElement = document.createElement('li');
+  liElement.className = 'location';
+
+  liElement.append('Title: ', location.title, document.createElement('br'),
+      'Number of Votes: ', location.voteCount);
+  return liElement;
+}
+
+/** Fetches the popular location data and adds it to the DOM. */
+async function displayPopularLocations() {
+  const popularLocationElement = 
+      document.getElementById('popular-locations-container');
+  popularLocationElement.innerHTML = '';
+
+  let json = await MeetingLocationDAO.fetchPopularLocations();
+  if (!json.length) {
+    popularLocationElement.append('There are no locations to display.');
+  } else {
+    json.forEach((location) => {
+      popularLocationElement.appendChild(createPopularLocationElement(location)); 
+    });
+  }
+}

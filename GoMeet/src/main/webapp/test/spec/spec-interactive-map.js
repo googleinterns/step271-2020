@@ -144,3 +144,38 @@ describe ('Build Info Window Vote', function() {
     expect(noteText).toBe(NOTE_A);
   });
 });
+
+/** Tests for displaying popular locations. */
+describe ('Display Popular Location', function() {
+  const LOCATIONS =
+      [{title: 'Hamburger Place', lat: 10.0, lng: 15.0, voteCount: 5,
+      note: 'I like Hamburgers!'},
+      {title: 'Sushi Place', lat: 15.0, lng: 22.0, voteCount: 5,
+      note: 'I like Unagi!'},
+      {title: 'Pizza Place', lat: 15.0, lng: 22.0, voteCount: 5,
+      note: 'I like tomato!'}];
+
+  it ('Should add 3 list elements to the popular location list',
+      async function() {     
+    spyOn(MeetingLocationDAO, 'fetchPopularLocations').and.returnValue(LOCATIONS);
+
+    await displayPopularLocations();
+
+    let listSize = 
+        document.getElementById('popular-locations-container').childNodes.length;
+    expect(listSize).toBe(3);
+  });
+
+  it ('Should display a message when there are no locations', async function() {
+    const locations = [];
+    spyOn(MeetingLocationDAO, 'fetchPopularLocations').and.returnValue(locations);
+
+    await displayPopularLocations();
+
+    let childNodes =
+        document.getElementById('popular-locations-container').childNodes;
+    let listSize = childNodes.length;
+    expect(listSize).toBe(1);
+    expect(childNodes[0].textContent).toBe('There are no locations to display.');
+  });
+});

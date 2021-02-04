@@ -3,6 +3,8 @@ class MeetingLocationDAO {
 
   static storingEndPoint = '/location-data'; 
   static votingEndPoint = '/update-location-data';
+  static popularEndPoint = '/popular-location-data';
+
   /**
    * Fetches the location data from the servlet.
    * Returns a JSON array of the location data.
@@ -10,6 +12,16 @@ class MeetingLocationDAO {
   static async fetchLocations() {
     let locations = await fetch(this.storingEndPoint).then(
         (response) => response.json());
+    return locations;
+  }
+
+   /**
+   * Fetches the popular location data from the servlet.
+   * Returns a JSON array of the location data.
+   */
+  static async fetchPopularLocations() {
+    let response = await fetch(this.popularEndPoint);
+    let locations = await response.json();
     return locations;
   }
 
