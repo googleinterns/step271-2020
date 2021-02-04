@@ -5,6 +5,8 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.assertNotNull;
 import static org.mockito.Mockito.*;
 
+import com.google.gson.JsonParser;
+import com.google.gson.JsonObject;
 import com.google.sps.data.ErrorMessages;
 import com.google.sps.data.ServletUtil;
 import com.google.sps.servlets.EmailServlet;
@@ -65,12 +67,19 @@ public class EmailServletTest {
       mockedServlet.verify(times(1), () -> EmailServlet.sendEmail(GUEST_3, MEETING_EVENT_ID));
     }
 
-    // Assert that key is returned in JSON Object
+    // Assert that sent status is returned in JSON Object
     HashMap<String, Object> keyObj = new HashMap<String, Object>() {{
       put("sent", true);
     }};
+
     writer.flush(); // writer may not have been flushed yet
-    assertTrue(stringWriter.toString().contains(ServletUtil.convertMapToJson(keyObj)));
+
+    // Convert expected and result to Json Object to compare 
+    String resultsJsonStr = stringWriter.toString(); 
+    String expectedJsonStr = ServletUtil.convertMapToJson(keyObj); 
+    JsonObject resultsJsonObj = new JsonParser().parse(resultsJsonStr).getAsJsonObject();
+    JsonObject expectedJsonObj = new JsonParser().parse(expectedJsonStr).getAsJsonObject(); 
+    assertEquals(resultsJsonObj.get("sent"), expectedJsonObj.get("sent"));
   }
 
   @Test 
@@ -94,13 +103,17 @@ public class EmailServletTest {
       put("message", errorMessage);
     }};
 
-    String errorJson = ServletUtil.convertMapToJson(errorResponse);
+    writer.flush(); // writer may not have been flushed yet
+
+    // Convert expected and result to Json Object to compare 
+    String resultsJsonStr = stringWriter.toString(); 
+    String expectedJsonStr = ServletUtil.convertMapToJson(errorResponse); 
+    JsonObject resultsJsonObj = new JsonParser().parse(resultsJsonStr).getAsJsonObject();
+    JsonObject expectedJsonObj = new JsonParser().parse(expectedJsonStr).getAsJsonObject(); 
+    assertEquals(resultsJsonObj.get("status"), expectedJsonObj.get("status"));
+    assertEquals(resultsJsonObj.get("message"), expectedJsonObj.get("message"));
 
     // Verify error status code set
     verify(mockedResponse, times(1)).setStatus(status);
-
-    // Assert that error response is returned
-    writer.flush(); // writer may not have been flushed yet
-    assertTrue(stringWriter.toString().contains(errorJson));
   }
 }
