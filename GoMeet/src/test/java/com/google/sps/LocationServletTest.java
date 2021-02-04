@@ -58,6 +58,8 @@ public class LocationServletTest {
   private HttpServletRequest request;
   private HttpServletResponse response;
   private LocationDao mockedLocationDao;
+  private StringWriter stringWriter = new StringWriter();
+  private PrintWriter writer = new PrintWriter(stringWriter);
 
   private final LocalServiceTestHelper helper =
       new LocalServiceTestHelper(new LocalDatastoreServiceTestConfig());
@@ -65,11 +67,12 @@ public class LocationServletTest {
   private Gson gson = new Gson();
 
   @Before
-  public void setUp() {
+  public void setUp() throws IOException {
     helper.setUp();
     request = mock(HttpServletRequest.class);       
     response = mock(HttpServletResponse.class);  
     mockedLocationDao = mock(LocationDao.class);
+    when(response.getWriter()).thenReturn(writer);
   }
 
   @After
@@ -88,12 +91,7 @@ public class LocationServletTest {
     when(request.getParameter("lat")).thenReturn(Double.toString(LOCATION_A.getLat()));
     when(request.getParameter("lng")).thenReturn(Double.toString(LOCATION_A.getLng()));
     when(request.getParameter("note")).thenReturn(LOCATION_A.getNote());
-
-    // Set up response mock writer
-    StringWriter stringWriter = new StringWriter();
-    PrintWriter writer = new PrintWriter(stringWriter);
-    when(response.getWriter()).thenReturn(writer);
-
+   
     // Set up DAO mock
     String keyString = KeyFactory.keyToString(KeyFactory.createKey("Location", 123));
     when(mockedLocationDao.save((Location)notNull())).thenReturn(keyString);
@@ -109,6 +107,7 @@ public class LocationServletTest {
     assertEquals(LOCATION_A, actual);
 
     // Check the entity's key was sent in the response.
+    stringWriter.flush();
     String sentString = gson.fromJson(stringWriter.toString(), String.class);
     assertEquals(keyString, sentString);
   }
@@ -122,11 +121,6 @@ public class LocationServletTest {
     // Set up DAO mock
     List<Location> listToReturn = new ArrayList<>(Arrays.asList(LOCATION_A));
     when(mockedLocationDao.getAll()).thenReturn(listToReturn);
-
-    // Set up response mock
-    StringWriter stringWriter = new StringWriter();
-    PrintWriter writer = new PrintWriter(stringWriter);
-    when(response.getWriter()).thenReturn(writer);
 
     LocationServlet servlet = new LocationServlet();
     servlet.setDao(mockedLocationDao);
