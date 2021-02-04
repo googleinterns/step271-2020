@@ -147,7 +147,7 @@ public class LocationDaoTest {
     String keyString = KeyFactory.keyToString(location.getKey());
 
     try {
-      locationDao.update(keyString);
+      locationDao.updateVote(keyString);
       Entity retrievedLocation = ds.get(location.getKey());
       assertEquals(2, ((Long) retrievedLocation.getProperty("voteCount")).intValue());
     } catch (EntityNotFoundException e) {
@@ -161,6 +161,6 @@ public class LocationDaoTest {
     // Create a key that is not on the database
     Key key = KeyFactory.createKey("Tacos", 12345);
     String keyString = KeyFactory.keyToString(key);
-    locationDao.update(keyString);
+    locationDao.updateVote(keyString);
   }
 }

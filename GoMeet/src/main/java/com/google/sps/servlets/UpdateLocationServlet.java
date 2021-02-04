@@ -30,7 +30,7 @@ public class UpdateLocationServlet extends HttpServlet {
   public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
     String keyString = request.getParameter("key");
     try {
-      locationDao.update(keyString);
+      locationDao.updateVote(keyString);
       response.setStatus(HttpServletResponse.SC_OK);
     } catch (EntityNotFoundException e) {
       ServletUtil.sendErrorResponse(

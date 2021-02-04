@@ -14,7 +14,7 @@ public interface Dao<T> {
 
   String save(T t);
 
-  void update(String keyString) throws EntityNotFoundException;
+  void updateVote(String keyString) throws EntityNotFoundException;
 
   void delete(String keyString);  
 }

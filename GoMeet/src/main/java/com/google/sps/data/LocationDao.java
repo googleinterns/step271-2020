@@ -72,7 +72,7 @@ public class LocationDao implements Dao<Location> {
 
   /** Increments the vote count of the location entity with the give keyString. */
   @Override 
-  public void update(String keyString) throws EntityNotFoundException {
+  public void updateVote(String keyString) throws EntityNotFoundException {
     Key entityKey = KeyFactory.stringToKey(keyString);
     Entity entity = ds.get(entityKey);
     int currentCount = ((Long) entity.getProperty("voteCount")).intValue();
