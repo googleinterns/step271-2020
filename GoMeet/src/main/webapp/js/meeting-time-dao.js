@@ -1,7 +1,7 @@
 class MeetingTimeDAO {
   /** Data Access Object for MeetingTimes */
 
-  static endpoint = '/meeting-time?'; // URL endpoint of the associated servlet
+  static endpoint = '/meeting-time'; // URL endpoint of the associated servlet
   
   /**
    * Returns a URL string with the key value pairs

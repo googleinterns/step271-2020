@@ -1,7 +1,7 @@
 class MeetingEventDAO {
   /** Data Access Object for MeetingEvents */
 
-  static endpoint = '/meeting-event?'; // URL endpoint of the associated servlet
+  static endpoint = '/meeting-event'; // URL endpoint of the associated servlet
 
   static getMeetingName() {
     return sessionStorage.getItem('meeting-name'); 

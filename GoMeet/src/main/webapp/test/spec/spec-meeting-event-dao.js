@@ -104,7 +104,7 @@ describe ('MeetingEventDAO - getter functions', function() {
 describe ('MeetingEventDAO - fetchMeetingEvent', function() {
   const MEETING_EVENT_ID = 'qwerty12345'; 
   const INVALID_ID = 'invalid_id';
-  const QUERY_STRING = 'meetingEventId=' + encodeURIComponent(MEETING_EVENT_ID); 
+  const QUERY_STRING = '?meetingEventId=' + encodeURIComponent(MEETING_EVENT_ID); 
   const ERROR_RESPONSE = {
     status: 404, 
     messsage: 'Some error message'
@@ -153,7 +153,7 @@ describe ('MeetingEventDAO - fetchMeetingEvent', function() {
     let result = await MeetingEventDAO.fetchMeetingEvent(INVALID_ID);
     expect(result).toEqual(ERROR_RESPONSE);
     expect(window.fetch).toHaveBeenCalledWith(
-      MeetingEventDAO.endpoint + 'meetingEventId=' + INVALID_ID
+      MeetingEventDAO.endpoint + '?meetingEventId=' + INVALID_ID
     );
   });
 
@@ -182,7 +182,7 @@ describe ('MeetingEventDAO - newMeetingEvent', function() {
   const GUEST_LIST = ['guest1@gmail.com', 'guest2@gmail.com', 'another@guest.com'];
   const MEETING_TIMES = ['2021-01-25T17:52', '2021-02-25T17:52'];
   const MEETING_TIME_IDS = ['abcd1234', 'efgh5678']; 
-  const QUERY_STRING = 'meetingName=' + MEETING_NAME_URI +  
+  const QUERY_STRING = '?meetingName=' + MEETING_NAME_URI +  
     '&durationMins=' + DURATION_MINS + '&durationHours=' + DURATION_HOURS + 
     '&timeFindMethod=' + TIME_FIND_METHOD + '&guestList=' + encodeURIComponent(GUEST_LIST) + 
     '&meetingTimeIds=' + encodeURIComponent(MEETING_TIME_IDS);
