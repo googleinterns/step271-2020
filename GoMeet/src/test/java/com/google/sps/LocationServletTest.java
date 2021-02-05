@@ -76,7 +76,7 @@ public class LocationServletTest {
   }
 
   /** 
-   * Tests if the recieved requests is correctly sent to the LocationDAO
+   * Tests if the recieved requests are correctly sent to the LocationDAO
    * and the key is sent in the response.
    */
   @Test

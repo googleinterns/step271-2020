@@ -78,7 +78,7 @@ public class LocationDaoTest {
     return KeyFactory.keyToString(entity.getKey());
   }
 
-  /** Tests if the returns the location entities on the database. */
+  /** Tests if getAll() returns the location entities on the database. */
   @Test
   public void getAllTestSingle() {
     // Set up database
