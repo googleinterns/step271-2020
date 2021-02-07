@@ -79,16 +79,6 @@ function buildInfoWindowInput(lat, lng, editLocation) {
   return containerDiv;
 }
 
-/** Sends a POST request with the location data. */
-function postLocation(title, lat, lng, note) {
-  const params = new URLSearchParams();
-  params.append('title', title);
-  params.append('lat', lat);
-  params.append('lng', lng);
-  params.append('note', note);
-  MeetingLocationDAO.postLocation('/location-data', params);
-}
-
 /** 
  * Check if user input is valid. 
  * Throws an error if title in an invalid input.
