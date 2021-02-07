@@ -120,7 +120,7 @@ describe ('Build Info Window Vote', function() {
   const TITLE_A = 'Taco Place';
   const COUNT_A = 2;
   const NOTE_A = 'Tacos taste yum!';
-
+  
   it ('Should display correctly with inputted args and button', function() {
     const infoWindowContent = buildInfoWindowVote(TITLE_A, COUNT_A, NOTE_A);
     const childNodes = infoWindowContent.children;
@@ -142,6 +142,23 @@ describe ('Build Info Window Vote', function() {
 
     expect(titleText).toBe(TITLE_A);
     expect(noteText).toBe(NOTE_A);
+  });
+
+  it ('Should increment the voteCount when the vote button is pressed',
+      function() {
+    spyOn(MeetingLocationDAO, 'updateLocation');
+    let currDisplayVote;
+    const infoWindowContent = buildInfoWindowVote(TITLE_A, COUNT_A, NOTE_A);
+
+    currDisplayVote = infoWindowContent.querySelector('#displayVoteCount')
+        .innerText;
+    expect(parseInt(currDisplayVote)).toBe(COUNT_A);
+
+    const button = infoWindowContent.querySelector('#voteButton');
+    button.click();
+    currDisplayVote = infoWindowContent.querySelector('#displayVoteCount')
+        .innerText;
+    expect(parseInt(currDisplayVote)).toBe(COUNT_A + 1);
   });
 });
 

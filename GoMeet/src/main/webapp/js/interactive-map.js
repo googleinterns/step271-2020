@@ -100,23 +100,22 @@ async function fetchLocations(map) {
 
 /** Builds a HTML element to display the location's data and a vote button. */
 function buildInfoWindowVote(title, voteCount, note, keyString) {
-  let titleContainer = document.createElement('span');
-  titleContainer.setAttribute('id', 'displayTitle');
-  titleContainer.innerText = title;
-
-  let noteContainer = document.createElement('span');
-  noteContainer.setAttribute('id', 'displayNote');
-  noteContainer.innerText = note;
+  const titleContainer = createSpanContainer(title, 'displayTitle');
+  const noteContainer = createSpanContainer(note, 'displayNote');
+  const voteContainer = createSpanContainer(voteCount, 'displayVoteCount');
 
   const button = document.createElement('button');
+  button.setAttribute('id', 'voteButton');
   button.appendChild(document.createTextNode('VOTE'));
   button.onclick = () => {
     MeetingLocationDAO.updateLocation(keyString);
+    const currVote = voteContainer.innerText;
+    voteContainer.innerText = parseInt(currVote) + 1;
   };
 
   const containerDiv = document.createElement('div');
   containerDiv.append('Location title: ', titleContainer, 
-      document.createElement('br'), 'Vote Count: ', voteCount, 
+      document.createElement('br'), 'Vote Count: ', voteContainer, 
       document.createElement('br'), 'Note: ', noteContainer,
       document.createElement('br'), button);
   return containerDiv;
@@ -127,16 +126,13 @@ function createPopularLocationElement(location) {
   const liElement = document.createElement('li');
   liElement.className = 'location';
 
-  let titleContainer = document.createElement('span');
-  titleContainer.setAttribute('id', 'popularLocationTitle');
-  titleContainer.innerText = location.title;
-
-  let voteCountContianer = document.createElement('span');
-  voteCountContianer.setAttribute('id', 'popularLocationVoteCount');
-  voteCountContianer.innerText = location.voteCount;
+  let titleContainer =
+      createSpanContainer(location.title, 'popularLocationTitle');
+  let voteCountContainer = 
+      createSpanContainer(location.voteCount, 'popularLocationVoteCount');
 
   liElement.append('Title: ', titleContainer, document.createElement('br'),
-      'Number of Votes: ', voteCountContianer);
+      'Number of Votes: ', voteCountContainer);
   return liElement;
 }
 
@@ -167,4 +163,12 @@ async function displayPopularLocations() {
 /** Used to handle error. */
 function handleError(error) {
   alert('Error Occurred: ' + error.message + '\nPlease Try Again Later.');
+}
+
+/** Returns a container with the given id and innerText. */
+function createSpanContainer(innerText, id) {
+  const container = document.createElement('span');
+  container.setAttribute('id', id);
+  container.innerText = innerText;
+  return container;
 }
