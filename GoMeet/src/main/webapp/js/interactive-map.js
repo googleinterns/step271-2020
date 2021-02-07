@@ -1,3 +1,5 @@
+const INITIAL_VOTE_COUNT = 1;
+
 /** Initialises the map. */
 function initMap() {
   // Create the map object
@@ -27,7 +29,7 @@ function createLocationForEdit(map, lat, lng) {
 
   const infoWindow =
       new google.maps.InfoWindow({content: buildInfoWindowInput(lat, lng,
-         editLocation)});
+         editLocation, map)});
 
   // When the user closes the editable info window, remove the marker.
   google.maps.event.addListener(infoWindow, 'closeclick', () => {
@@ -54,17 +56,24 @@ function createLocationForDisplay(map, lat, lng, title, voteCount, note, keyStri
  * Builds and returns HTML elements that show an editable textbox and a submit
  * button.
  */
-function buildInfoWindowInput(lat, lng, editLocation) {
+function buildInfoWindowInput(lat, lng, editLocation, map) {
   const titleTextbox = document.createElement('textarea');
+  titleTextbox.setAttribute('id', 'titleTextbox');
+
   const noteTextbox = document.createElement('textarea');
+  noteTextbox.setAttribute('id', 'noteTextbox');
 
   const button = document.createElement('button');
+  button.setAttribute('id', 'confirmButton');
   button.appendChild(document.createTextNode('CONFIRM'));
-  button.onclick = () => {
+  button.onclick = async () => {
     try {
       validateTitle(titleTextbox.value);
-      MeetingLocationDAO.newLocation(titleTextbox.value, lat, lng,
-          noteTextbox.value);
+      const keyString = await MeetingLocationDAO.newLocation(
+          titleTextbox.value, lat, lng, noteTextbox.value);
+      createLocationForDisplay(
+          map, lat, lng, titleTextbox.value, INITIAL_VOTE_COUNT,
+          noteTextbox.value, keyString);
       editLocation.setMap(null);
     } catch (err) {
       alert(err.message);

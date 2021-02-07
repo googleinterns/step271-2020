@@ -39,7 +39,11 @@ describe('Create location for edit', function() {
 describe('Build Info window input', function() {
   const LAT_A = 33.0;
   const LNG_A = 150.0;
+  const TITLE_A = 'My meeting place';
   const EMPTY_TITLE = '';
+  const NOTE_A = 'My note!';
+  const MAP = {};
+  const KEY_STRING = '1234';
   let mockedLocation;
   
   beforeAll(function() {
@@ -47,7 +51,7 @@ describe('Build Info window input', function() {
   });
 
   it ('Should have two textareas and one button', function() {
-    const infoWindowContent = buildInfoWindowInput(LAT_A, LNG_A, mockedLocation);
+    const infoWindowContent = buildInfoWindowInput(LAT_A, LNG_A, mockedLocation, MAP);
     const childNodes = infoWindowContent.children;
 
     let textareaCount = 0;
@@ -67,12 +71,27 @@ describe('Build Info window input', function() {
 
   it ('Should call alert if title is empty', function() {
     spyOn(window, 'alert');
-    const infoWindowContent = buildInfoWindowInput(LAT_A, LNG_A, mockedLocation);
+    const infoWindowContent = buildInfoWindowInput(LAT_A, LNG_A, mockedLocation, MAP);
     const titleTextbox = infoWindowContent.children[1];
     const button = infoWindowContent.children[6];
     titleTextbox.value = EMPTY_TITLE;
     button.click();
     expect(window.alert).toHaveBeenCalled(); 
+  });
+
+  it ('Should call createLocationForDisplay with the corerct params', async function() {
+    spyOn(MeetingLocationDAO, 'newLocation').and.returnValue(KEY_STRING)
+    spyOn(window, 'createLocationForDisplay');
+    const infoWindowContent = buildInfoWindowInput(LAT_A, LNG_A, mockedLocation, MAP);
+
+    infoWindowContent.querySelector('#titleTextbox').value = TITLE_A;
+    infoWindowContent.querySelector('#noteTextbox').value = NOTE_A;
+    const button = infoWindowContent.querySelector('#confirmButton');
+
+    await button.onclick();
+
+    expect(window.createLocationForDisplay).toHaveBeenCalledWith(
+        MAP, LAT_A, LNG_A, TITLE_A, 1, NOTE_A, KEY_STRING);
   });
 });
 
