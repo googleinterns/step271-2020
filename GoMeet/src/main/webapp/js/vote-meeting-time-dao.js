@@ -11,10 +11,8 @@ class VoteMeetingTimeDAO {
    * MeetingTime
    */
   static async voteMeetingTime(meetingTimeId, voter) {
-    if (meetingTimeId === null || meetingTimeId === undefined) {
-      throw new Error(INSUFFICIENT_REQUEST_PARAM);
-    }
-    if (voter === null || voter === undefined) {
+    if (meetingTimeId === null || meetingTimeId === undefined || 
+        voter === null || voter === undefined) {
       throw new Error(INSUFFICIENT_REQUEST_PARAM);
     }
 
