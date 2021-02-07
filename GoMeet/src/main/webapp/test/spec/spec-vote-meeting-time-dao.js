@@ -1,8 +1,8 @@
 /**
  * Verfies that the expected error message was returned by VoteMeetingTimeDAO.voteMeetingTime,
  * given the combination of parameters passed to it.
- * @param {String} meetingTimeId The meetingTimeId to be passed to VoteMeetingTimeDAO.voteMeetingTime
- * @param {String} voter The voter to be passes to VoteMeetingTimeDAO.voteMeetingTime
+ * @param {String} meetingTimeId The meetingTimeId to be passed to VoteMeetingTimeDAO.voteMeetingTime.
+ * @param {String} voter The voter to be passes to VoteMeetingTimeDAO.voteMeetingTime.
  * @param {String} expectedError The error message expected from VoteMeetingTimeDAO.voteMeetingTime 
  * given the meetingTimeId and voter passed to it.
  */
@@ -31,7 +31,7 @@ describe('VoteMeetingTimeDAO - voteMeetingTime', function () {
       + encodeURIComponent(NON_EXISTENT_ID) 
       + '&voters=' 
       + encodeURIComponent(VOTER);
-  const RESPONSE_INIT = { // send to doPost not doGet
+  const RESPONSE_INIT = { // Send to doPost not doGet.
     method: 'POST'
   };
   const SUCCESS_RESPONSE = 200;
@@ -45,7 +45,7 @@ describe('VoteMeetingTimeDAO - voteMeetingTime', function () {
       if (url === VoteMeetingTimeDAO.endpoint + QUERY_STRING) {
         return new Response(JSON.stringify(SUCCESS_RESPONSE));
       } else {
-        // assumed all urls but the hardcoded one to be invalid
+        // Assumed all urls but the hardcoded one to be invalid.
         return new Response(JSON.stringify(ERROR_RESPONSE));
       }
     });
@@ -79,7 +79,7 @@ describe('VoteMeetingTimeDAO - voteMeetingTime', function () {
   });
 
   it('on failure, returns the JSON error response as returned from the server', async function() {
-    // If meetingTimeId is non-existent in datastore, an error response will be sent back
+    // If meetingTimeId is non-existent in datastore, an error response will be sent back.
     let failResult = await VoteMeetingTimeDAO.voteMeetingTime(NON_EXISTENT_ID, VOTER);
     expect(failResult).toEqual(ERROR_RESPONSE);
     expect(window.fetch)
