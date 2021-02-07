@@ -32,20 +32,20 @@ public class EmailServlet extends HttpServlet {
       return; 
     }
 
+    // Create a hashmap to store the sent status of each email 
+    HashMap<String, Object> emailStatus = new HashMap<String, Object>();
+
     String guestList = ServletUtil.decodeUri(guestListUri); 
     String[] guestListSplit = guestList.split(",");
     for (int i = 0; i < guestListSplit.length; i++) {
       boolean sent = sendEmail(guestListSplit[i], meetingEventId);
-      if (!sent) {
-        ServletUtil.sendErrorResponse(response, HttpServletResponse.SC_BAD_REQUEST, 
-            ErrorMessages.BAD_EMAIL_REQUEST_ERROR);
-        return; 
+      if (sent) {
+        emailStatus.put(guestListSplit[i], true); 
+      } else {
+        emailStatus.put(guestListSplit[i], false); 
       }
     }
 
-    HashMap<String, Object> emailStatus = new HashMap<String, Object>() {{
-      put("sent", true); 
-    }};
     response.setContentType("application/json");
     response.getWriter().println(ServletUtil.convertMapToJson(emailStatus));
   }

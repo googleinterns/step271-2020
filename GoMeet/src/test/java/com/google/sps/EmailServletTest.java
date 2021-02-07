@@ -67,19 +67,22 @@ public class EmailServletTest {
       mockedServlet.verify(times(1), () -> EmailServlet.sendEmail(GUEST_3, MEETING_EVENT_ID));
     }
 
-    // Assert that sent status is returned in JSON Object
-    HashMap<String, Object> keyObj = new HashMap<String, Object>() {{
-      put("sent", true);
+    HashMap<String, Object> expected = new HashMap<String, Object>() {{
+      put(GUEST_1, true);
+      put(GUEST_2, true);
+      put(GUEST_3, true);
     }};
 
     writer.flush(); // writer may not have been flushed yet
 
     // Convert expected and result to Json Object to compare 
     String resultsJsonStr = stringWriter.toString(); 
-    String expectedJsonStr = ServletUtil.convertMapToJson(keyObj); 
+    String expectedJsonStr = ServletUtil.convertMapToJson(expected); 
     JsonObject resultsJsonObj = new JsonParser().parse(resultsJsonStr).getAsJsonObject();
     JsonObject expectedJsonObj = new JsonParser().parse(expectedJsonStr).getAsJsonObject(); 
-    assertEquals(resultsJsonObj.get("sent"), expectedJsonObj.get("sent"));
+    assertEquals(resultsJsonObj.get(GUEST_1), expectedJsonObj.get(GUEST_1));
+    assertEquals(resultsJsonObj.get(GUEST_1), expectedJsonObj.get(GUEST_1));
+    assertEquals(resultsJsonObj.get(GUEST_1), expectedJsonObj.get(GUEST_1));
   }
 
   @Test 
