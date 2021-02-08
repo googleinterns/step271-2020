@@ -31,6 +31,7 @@ import javax.servlet.http.HttpServletResponse;
 import main.java.com.google.sps.servlets.LocationServlet;
 import main.java.com.google.sps.data.Location;
 import main.java.com.google.sps.dao.LocationDao;
+import main.java.com.google.sps.exceptions.SimilarEntityExistsException;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -44,6 +45,8 @@ public class LocationDaoTest {
   private final long INIT_VOTE_COUNT = 1;
   private final Location LOCATION_A = new Location("Cake Shop", 10.0, 15.0, "I like Cakes!", 1);
   private final Location LOCATION_B = new Location("Fruit Shop", 22.0, 60.0, "", 1);
+  private final Location REPEAT_TITLE_LOCATION =
+      new Location("Fruit Shop", 25.0, 60.0, "I like oranges.", 1);
 
   private final LocalServiceTestHelper helper =
       new LocalServiceTestHelper(new LocalDatastoreServiceTestConfig());
@@ -113,8 +116,14 @@ public class LocationDaoTest {
   /** Tests if a location is saved to datastore with the correct properties. */
   @Test
   public void saveTest() {
-    String keyString = locationDao.save(LOCATION_A);
-  
+    String keyString = "";
+
+    try {
+      keyString = locationDao.save(LOCATION_A);
+    } catch (Exception e) {
+      fail();
+    }
+    
     // Check location entity was added to Datastore
     assertEquals(1, ds.prepare(new Query("Location")).countEntities(withLimit(10)));
 
@@ -133,6 +142,13 @@ public class LocationDaoTest {
     assertEquals(KeyFactory.keyToString(result.getKey()), keyString);
   }
 
+  /** Tests if EntityExistException is thrown when an invalid title is given. */
+  @Test(expected = SimilarEntityExistsException.class)
+  public void saveInvalidTitleTest() throws Exception {
+    addLocationToDatabase(LOCATION_B);
+    locationDao.save(REPEAT_TITLE_LOCATION);
+  }
+  
   /** Tests that update() adds one to the entity's voteCount. */
   @Test
   public void updateTest() {

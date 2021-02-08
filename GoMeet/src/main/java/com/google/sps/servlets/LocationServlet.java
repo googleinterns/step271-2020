@@ -12,6 +12,8 @@ import javax.servlet.http.HttpServletResponse;
 import main.java.com.google.sps.dao.Dao;
 import main.java.com.google.sps.dao.LocationDao;
 import main.java.com.google.sps.data.Location;
+import main.java.com.google.sps.exceptions.SimilarEntityExistsException;
+
 import org.jsoup.Jsoup;
 import org.jsoup.safety.Whitelist;
 
@@ -46,11 +48,15 @@ public class LocationServlet extends HttpServlet {
     String title = Jsoup.clean(request.getParameter("title"), Whitelist.none());
 
     Location location = new Location(title, lat, lng, note, INITIAL_VOTE_COUNT);
-    String entityKeyString = locationDao.save(location);
-
     response.setContentType("application/json");
-    String json = ServletUtil.convertToJson(entityKeyString);
-    response.getWriter().println(json);
+
+    try {
+      String entityKeyString = locationDao.save(location);
+      String json = ServletUtil.convertToJson(entityKeyString);
+      response.getWriter().println(json);
+    } catch (SimilarEntityExistsException e) {
+      // TODO: Send error reponse
+    }
   }
 
   public void setDao(LocationDao locationDao) {

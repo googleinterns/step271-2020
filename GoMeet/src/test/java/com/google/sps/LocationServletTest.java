@@ -4,6 +4,7 @@ import static com.google.appengine.api.datastore.FetchOptions.Builder.withLimit;
 import static org.mockito.Mockito.*;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
@@ -88,17 +89,27 @@ public class LocationServletTest {
    
     // Set up DAO mock
     String keyString = KeyFactory.keyToString(KeyFactory.createKey("Location", 123));
-    when(mockedLocationDao.save((Location)notNull())).thenReturn(keyString);
 
+    try {
+      when(mockedLocationDao.save((Location)notNull())).thenReturn(keyString);
+    } catch (Exception e) {
+      fail();
+    }
+     
     LocationServlet servlet = new LocationServlet();
     servlet.setDao(mockedLocationDao);
     servlet.doPost(request, response);
     
     // Check the mockedDao was called with the correct parameters
     ArgumentCaptor<Location> captor = ArgumentCaptor.forClass(Location.class);
-    verify(mockedLocationDao, times(1)).save(captor.capture());
-    Location actual = captor.getValue();
-    assertEquals(LOCATION_A, actual);
+
+    try {
+       verify(mockedLocationDao, times(1)).save(captor.capture());
+       Location actual = captor.getValue();
+      assertEquals(LOCATION_A, actual);
+    } catch (Exception e) {
+      fail();
+    }
 
     // Check the entity's key was sent in the response.
     stringWriter.flush();

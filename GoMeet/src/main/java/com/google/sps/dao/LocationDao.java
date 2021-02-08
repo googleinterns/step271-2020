@@ -8,10 +8,13 @@ import com.google.appengine.api.datastore.Key;
 import com.google.appengine.api.datastore.KeyFactory;
 import com.google.appengine.api.datastore.PreparedQuery;
 import com.google.appengine.api.datastore.Query;
+import com.google.appengine.api.datastore.Query.FilterOperator;
+import com.google.appengine.api.datastore.Query.FilterPredicate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import main.java.com.google.sps.data.Location;
+import main.java.com.google.sps.exceptions.SimilarEntityExistsException;
 
 /** Provides functionality for fetching, adding, updating and deleting Location entities. */
 public class LocationDao implements Dao<Location> {
@@ -56,7 +59,12 @@ public class LocationDao implements Dao<Location> {
    * Returns the key string of the new entity.
    */
   @Override
-  public String save(Location location) {
+  public String save(Location location) throws SimilarEntityExistsException {
+    if (!validTitle(location.getTitle())) {
+      throw new SimilarEntityExistsException();
+    }
+
+    // If we reach here, then the new location is valid and we can add it to the database.
     Entity entity = new Entity("Location");
     entity.setProperty("title", location.getTitle());
     entity.setProperty("lat", location.getLat());
@@ -82,4 +90,20 @@ public class LocationDao implements Dao<Location> {
   public void delete(String keyString) {
     //TODO:
   }
+
+ /** 
+   * Returns true if the provided title is valid. 
+   * A title is valid if there is no other locations in the meeting with the same title.
+   * TODO: Update to use MeetingID.
+   */
+  private boolean validTitle(String targetTitle) {
+    Query q = new Query("Location").setFilter(new FilterPredicate("title", FilterOperator.EQUAL,
+        targetTitle));
+    int numOfSameEntities = ds.prepare(q).countEntities();
+    if (numOfSameEntities > 0) {
+      return false;
+    }
+    return true;
+  }
 }
+
