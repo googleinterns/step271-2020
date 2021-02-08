@@ -73,6 +73,7 @@ public class PopularLocationServletTest {
     Type locationListType = new TypeToken<ArrayList<Location>>(){}.getType();
     ArrayList<Location> locationList = gson.fromJson(stringWriter.toString(), locationListType);
 
+    assertEquals(1, locationList.size());
     assertTrue(locationList.contains(LOCATION_B));
     assertFalse(locationList.contains(LOCATION_A));
   }
@@ -97,6 +98,7 @@ public class PopularLocationServletTest {
     Type locationListType = new TypeToken<ArrayList<Location>>(){}.getType();
     ArrayList<Location> locationList = gson.fromJson(stringWriter.toString(), locationListType);
 
+    assertEquals(2, locationList.size());
     assertTrue(locationList.contains(LOCATION_B));
     assertTrue(locationList.contains(LOCATION_C));
     assertFalse(locationList.contains(LOCATION_A));   
@@ -139,6 +141,7 @@ public class PopularLocationServletTest {
     Type locationListType = new TypeToken<ArrayList<Location>>(){}.getType();
     ArrayList<Location> locationList = gson.fromJson(stringWriter.toString(), locationListType);
 
+    assertEquals(2, locationList.size());
     assertTrue(locationList.contains(LOCATION_B));
     assertTrue(locationList.contains(LOCATION_C));
   }
