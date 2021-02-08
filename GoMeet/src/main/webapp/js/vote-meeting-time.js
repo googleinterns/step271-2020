@@ -6,7 +6,16 @@ let MAX_VOTES = 3; // users can vote up to MAX_VOTES times
  * and generate voting form for the MeetingTimes.
  */
 async function displayMeetingTimeForm() {
-  let meetingTimeIds; // TODO: Call Vivian's function to retrieve IDs
+  let meetingEventId = getMeetingEventId();
+  let meetingEvent = await MeetingEventDAO.fetchMeetingEvent(meetingEventId);
+  let meetingTimeIds = meetingEvent['meetingTimeIds']; 
+
+  if (('status' in meetingEvent && parseInt(meetingEvent.status) !== 200) 
+      || meetingTimeIds === null) {
+    // Execution cannot continue unless meetingTimeIds can be retrieved. 
+    // Must terminate script with an Error. 
+    throw new Error(generateErrorMessage(meetingEvent) + " - MeetingEventId: " + meetingEventId);
+  }; 
   
   // prepare for re-render: reset the 'meeting-times-table' table 
   // to JUST the headers

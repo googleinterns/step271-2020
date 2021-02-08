@@ -54,3 +54,22 @@ describe ('toggleMeetingDisplay', function() {
     expect(votesTable.style.display).toBe('none');
   });
 });
+
+// TESTS FOR getMeetingEventId
+describe('getMeetingEventId', function() {
+  const MEETING_EVENT_ID = 'abc123';
+  const MEETING_EVENT_FIELDNAME = 'meetingEventId=';
+  const OTHER_PARAM = 'otherParam=hello&anotherParam=world';
+  const URL = 'https://www.gomeet.com/meeting-event.html';
+
+  it('returns the value of the meetingEventId field in the URL', async function() {
+    spyOn(window, 'getCurrentURL')
+        .and.returnValue(URL + '?' + MEETING_EVENT_FIELDNAME + MEETING_EVENT_ID);
+    expect(getMeetingEventId()).toEqual(MEETING_EVENT_ID);
+  });
+
+  it('returns null if the meetingEventId cannot be found in the URL', async function() {
+    spyOn(window, 'getCurrentURL').and.returnValue(URL + '?' + OTHER_PARAM);
+    expect(getMeetingEventId()).toEqual(null);
+  });
+});
