@@ -34,7 +34,11 @@ public class PopularLocationServlet extends HttpServlet {
     response.getWriter().println(json);
   }
 
-  /** Returns a list of the locations with the highest vote count. */
+  /** 
+   * Returns a list of the locations with the highest vote count.
+   * There can be multiple locations in the database with the highest vote count.
+   * All of these would be returned in the list.
+   */
   private List<Location> getPopularLocation() {
     List<Location> popularLocations = new ArrayList<>();
     List<Location> allLocations = locationDao.getAll();
