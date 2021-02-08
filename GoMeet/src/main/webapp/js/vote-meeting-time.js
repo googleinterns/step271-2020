@@ -1,4 +1,4 @@
-let MAX_VOTES = 3; // users can vote up to MAX_VOTES times
+let MAX_VOTES = 3; // Users can vote up to MAX_VOTES times.
 
 /**
  * Function called on page load of meeting-event.html
@@ -17,8 +17,8 @@ async function displayMeetingTimeForm() {
     throw new Error(generateErrorMessage(meetingEvent) + " - MeetingEventId: " + meetingEventId);
   }; 
   
-  // prepare for re-render: reset the 'meeting-times-table' table 
-  // to JUST the headers
+  // Prepare for re-render: reset the 'meeting-times-table' table 
+  // to JUST the table headers.
   let table = document.getElementById('meeting-times-table');
   for (let i = table.rows.length - 1; i > 0; i--) {
     table.deleteRow(i);
@@ -29,7 +29,7 @@ async function displayMeetingTimeForm() {
 /**
  * Returns the logged in user's email from the LoginServlet, or
  * null if the user is not logged in.
- * @returns the email of the current logged in user.
+ * @returns The email of the current logged in user.
  */
 async function getLoggedInUser() {
   let status = await LoginStatus.doGet('/user-status');
@@ -43,16 +43,16 @@ async function getLoggedInUser() {
 /**
  * Fetches the data from the MeetingTime entities represented 
  * by the meetingTimeIds, and pre-processes the data.
- * @param {Array[String]} meetingTimeIds the array of meetingTimeIds 
+ * @param {Array[String]} meetingTimeIds The array of meetingTimeIds 
  * that are the meeting times associated with this Meeting
- * @returns the array of timeData retrieved via GET request from the 
+ * @returns The array of timeData retrieved via GET request from the 
  * '/meeting-time' endpoint, in the format: 
  * [{meetingTimeId: id, datetime: datetimeStr, voteCount: count, voters: [voters]}]
  */
 async function fetchAndProcess(meetingTimeIds) {
   let currentUser = await getLoggedInUser();
   if (currentUser === null) {
-    return null; // Do not generate the voting form if the user is not logged in
+    return null; // Do not generate the voting form if the user is not logged in.
   }
 
   if (!(meetingTimeIds instanceof Array)) {
@@ -60,7 +60,7 @@ async function fetchAndProcess(meetingTimeIds) {
   }
 
   let timeData = [];
-  let votedTimes = new Set(); // Times that the user has voted for, so cannot vote them again
+  let votedTimes = new Set(); // Times that the user has voted for, so cannot vote them again.
   for (let i = 0; i < meetingTimeIds.length; i++) {
     let time = await MeetingTimeDAO.fetchMeetingTime(meetingTimeIds[i]);
     if ('status' in time && parseInt(time.status) !== 200) {
@@ -69,8 +69,8 @@ async function fetchAndProcess(meetingTimeIds) {
       // Hence not throwing an error (which stops execution), but logging it.
       console.error(generateErrorMessage(time) + " - MeetingTimeId: " + meetingTimeIds[i]);
     } else {
-      time.id = meetingTimeIds[i]; // store the meetingId with the time to identify them later
-      // add time Id to the votedTimes if logged in user has voted for it
+      time.id = meetingTimeIds[i]; // Store the meetingId with the time to identify them later.
+      // Add time Id to the votedTimes if logged in user has voted for it.
       if (time.voters !== null && time.voters.includes(currentUser)) {
         votedTimes.add(time.id);
       }
@@ -85,7 +85,7 @@ async function fetchAndProcess(meetingTimeIds) {
  * in the 'vote-meeting-times' <div>. 
  * Current logged-in user will use this form to vote on the 
  * associated meeting times.
- * @param {Array[Object]} timeData an array of timeData objects
+ * @param {Array[Object]} timeData An array of timeData objects
  * retrieved from the '/meeting-time' servlet via GET request, in 
  * the format:
  * {meetingTimeId: id, datetime: datetimeStr, voteCount: count, voters: [voters]}
@@ -93,9 +93,9 @@ async function fetchAndProcess(meetingTimeIds) {
 function generateVoteTimeForm(timeData, currentUser, votedTimes) {
   let votingRight = true;
   if (votedTimes.size === MAX_VOTES) {
-    votingRight = false; // user may not vote again if they have voted maximum times
+    votingRight = false; // User may not vote again if they have voted maximum times.
   }
-  // disable all vote buttons for users that have voted MAX_VOTES already
+  // Disable all vote buttons for users that have voted MAX_VOTES already.
   let disabledState = !votingRight; 
 
   sortTimesbyVotes(timeData);
@@ -115,14 +115,14 @@ function generateVoteTimeForm(timeData, currentUser, votedTimes) {
     let votersCell = timeRow.insertCell(2);
     votersCell.innerText = time.voters;
 
-    // Clicking on this button will cast a vote for this meeting time
+    // Clicking on this button will cast a vote for this meeting time.
     let voteFormCell = timeRow.insertCell(3);
     let voteButton = document.createElement('button');
     voteButton.innerText = 'Vote Time'
     voteButton.id = time.id;
     voteButton.onclick = function() {voteTime(time.id, currentUser)};
     if (votedTimes.has(time.id)) {
-      // always disable buttons of times the user has voted for already
+      // Always disable buttons of times the user has voted for already.
       voteButton.disabled = true;
     } else {
       voteButton.disabled = disabledState;
@@ -140,7 +140,7 @@ function generateVoteTimeForm(timeData, currentUser, votedTimes) {
  * {meetingTimeId: id, datetime: datetimeStr, voteCount: count, voters: [voters]}
  */
 function sortTimesbyVotes(timeData) {
-  // sort the times by votes, in decreasing order
+  // Sort the times by votes, in decreasing order.
   timeData.sort((time1, time2) => {
     if (time1.voteCount > time2.voteCount) {
       return -1;
@@ -148,7 +148,7 @@ function sortTimesbyVotes(timeData) {
     if (time1.voteCount < time2.voteCount) {
       return 1;
     }
-    // voteCounts equal
+    // 'voteCounts' equal
     return 0;
   });
 }
@@ -157,9 +157,9 @@ function sortTimesbyVotes(timeData) {
  * Increments the vote count for the MeetingTime with the id
  * given. Stores the new vote count, and the email of the user 
  * that voted to Datastore.
- * @param {String} id The id of the meeting time voted for
+ * @param {String} id The id of the meeting time voted for.
  * @param {String} currentUser The user that is currently logged in,
- * and who is voting
+ * and who is voting.
  */
 async function voteTime(id, currentUser) {
   let response = await VoteMeetingTimeDAO.voteMeetingTime(id, currentUser);
@@ -169,6 +169,6 @@ async function voteTime(id, currentUser) {
     // Hence not throwing an error (which stops execution), but logging it.
     console.error(generateErrorMessage(response) + " - MeetingTimeId: " + id);
   }
-  // Re-render the form to update the votes
+  // Re-render the form to update the votes.
   await displayMeetingTimeForm();
 }

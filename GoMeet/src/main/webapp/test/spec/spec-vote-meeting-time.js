@@ -1,6 +1,7 @@
 const CURRENT_USER = 'anna@test.com';
 const MEETING_TIME_IDS = ['abc123', 'def456', 'ghi789'];
-const VOTED_TIMES = new Set(['abc123', 'def456', 'ghi789']); // The times that CURRENT_USER has voted for
+// The times that CURRENT_USER has voted for.
+const VOTED_TIMES = new Set(['abc123', 'def456', 'ghi789']); 
 const MEETING_TIME_DATA = [
   {
     datetime: '2021-01-28T17:20',
@@ -86,7 +87,7 @@ describe('fetchAndProcess(meetingTimeIds)', function() {
 
   it('logs any error responses received from the DAO without alerting the user', async function() {
     // Errors from the DAO are internal errors that the user cannot deal with, 
-    // so don't alert them, but also don't crash the program either
+    // so don't alert them, but also don't crash the program either.
     let nonExistentMeetingIds = ['non-existent-key'];
     spyOn(console, 'error');
     await fetchAndProcess(nonExistentMeetingIds);
@@ -103,7 +104,7 @@ describe('fetchAndProcess(meetingTimeIds)', function() {
 
   it('calls generateVoteTime form with a list of objects containing the MeetingTime data \
       retrieved by MeetingTimeDAO, and the set of times the currentUser has voted for', async function() {
-    // the set of times voted for make it easier to determine: 
+    // The set of times voted for make it easier to determine: 
     // - which times the user cannot vote for again (can't vote for same time twice)
     // - whether the user has voting rights (each user has MAX_VOTES number of votes total)
     await fetchAndProcess(MEETING_TIME_IDS);
@@ -111,50 +112,50 @@ describe('fetchAndProcess(meetingTimeIds)', function() {
   });
 });
 
-// TESTS FOR generateVoteTimeForm
 /**
  * Verifies that the cells of each row of the meeting time voting table 
  * contains expected data (in order: datetime, voteCount, 
- * voters list, voting button).
+ * voters list, voting button). Used in tests for generateVoteTimeForm
  */
 function verifyRowData() {
-  // there should be 4 fields of information per row: 
+  // There should be 4 fields of information per row: 
   // datetime, voteCount, voters, voting button
   const ROW_LENGTH = 4; 
   let table = document.getElementById('meeting-times-table');
   expect(table.rows.length)
-      .toEqual(MEETING_TIME_DATA.length + 1); // length of data + 1 to include headers row
+      .toEqual(MEETING_TIME_DATA.length + 1); // Length of data + 1 to include headers row.
   
   for (let i = 1; i < table.rows.length; i++) {
     let dataRow = table.rows.item(i);
     expect(dataRow.children.length).toEqual(ROW_LENGTH);
-    // first cell in the datetime string
+    // First cell in the datetime string.
     expect(dataRow.children.item(0).innerText)
         .toEqual(MEETING_TIME_DATA[i - 1].datetime); 
-    // second cell is the voteCount
+    // Second cell is the voteCount.
     expect(dataRow.children.item(1).innerText)
         .toEqual(MEETING_TIME_DATA[i - 1].voteCount.toString());
-    // third cell is the voters 
+    // Third cell is the voters.
     expect(dataRow.children.item(2).innerText)
         .toEqual(MEETING_TIME_DATA[i - 1].voters.toString());
-    // fourth cell contains the voting button
+    // Fourth cell contains the voting button.
     let voteButton = dataRow.children.item(3).children.item(0);
     expect(voteButton.tagName).toEqual('BUTTON');
     expect(voteButton.onclick.toString()).toEqual(`function() {voteTime(time.id, currentUser)}`);
   }
 }
 
+// TESTS FOR generateVoteTimeForm
 describe('generateVoteTimeForm', function() {
   it('creates rows in the table with id="meeting-times-table" with the data received \
       disabling all the vote buttons if the user has voted MAX_VOTES times', async function() {
     generateVoteTimeForm(MEETING_TIME_DATA, CURRENT_USER, VOTED_TIMES);
     verifyRowData();
-    // verify the voting buttons separately, as their state varies depending on voter
+    // Verify the voting buttons separately, as their state varies depending on voter.
     let table = document.getElementById('meeting-times-table');
     for (let i = 1; i < table.rows.length; i++) {
       let dataRow = table.rows.item(i);
       let voteButton = dataRow.children.item(3).children.item(0);
-      expect(voteButton.disabled).toBe(true); // currentUser has voted for MAX_VOTES times
+      expect(voteButton.disabled).toBe(true); // 'currentUser' has voted for MAX_VOTES times
     }
   });
 
@@ -168,7 +169,7 @@ describe('generateVoteTimeForm', function() {
       let dataRow = table.rows.item(i);
       let voteButton = dataRow.children.item(3).children.item(0);
       // If the button if associated with a time not voted for yet, 
-      // button should not be disabled
+      // button should not be disabled.
       if (!votedTimesTherese.has(voteButton.id)) {
         expect(voteButton.disabled).toBe(false); 
       } else {
@@ -186,11 +187,11 @@ describe('generateVoteTimeForm', function() {
     for (let i = 1; i < table.rows.length; i++) {
       let dataRow = table.rows.item(i);
       let voteButton = dataRow.children.item(3).children.item(0);
-      expect(voteButton.disabled).toBe(false); // currentUser has not voted at all
+      expect(voteButton.disabled).toBe(false); // 'currentUser' has not voted at all
     }
   });
   afterEach(function() {
-    // reset the 'meeting-times-table' table to JUST include the headers
+    // Reset the 'meeting-times-table' table to JUST include the headers.
     let table = document.getElementById('meeting-times-table');
     for (let i = table.rows.length - 1; i > 0; i--) {
       table.deleteRow(i);
@@ -244,7 +245,7 @@ describe('sortTimeByVotes', function() {
   });
 
   it('does not modify the timeData objects if already sorted', function() {
-    // duplicate of sortedTimeData
+    // Duplicate of sortedTimeData.
     let sortedTimeDataDuplicate = [
       {
         datetime: '2021-01-27T11:20',
@@ -300,7 +301,7 @@ describe('voteTime', function() {
   it('logs any error responses received from the DAO without alerting the user', async function() {
     voteMeetingTimeSpy.and.returnValue(ERROR_RESPONSE);
     // Errors from the DAO are internal errors that the user cannot deal with, 
-    // so don't alert them, but also don't crash the program either
+    // so don't alert them, but also don't crash the program either.
     let nonExistentMeetingId = 'non-existent-key';
     await voteTime(nonExistentMeetingId, CURRENT_USER);
     expect(console.error).toHaveBeenCalledWith(
