@@ -1,5 +1,5 @@
 class VoteMeetingTimeDAO {
-  static endpoint = '/vote-meeting-time?'; // Endpoint associated with this servlet.
+  static endpoint = '/vote-meeting-time'; // Endpoint associated with this servlet.
 
   /**
    * Increments the number of votes associated with the MeetingTime

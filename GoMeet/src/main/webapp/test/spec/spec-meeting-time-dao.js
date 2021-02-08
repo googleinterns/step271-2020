@@ -1,7 +1,7 @@
 describe('MeetingTimeDAO - fetchMeetingTime', function () {
   const MEETING_TIME_ID = 'abc123def456';
   const INVALID_ID = 'non-existent-id';
-  const QUERY_STRING = 'meetingTimeId=' + encodeURIComponent(MEETING_TIME_ID);
+  const QUERY_STRING = '?meetingTimeId=' + encodeURIComponent(MEETING_TIME_ID);
   const ERROR_RESPONSE = {
     status: 404,
     message: 'This will be an error message',
@@ -52,7 +52,7 @@ describe('MeetingTimeDAO - fetchMeetingTime', function () {
     let result = await MeetingTimeDAO.fetchMeetingTime(INVALID_ID);
     expect(result).toEqual(ERROR_RESPONSE);
     expect(window.fetch).toHaveBeenCalledWith(
-      MeetingTimeDAO.endpoint + 'meetingTimeId=' + INVALID_ID
+      MeetingTimeDAO.endpoint + '?meetingTimeId=' + INVALID_ID
     );
   });
 
@@ -75,7 +75,7 @@ describe('MeetingTimeDAO - newMeetingTime', function () {
   const DATETIME_STR = '2021-01-25T17:52';
   const INVALID_DATETIME_FORMAT = '25 January 2021, 5:25PM';
   const INVALID_DATETIME = '2021-01-33T17:52'; // No 33rd of January
-  const QUERY_STRING = 'datetime=' + encodeURIComponent(DATETIME_STR);
+  const QUERY_STRING = '?datetime=' + encodeURIComponent(DATETIME_STR);
   const RESPONSE_INIT = { // send to doPost not doGet
     method: 'POST'
   };

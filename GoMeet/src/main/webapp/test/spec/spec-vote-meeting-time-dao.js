@@ -23,11 +23,11 @@ describe('VoteMeetingTimeDAO - voteMeetingTime', function () {
   const MEETING_TIME_ID = 'abc123def456';
   const NON_EXISTENT_ID = 'non-existent-id';
   const VOTER = 'anna@test.com';
-  const QUERY_STRING = 'meetingTimeId=' 
+  const QUERY_STRING = '?meetingTimeId=' 
       + encodeURIComponent(MEETING_TIME_ID) 
       + '&voters=' 
       + encodeURIComponent(VOTER);
-  const INVALID_DATA_QUERY_STRING = 'meetingTimeId=' 
+  const INVALID_DATA_QUERY_STRING = '?meetingTimeId=' 
       + encodeURIComponent(NON_EXISTENT_ID) 
       + '&voters=' 
       + encodeURIComponent(VOTER);
