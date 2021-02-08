@@ -17,6 +17,7 @@ import main.java.com.google.sps.exceptions.SimilarEntityExistsException;
 import org.jsoup.Jsoup;
 import org.jsoup.safety.Whitelist;
 
+import com.google.sps.data.ErrorMessages;
 import com.google.sps.data.ServletUtil;
 
 /** Handles fetching and saving location data. */
@@ -55,7 +56,8 @@ public class LocationServlet extends HttpServlet {
       String json = ServletUtil.convertToJson(entityKeyString);
       response.getWriter().println(json);
     } catch (SimilarEntityExistsException e) {
-      // TODO: Send error reponse
+      ServletUtil.sendErrorResponse(
+          response, HttpServletResponse.SC_BAD_REQUEST, ErrorMessages.BAD_REQUEST_ERROR_LOCATION);
     }
   }
 

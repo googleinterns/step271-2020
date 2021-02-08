@@ -24,4 +24,6 @@ public class ErrorMessages {
       "Entity not found";
   public static final String TOO_MANY_RESULTS_ERROR = 
       "Too many results returned";
+  public static final String BAD_REQUEST_ERROR_LOCATION = 
+      "Invalid location";
 }
