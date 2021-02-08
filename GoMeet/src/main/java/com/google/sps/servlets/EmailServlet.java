@@ -39,11 +39,7 @@ public class EmailServlet extends HttpServlet {
     String[] guestListSplit = guestList.split(",");
     for (int i = 0; i < guestListSplit.length; i++) {
       boolean sent = sendEmail(guestListSplit[i], meetingEventId);
-      if (sent) {
-        emailStatus.put(guestListSplit[i], true); 
-      } else {
-        emailStatus.put(guestListSplit[i], false); 
-      }
+      emailStatus.put(guestListSplit[i], sent);
     }
 
     response.setContentType("application/json");
