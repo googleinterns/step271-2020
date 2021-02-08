@@ -11,6 +11,7 @@ describe ('EmailDAO - inviteGuestsToMeeting', function() {
   const GUEST_LIST = ['guest1@gmail.com', 'guest2@gmail.com', 'guest3@gmail.com'];
   const BAD_GUEST_LIST_1 = 'guest1@gmail.com, guest2@gmail.com, guest3@gmail.com'; 
   const BAD_GUEST_LIST_2 = [123, 456, 789]; 
+  const BAD_GUEST_LIST_3 = ['guest1@gmail.com', 123, 'guest3@gmail.com']; 
   const QUERY_STRING = '?meetingEventId=' + encodeURIComponent(MEETING_EVENT_ID) + 
       '&guestList=' + encodeURIComponent(GUEST_LIST); 
   
@@ -77,6 +78,13 @@ describe ('EmailDAO - inviteGuestsToMeeting', function() {
 
     try {
       await EmailDAO.inviteGuestsToMeeting(MEETING_EVENT_ID, BAD_GUEST_LIST_2); 
+    } catch (error) {
+      errorMessage = error.message; 
+    }
+    expect(errorMessage).toEqual(INVALID_PARAM_TYPE); 
+
+    try {
+      await EmailDAO.inviteGuestsToMeeting(MEETING_EVENT_ID, BAD_GUEST_LIST_3); 
     } catch (error) {
       errorMessage = error.message; 
     }
