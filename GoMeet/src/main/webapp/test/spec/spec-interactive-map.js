@@ -45,13 +45,14 @@ describe('Build Info window input', function() {
   const MAP = {};
   const KEY_STRING = '1234';
   let mockedLocation;
+  let infoWindowContent;
   
   beforeAll(function() {
     mockedLocation = jasmine.createSpyObj('Marker', ['setMap']);
+    infoWindowContent = buildInfoWindowInput(LAT_A, LNG_A, mockedLocation, MAP);
   });
 
   it ('Should have two textareas and one button', function() {
-    const infoWindowContent = buildInfoWindowInput(LAT_A, LNG_A, mockedLocation, MAP);
     const childNodes = infoWindowContent.children;
 
     let textareaCount = 0;
@@ -71,7 +72,6 @@ describe('Build Info window input', function() {
 
   it ('Should call alert if title is empty', function() {
     spyOn(window, 'alert');
-    const infoWindowContent = buildInfoWindowInput(LAT_A, LNG_A, mockedLocation, MAP);
     const titleTextbox = infoWindowContent.children[1];
     const button = infoWindowContent.children[6];
     titleTextbox.value = EMPTY_TITLE;
@@ -82,7 +82,6 @@ describe('Build Info window input', function() {
   it ('Should call createLocationForDisplay with the corerct params', async function() {
     spyOn(MeetingLocationDAO, 'newLocation').and.returnValue(KEY_STRING)
     spyOn(window, 'createLocationForDisplay');
-    const infoWindowContent = buildInfoWindowInput(LAT_A, LNG_A, mockedLocation, MAP);
 
     infoWindowContent.querySelector('#titleTextbox').value = TITLE_A;
     infoWindowContent.querySelector('#noteTextbox').value = NOTE_A;
