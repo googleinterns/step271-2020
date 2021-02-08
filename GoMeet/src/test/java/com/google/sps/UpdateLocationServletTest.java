@@ -23,12 +23,19 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import main.java.com.google.sps.servlets.LocationServlet;
+import main.java.com.google.sps.data.Location;
+import main.java.com.google.sps.data.LocationDao;
+import com.google.sps.data.ErrorMessages;
+
 import java.beans.Transient;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.junit.Assert;
 import org.junit.Before;
@@ -38,6 +45,9 @@ import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
 import static org.mockito.Mockito.*;
 
+import com.google.gson.reflect.TypeToken;
+import java.lang.reflect.Type;
+
 /** Tests for UpdateLocationServlet.java */
 @RunWith(JUnit4.class)
 public class UpdateLocationServletTest {
@@ -46,15 +56,19 @@ public class UpdateLocationServletTest {
 
   private HttpServletRequest request;
   private HttpServletResponse response;
+  private LocationDao mockedLocationDao;
   
   private final LocalServiceTestHelper helper =
       new LocalServiceTestHelper(new LocalDatastoreServiceTestConfig());
+
+  private final Gson gson = new Gson();
 
   @Before
   public void setUp() {
     helper.setUp();
     request = mock(HttpServletRequest.class);       
-    response = mock(HttpServletResponse.class);  
+    response = mock(HttpServletResponse.class);
+    mockedLocationDao = mock(LocationDao.class); 
   }
 
   @After
@@ -62,32 +76,58 @@ public class UpdateLocationServletTest {
     helper.tearDown();
   }
 
-  /** Tests if the entity's voteCount is updated. */
+  /** Tests if the keystring from the request is sent to the LocationDAO. */
   @Test
-  public void doPostTest() {
-    // Set up the database
-    DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
-    Key entityKey = KeyFactory.createKey("Location", LOCATION_A.getTitle());
-    Entity location = new Entity("Location");
-
-    location.setProperty("title", LOCATION_A.getTitle());
-    location.setProperty("lat", LOCATION_A.getLat());
-    location.setProperty("lng", LOCATION_A.getLng());
-    location.setProperty("note", LOCATION_A.getNote());
-    location.setProperty("voteCount", LOCATION_A.getVoteCount());
-    ds.put(location);
-
-    String keyString = KeyFactory.keyToString(location.getKey());
-
+  public void doPostTest() throws IOException {
+    // Set up request mock
+    String keyString =
+        KeyFactory.keyToString(KeyFactory.createKey("Location", LOCATION_A.getTitle()));
     when(request.getParameter("key")).thenReturn(keyString);
 
-    new UpdateLocationServlet().doPost(request, response);
-
+    UpdateLocationServlet servlet = new UpdateLocationServlet();
+    servlet.setDao(mockedLocationDao);
+    servlet.doPost(request, response);
+    
     try {
-      Entity retrievedLocation = ds.get(location.getKey());
-      assertEquals(2, ((Long) retrievedLocation.getProperty("voteCount")).intValue());
-    } catch (EntityNotFoundException e) {
+      verify(mockedLocationDao, times(1)).updateVote(keyString);
+      verify(response, times(1)).setStatus(HttpServletResponse.SC_OK);
+    } catch (Exception e) {
       fail();
     }
+  }
+
+  /** Tests if an error response is sent when the requested Location ID is invalid. */
+  @Test
+  public void doPostInvalidId() throws IOException {
+    // Set up request mock
+    Key key = KeyFactory.createKey("Location", LOCATION_A.getTitle());
+    String keyString = KeyFactory.keyToString(key);
+    when(request.getParameter("key")).thenReturn(keyString);
+
+    // Set up response mock writer
+    StringWriter stringWriter = new StringWriter();
+    PrintWriter writer = new PrintWriter(stringWriter);
+    when(response.getWriter()).thenReturn(writer);
+
+    // Dao throws an EntityNotFoundException.
+    try {
+      doThrow(new EntityNotFoundException(key)).when(mockedLocationDao).updateVote(anyString());
+    } catch (Exception e) {
+      fail();
+    }
+    
+    UpdateLocationServlet servlet = new UpdateLocationServlet();
+    servlet.setDao(mockedLocationDao);
+    servlet.doPost(request, response);
+
+    stringWriter.flush();
+    String responseString = stringWriter.toString();
+
+    Type responseMap = new TypeToken<HashMap<String, Object>>() {}.getType();
+    Map<String, Object> map = gson.fromJson(responseString, responseMap);
+
+    // Check hashmap with the correct values was sent.
+    assertEquals((Double) map.get("status"), Double.valueOf(HttpServletResponse.SC_BAD_REQUEST));
+    assertEquals((String) map.get("message"), ErrorMessages.ENTITY_NOT_FOUND_ERROR);
   }
 }
