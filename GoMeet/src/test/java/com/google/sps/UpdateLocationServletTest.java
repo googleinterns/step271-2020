@@ -25,7 +25,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import main.java.com.google.sps.servlets.LocationServlet;
 import main.java.com.google.sps.data.Location;
-import main.java.com.google.sps.data.LocationDao;
+import main.java.com.google.sps.dao.LocationDao;
 import com.google.sps.data.ErrorMessages;
 
 import java.beans.Transient;

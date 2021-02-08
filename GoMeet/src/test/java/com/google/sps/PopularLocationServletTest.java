@@ -9,7 +9,7 @@ import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import main.java.com.google.sps.servlets.PopularLocationServlet;
 import main.java.com.google.sps.data.Location;
-import main.java.com.google.sps.data.LocationDao;
+import main.java.com.google.sps.dao.LocationDao;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.io.IOException;

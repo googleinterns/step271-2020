@@ -1,21 +1,20 @@
 package main.java.com.google.sps.servlets;
 
 import com.google.appengine.api.datastore.EntityNotFoundException;
-
-import main.java.com.google.sps.data.Dao;
-import main.java.com.google.sps.data.Location;
-import main.java.com.google.sps.data.LocationDao;
-import com.google.sps.data.ServletUtil;
-import com.google.sps.data.ErrorMessages;
-
 import com.google.gson.Gson;
-import java.io.IOException;
+import com.google.sps.data.ErrorMessages;
+import com.google.sps.data.ServletUtil;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.io.IOException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import main.java.com.google.sps.data.Location;
+import main.java.com.google.sps.dao.Dao;
+import main.java.com.google.sps.dao.LocationDao;
+import main.java.com.google.sps.data.Location;
 import org.jsoup.Jsoup;
 import org.jsoup.safety.Whitelist;
 
