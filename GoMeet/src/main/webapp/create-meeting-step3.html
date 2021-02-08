@@ -4,7 +4,20 @@
   <head>
     <meta charset="UTF-8" />
     <title>Create Meeting</title>
+    <script src="js/error-messages.js"></script>
+    <script src="js/interactive-map.js"></script>
+    <script src="js/load-map.js"></script>
+    <script src="js/meeting-location-dao.js"></script>
+    <link rel="stylesheet" href="style.css">
   </head>
-  <body>
+  <body onload="initMap()">
+    <div>
+      <h2>Step 3</h2>
+      <h2>Find a Meeting Location</h2>
+      <p>Click on the map to create a new location.</p>
+      <p>Other people can see these markers and vote for them.</p>
+      <div id="map"></div></br>
+      <button id="myButton" onclick="location.href='/meeting-event.html'">Next</button>
+    </div> 
   </body>
 </html>
