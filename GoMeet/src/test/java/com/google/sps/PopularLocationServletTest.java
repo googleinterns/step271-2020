@@ -45,6 +45,7 @@ public class PopularLocationServletTest {
   private StringWriter stringWriter = new StringWriter();
   private PrintWriter writer = new PrintWriter(stringWriter);
   private Gson gson = new Gson();
+  private PopularLocationServlet servlet;
 
   @Before
   public void setUp() throws IOException {
@@ -52,6 +53,8 @@ public class PopularLocationServletTest {
     response = mock(HttpServletResponse.class);  
     mockedLocationDao = mock(LocationDao.class);
     when(response.getWriter()).thenReturn(writer);
+    servlet = new PopularLocationServlet();
+    servlet.setDao(mockedLocationDao);
   }
 
   /** 
@@ -110,9 +113,7 @@ public class PopularLocationServletTest {
     List<Location> emptyList = new ArrayList<>();
     when(mockedLocationDao.getAll()).thenReturn(emptyList);
 
-    PopularLocationServlet servlet = new PopularLocationServlet();
-    servlet.setDao(mockedLocationDao);
-    servlet.doGet(request, response);
+    servlet.doGet(request, response); 
 
     // Check if the no locations were sent in the response
     stringWriter.flush();
@@ -132,9 +133,7 @@ public class PopularLocationServletTest {
     List<Location> listToReturn = new ArrayList<>(Arrays.asList(LOCATION_B, LOCATION_C));
     when(mockedLocationDao.getAll()).thenReturn(listToReturn);
 
-    PopularLocationServlet servlet = new PopularLocationServlet();
-    servlet.setDao(mockedLocationDao);
-    servlet.doGet(request, response);
+    servlet.doGet(request, response); 
 
     // Check if the popular location was sent in the response
     stringWriter.flush();
