@@ -54,10 +54,6 @@ public class PopularLocationServletTest {
     when(response.getWriter()).thenReturn(writer);
   }
 
-  @After
-  public void tearDown() {
-  }
-
   /** 
    * Tests if the response contains the most popular location when there is
    * only one popular location.
