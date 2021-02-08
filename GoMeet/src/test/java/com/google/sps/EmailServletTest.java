@@ -81,8 +81,8 @@ public class EmailServletTest {
     JsonObject resultsJsonObj = new JsonParser().parse(resultsJsonStr).getAsJsonObject();
     JsonObject expectedJsonObj = new JsonParser().parse(expectedJsonStr).getAsJsonObject(); 
     assertEquals(resultsJsonObj.get(GUEST_1), expectedJsonObj.get(GUEST_1));
-    assertEquals(resultsJsonObj.get(GUEST_1), expectedJsonObj.get(GUEST_1));
-    assertEquals(resultsJsonObj.get(GUEST_1), expectedJsonObj.get(GUEST_1));
+    assertEquals(resultsJsonObj.get(GUEST_2), expectedJsonObj.get(GUEST_2));
+    assertEquals(resultsJsonObj.get(GUEST_3), expectedJsonObj.get(GUEST_3));
   }
 
   @Test 
