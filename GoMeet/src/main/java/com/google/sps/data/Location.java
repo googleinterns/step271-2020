@@ -63,4 +63,32 @@ public class Location {
   public String getKeyString() {
     return keyString;
   }
+
+  /** 
+   * Checks if this location is equal to another location. 
+   * Locations are equal if they have the same title, lat, lng, note and the 
+   * key strings are not different.
+   * Note: Location entities are the same even if one key string is null.
+   * That is because locations' MeetingID+Title are unique.
+   * @param o the object to compare this location to.
+   */
+  @Override
+  public boolean equals(Object o) {
+    if (o == this) {
+      return true;
+    }
+    if (!(o instanceof Location)) {
+      return false;
+    }
+    Location otherLocation = (Location) o;
+    
+    return this.title.equals(otherLocation.getTitle()) &&
+        (Double.compare(this.lat, otherLocation.getLat()) == 0) &&
+        (Double.compare(this.lng, otherLocation.getLng()) == 0) &&
+        this.note.equals(otherLocation.getNote()) &&
+        ((this.keyString == otherLocation.getKeyString()) ||
+        this.keyString == null ||
+        otherLocation.getKeyString() == null ||
+        this.keyString.equals(otherLocation.getKeyString()));
+  }
 }
