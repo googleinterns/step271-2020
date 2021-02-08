@@ -28,7 +28,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
 
-
 /** Tests for PopularLocationServlet.java */
 @RunWith(JUnit4.class)
 public class PopularLocationServletTest {
@@ -37,7 +36,8 @@ public class PopularLocationServletTest {
       new Location("Burger Bonanza", 15.0, 150.0, "I like burgers!", 1);
   private final Location LOCATION_B =
       new Location("Pastry Patisserie", 20.0, 10.0, "Pastries are yum!", 5);
-  private final Location LOCATION_C = new Location("Pizza Place", 20.0, 10.0, "Nice Cheese!", 5);
+  private final Location LOCATION_C =
+      new Location("Pizza Place", 20.0, 10.0, "Nice Cheese!", 5);
 
   private HttpServletRequest request;
   private HttpServletResponse response;
