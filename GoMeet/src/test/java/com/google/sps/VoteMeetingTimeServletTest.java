@@ -121,8 +121,9 @@ public final class VoteMeetingTimeServletTest {
         .thenReturn(NEW_VOTER);
     new VoteMeetingTimeServlet().doPost(mockedRequest, mockedResponse);
 
-    // Check that error response was sent with appropriate details
-    testBadRequest(HttpServletResponse.SC_BAD_REQUEST, ErrorMessages.BAD_REQUEST_ERROR);
+    ServletTestUtil.expectBadRequest(HttpServletResponse.SC_BAD_REQUEST, 
+        ErrorMessages.BAD_REQUEST_ERROR, 
+        mockedResponse, stringWriter, writer);
   }
 
   @Test
@@ -133,8 +134,9 @@ public final class VoteMeetingTimeServletTest {
         .thenReturn(null); // Null voter
     new VoteMeetingTimeServlet().doPost(mockedRequest, mockedResponse);
 
-    // Check that error response was sent with appropriate details
-    testBadRequest(HttpServletResponse.SC_BAD_REQUEST, ErrorMessages.BAD_REQUEST_ERROR);
+    ServletTestUtil.expectBadRequest(HttpServletResponse.SC_BAD_REQUEST, 
+        ErrorMessages.BAD_REQUEST_ERROR, 
+        mockedResponse, stringWriter, writer);
   }
 
   @Test
@@ -155,7 +157,9 @@ public final class VoteMeetingTimeServletTest {
     new VoteMeetingTimeServlet().doPost(mockedRequest, mockedResponse);
 
     // Check that error response was sent with appropriate details
-    testBadRequest(HttpServletResponse.SC_NOT_FOUND, ErrorMessages.ENTITY_NOT_FOUND_ERROR);
+    ServletTestUtil.expectBadRequest(HttpServletResponse.SC_NOT_FOUND, 
+        ErrorMessages.ENTITY_NOT_FOUND_ERROR, 
+        mockedResponse, stringWriter, writer);
   }
 
   @Test
@@ -167,7 +171,9 @@ public final class VoteMeetingTimeServletTest {
     new VoteMeetingTimeServlet().doPost(mockedRequest, mockedResponse);
     
     // Check that error response was sent with appropriate details
-    testBadRequest(HttpServletResponse.SC_CONFLICT, ErrorMessages.USER_HAS_VOTED_ERROR);
+    ServletTestUtil.expectBadRequest(HttpServletResponse.SC_CONFLICT, 
+        ErrorMessages.USER_HAS_VOTED_ERROR, 
+        mockedResponse, stringWriter, writer);
   }
 
   // Voter is the first voter - there were no past voters for the meeting time 
@@ -243,32 +249,5 @@ public final class VoteMeetingTimeServletTest {
       return false;
     }
     return true;
-  }
-
-  /**
-   * Verfies the expected behaviour on a bad request, and that the expected error response 
-   * containing the status code and errorMessage was sent by VoteMeetingTimeServlet
-   * @param {int} status The error status code to be sent, and what response status is set to 
-   * via response.setStatus()
-   * @param {String} errorMessage The error message to be sent 
-   */
-  private void testBadRequest(int status, String errorMessage) throws IOException {
-    // Check that error response was sent with appropriate details
-    HashMap errorResponse = new HashMap<String, Object>() {{
-      put("status", status);
-      put("message", errorMessage);
-    }};
-
-    String errorJson = ServletUtil.convertMapToJson(errorResponse);
-
-    // Verify error status code set
-    verify(mockedResponse, times(1)).setStatus(status);
-
-    // Check that nothing was modified 
-    assertTrue(checkNothingModified());
-
-    // Assert that error response is returned
-    writer.flush(); // writer may not have been flushed yet
-    assertTrue(stringWriter.toString().contains(errorJson));
   }
 }
