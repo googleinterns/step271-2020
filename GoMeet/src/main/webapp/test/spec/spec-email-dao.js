@@ -6,7 +6,7 @@ describe ('EmailDAO - inviteGuestsToMeeting', function() {
   };
   const RESPONSE_INIT = {method: 'POST'};
   const MEETING_EVENT_ID = 'qwerty12345'; 
-  // Note: Guest list should be of type object and each element within the list
+  // Note: Guest list should be of type array and each element within the list
   // should be of type string 
   const GUEST_LIST = ['guest1@gmail.com', 'guest2@gmail.com', 'guest3@gmail.com'];
   const BAD_GUEST_LIST_1 = 'guest1@gmail.com, guest2@gmail.com, guest3@gmail.com'; 

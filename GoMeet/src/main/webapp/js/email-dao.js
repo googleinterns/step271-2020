@@ -17,7 +17,7 @@ class EmailDAO {
       throw new Error(INSUFFICIENT_REQUEST_PARAM);
     }
 
-    if (typeof meetingEventId !== 'string' || typeof guestList !== 'object') {
+    if (typeof meetingEventId !== 'string' || !Array.isArray(guestList)) {
       throw new Error(INVALID_PARAM_TYPE); 
     }
 
