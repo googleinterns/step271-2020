@@ -21,9 +21,8 @@ describe ('EmailDAO - inviteGuestsToMeeting', function() {
       // to be invalid
       if (url !== EmailDAO.endpoint + QUERY_STRING) {
         return new Response(JSON.stringify(ERROR_RESPONSE), null);
-      } else {
-        return new Response(JSON.stringify(SENT_RESULT), null);
       }
+      return new Response(JSON.stringify(SENT_RESULT), null);
     }); 
   }); 
   

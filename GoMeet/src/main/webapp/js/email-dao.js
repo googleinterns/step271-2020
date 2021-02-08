@@ -28,10 +28,12 @@ class EmailDAO {
     }
 
     // Encode the data to be sent in the query string
-    let urlString = DAOUtils.url(EmailDAO.endpoint, {'meetingEventId': meetingEventId, 
-    'guestList': guestList});
+    let urlString = DAOUtils.url(
+        EmailDAO.endpoint, 
+        {'meetingEventId': meetingEventId, 'guestList': guestList}
+    );
 
-    let responseInit = {method: 'POST'}
+    let responseInit = {method: 'POST'};
     let response = await fetch(urlString, responseInit).then((response) => response.json());
     return response;
   }
