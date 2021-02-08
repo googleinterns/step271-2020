@@ -91,7 +91,7 @@ public class EmailServletTest {
     when(mockedRequest.getParameter("meetingEventId")).thenReturn(null);
     new EmailServlet().doPost(mockedRequest, mockedResponse); 
 
-    ServletTestUtil.badRequest(HttpServletResponse.SC_BAD_REQUEST, 
+    ServletTestUtil.expectBadRequest(HttpServletResponse.SC_BAD_REQUEST, 
         ErrorMessages.BAD_EMAIL_REQUEST_ERROR, mockedResponse, stringWriter, writer);
   }
 
@@ -100,7 +100,7 @@ public class EmailServletTest {
     when(mockedRequest.getParameter("guestList")).thenReturn(null); 
     new EmailServlet().doPost(mockedRequest, mockedResponse); 
     
-    ServletTestUtil.badRequest(HttpServletResponse.SC_BAD_REQUEST, 
+    ServletTestUtil.expectBadRequest(HttpServletResponse.SC_BAD_REQUEST, 
         ErrorMessages.BAD_EMAIL_REQUEST_ERROR, mockedResponse, stringWriter, writer);
   }
 }

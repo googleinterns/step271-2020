@@ -99,7 +99,7 @@ public final class MeetingTimeServletTest {
     when(mockedRequest.getParameter(MeetingTimeFields.DATETIME)).thenReturn(null); // null datetime
     new MeetingTimeServlet().doPost(mockedRequest, mockedResponse);
 
-    ServletTestUtil.badRequest(HttpServletResponse.SC_BAD_REQUEST, 
+    ServletTestUtil.expectBadRequest(HttpServletResponse.SC_BAD_REQUEST, 
         ErrorMessages.BAD_REQUEST_ERROR, 
         mockedResponse, stringWriter, writer);
 
@@ -144,7 +144,7 @@ public final class MeetingTimeServletTest {
         .thenReturn(null); // null key
     new MeetingTimeServlet().doGet(mockedRequest, mockedResponse);
     
-    ServletTestUtil.badRequest(HttpServletResponse.SC_BAD_REQUEST, 
+    ServletTestUtil.expectBadRequest(HttpServletResponse.SC_BAD_REQUEST, 
         ErrorMessages.BAD_REQUEST_ERROR, 
         mockedResponse, stringWriter, writer);
   }
@@ -155,7 +155,7 @@ public final class MeetingTimeServletTest {
         .thenReturn("non-existent key");
     new MeetingTimeServlet().doGet(mockedRequest, mockedResponse);
 
-    ServletTestUtil.badRequest(HttpServletResponse.SC_BAD_REQUEST, 
+    ServletTestUtil.expectBadRequest(HttpServletResponse.SC_BAD_REQUEST, 
         ErrorMessages.INVALID_KEY_ERROR, 
         mockedResponse, stringWriter, writer);
   }
@@ -175,7 +175,7 @@ public final class MeetingTimeServletTest {
         .thenReturn(fakeMeetingTimeKeyStr);
     new MeetingTimeServlet().doGet(mockedRequest, mockedResponse);
 
-    ServletTestUtil.badRequest(HttpServletResponse.SC_NOT_FOUND, 
+    ServletTestUtil.expectBadRequest(HttpServletResponse.SC_NOT_FOUND, 
         ErrorMessages.ENTITY_NOT_FOUND_ERROR, mockedResponse, stringWriter, writer);
   }
 

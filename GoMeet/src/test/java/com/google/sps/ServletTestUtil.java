@@ -24,7 +24,7 @@ public class ServletTestUtil {
    * Helper function to test the correct error response was sent in the case of 
    * a bad request
    */
-  public static void badRequest(int status, String errorMessage, 
+  public static void expectBadRequest(int status, String errorMessage, 
       HttpServletResponse mockedResponse, StringWriter stringWriter, PrintWriter writer) {
 
     HashMap errorResponse = new HashMap<String, Object>() {{

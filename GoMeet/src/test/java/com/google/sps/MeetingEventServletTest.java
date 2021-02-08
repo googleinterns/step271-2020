@@ -124,7 +124,7 @@ public final class MeetingEventServletTest {
     when(mockedRequest.getParameter(MeetingEventFields.MEETING_NAME)).thenReturn(null);
     new MeetingEventServlet().doPost(mockedRequest, mockedResponse);
 
-    ServletTestUtil.badRequest(HttpServletResponse.SC_BAD_REQUEST, 
+    ServletTestUtil.expectBadRequest(HttpServletResponse.SC_BAD_REQUEST, 
         ErrorMessages.BAD_POST_REQUEST_ERROR, mockedResponse, stringWriter, writer);
   }
 
@@ -133,7 +133,7 @@ public final class MeetingEventServletTest {
     when(mockedRequest.getParameter(MeetingEventFields.DURATION_MINS)).thenReturn(null);
     new MeetingEventServlet().doPost(mockedRequest, mockedResponse);
 
-    ServletTestUtil.badRequest(HttpServletResponse.SC_BAD_REQUEST, 
+    ServletTestUtil.expectBadRequest(HttpServletResponse.SC_BAD_REQUEST, 
         ErrorMessages.BAD_POST_REQUEST_ERROR, mockedResponse, stringWriter, writer);
   }
 
@@ -142,7 +142,7 @@ public final class MeetingEventServletTest {
     when(mockedRequest.getParameter(MeetingEventFields.DURATION_HOURS)).thenReturn(null);
     new MeetingEventServlet().doPost(mockedRequest, mockedResponse);
 
-    ServletTestUtil.badRequest(HttpServletResponse.SC_BAD_REQUEST, 
+    ServletTestUtil.expectBadRequest(HttpServletResponse.SC_BAD_REQUEST, 
         ErrorMessages.BAD_POST_REQUEST_ERROR, mockedResponse, stringWriter, writer);
   }
 
@@ -151,7 +151,7 @@ public final class MeetingEventServletTest {
     when(mockedRequest.getParameter(MeetingEventFields.TIME_FIND_METHOD)).thenReturn(null);
     new MeetingEventServlet().doPost(mockedRequest, mockedResponse);
 
-    ServletTestUtil.badRequest(HttpServletResponse.SC_BAD_REQUEST, 
+    ServletTestUtil.expectBadRequest(HttpServletResponse.SC_BAD_REQUEST, 
         ErrorMessages.BAD_POST_REQUEST_ERROR, mockedResponse, stringWriter, writer);
   }
 
@@ -160,7 +160,7 @@ public final class MeetingEventServletTest {
     when(mockedRequest.getParameter(MeetingEventFields.GUEST_LIST)).thenReturn(null);
     new MeetingEventServlet().doPost(mockedRequest, mockedResponse);
 
-    ServletTestUtil.badRequest(HttpServletResponse.SC_BAD_REQUEST, 
+    ServletTestUtil.expectBadRequest(HttpServletResponse.SC_BAD_REQUEST, 
         ErrorMessages.BAD_POST_REQUEST_ERROR, mockedResponse, stringWriter, writer);
   }
 
@@ -169,7 +169,7 @@ public final class MeetingEventServletTest {
     when(mockedRequest.getParameter(MeetingEventFields.MEETING_TIME_IDS)).thenReturn(null);
     new MeetingEventServlet().doPost(mockedRequest, mockedResponse);
 
-    ServletTestUtil.badRequest(HttpServletResponse.SC_BAD_REQUEST, 
+    ServletTestUtil.expectBadRequest(HttpServletResponse.SC_BAD_REQUEST, 
         ErrorMessages.BAD_POST_REQUEST_ERROR, mockedResponse, stringWriter, writer);
   }
 
@@ -178,7 +178,7 @@ public final class MeetingEventServletTest {
     when(mockedRequest.getParameter(MeetingEventFields.MEETING_LOCATION_IDS)).thenReturn(null);
     new MeetingEventServlet().doPost(mockedRequest, mockedResponse);
 
-    ServletTestUtil.badRequest(HttpServletResponse.SC_BAD_REQUEST, 
+    ServletTestUtil.expectBadRequest(HttpServletResponse.SC_BAD_REQUEST, 
         ErrorMessages.BAD_POST_REQUEST_ERROR, mockedResponse, stringWriter, writer);
   }
 
@@ -225,7 +225,7 @@ public final class MeetingEventServletTest {
     when(mockedRequest.getParameter(MeetingEventFields.MEETING_EVENT_ID)).thenReturn(null);
     new MeetingEventServlet().doGet(mockedRequest, mockedResponse);
 
-    ServletTestUtil.badRequest(HttpServletResponse.SC_BAD_REQUEST, 
+    ServletTestUtil.expectBadRequest(HttpServletResponse.SC_BAD_REQUEST, 
         ErrorMessages.BAD_GET_REQUEST_ERROR, mockedResponse, stringWriter, writer);
   }
 
@@ -234,7 +234,7 @@ public final class MeetingEventServletTest {
     when(mockedRequest.getParameter(MeetingEventFields.MEETING_EVENT_ID)).thenReturn("non-existent key");
     new MeetingEventServlet().doGet(mockedRequest, mockedResponse);
 
-    ServletTestUtil.badRequest(HttpServletResponse.SC_BAD_REQUEST, 
+    ServletTestUtil.expectBadRequest(HttpServletResponse.SC_BAD_REQUEST, 
         ErrorMessages.INVALID_KEY_ERROR, mockedResponse, stringWriter, writer);
   }
 
@@ -252,7 +252,7 @@ public final class MeetingEventServletTest {
     when(mockedRequest.getParameter(MeetingEventFields.MEETING_EVENT_ID)).thenReturn(fakeMeetingEventKeyStr);
     new MeetingEventServlet().doGet(mockedRequest, mockedResponse);
 
-    ServletTestUtil.badRequest(HttpServletResponse.SC_NOT_FOUND, 
+    ServletTestUtil.expectBadRequest(HttpServletResponse.SC_NOT_FOUND, 
         ErrorMessages.ENTITY_NOT_FOUND_ERROR, mockedResponse, stringWriter, writer);
   }
 
