@@ -1,3 +1,6 @@
+/**
+ * Toggles meeting event display depending on login status of user.
+ */
 function toggleMeetingDisplay() {
   LoginStatus.doGet().then((loginStatus) => {
     let prompt; 
@@ -16,4 +19,17 @@ function toggleMeetingDisplay() {
     document.getElementById('votes-table').style.display = style;
     document.getElementById('login-or-logout-prompt').innerHTML = prompt;
   });
+}
+
+/**
+ * Generates an error message string of the format:
+ * "ERROR: errorResponse.status errorResponse.message".
+ * @param {Object} errorResponse The error response object returned from 
+ * a DAO.
+ * @returns The string of the format "ERROR: errorResponse.status 
+ * errorResponse.message"
+ */
+function generateErrorMessage(errorResponse) {
+  let message = "ERROR " + errorResponse.status + " " + errorResponse.message;
+  return message;
 }

@@ -58,14 +58,7 @@ async function fetchAndProcess(meetingTimeIds) {
       // NOTE: Error responses from the DAO are internal errors that the user cannot deal with, 
       // so don't alert them, but also don't crash the program or stop execution either.
       // Hence not throwing an error (which stops execution), but logging it.
-      console.error(
-        "ERROR " +
-          time.status +
-          " " +
-          time.message +
-          " - MeetingTimeId: " +
-          meetingTimeIds[i]
-      );
+      console.error(generateErrorMessage(time) + " - MeetingTimeId: " + meetingTimeIds[i]);
     } else {
       time.id = meetingTimeIds[i]; // store the meetingId with the time to identify them later
       // add time Id to the votedTimes if logged in user has voted for it
@@ -165,14 +158,7 @@ async function voteTime(id, currentUser) {
     // NOTE: Error responses from the DAO are internal errors that the user cannot deal with, 
     // so don't alert them, but also don't crash the program or stop execution either.
     // Hence not throwing an error (which stops execution), but logging it.
-    console.error(
-      "ERROR " +
-        response.status +
-        " " +
-        response.message +
-        " - MeetingTimeId: " +
-        id
-    );
+    console.error(generateErrorMessage(response) + " - MeetingTimeId: " + id);
   }
   // Re-render the form to update the votes
   await displayMeetingTimeForm();
