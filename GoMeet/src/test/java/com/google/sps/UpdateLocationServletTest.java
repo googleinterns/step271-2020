@@ -91,7 +91,7 @@ public class UpdateLocationServletTest {
     try {
       verify(mockedLocationDao, times(1)).updateVote(keyString);
       verify(response, times(1)).setStatus(HttpServletResponse.SC_OK);
-    } catch (EntityNotFoundException e) {
+    } catch (Exception e) {
       fail();
     }
   }
@@ -112,7 +112,7 @@ public class UpdateLocationServletTest {
     // Dao throws an EntityNotFoundException.
     try {
       doThrow(new EntityNotFoundException(key)).when(mockedLocationDao).updateVote(anyString());
-    } catch (EntityNotFoundException e) {
+    } catch (Exception e) {
       fail();
     }
     
