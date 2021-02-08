@@ -13,9 +13,9 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import main.java.com.google.sps.data.Dao;
+import main.java.com.google.sps.dao.Dao;
 import main.java.com.google.sps.data.Location;
-import main.java.com.google.sps.data.LocationDao;
+import main.java.com.google.sps.dao.LocationDao;
 import org.jsoup.Jsoup;
 import org.jsoup.safety.Whitelist;
 
