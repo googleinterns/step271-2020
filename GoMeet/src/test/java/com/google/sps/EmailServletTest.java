@@ -24,6 +24,7 @@ import org.junit.runners.JUnit4;
 import org.junit.Test;
 import org.mockito.MockedStatic;
 import org.mockito.Mockito;
+import test.java.com.google.sps.ServletTestUtil;
 
 /** Tests for EmailServlet.java */
 @RunWith(JUnit4.class)
@@ -89,34 +90,17 @@ public class EmailServletTest {
   public void testNullMeetingEventId() throws IOException {
     when(mockedRequest.getParameter("meetingEventId")).thenReturn(null);
     new EmailServlet().doPost(mockedRequest, mockedResponse); 
-    testBadRequest(HttpServletResponse.SC_BAD_REQUEST, ErrorMessages.BAD_EMAIL_REQUEST_ERROR);
+
+    ServletTestUtil.expectBadRequest(HttpServletResponse.SC_BAD_REQUEST, 
+        ErrorMessages.BAD_EMAIL_REQUEST_ERROR, mockedResponse, stringWriter, writer);
   }
 
   @Test 
   public void testNullGuestList() throws IOException {
     when(mockedRequest.getParameter("guestList")).thenReturn(null); 
     new EmailServlet().doPost(mockedRequest, mockedResponse); 
-    testBadRequest(HttpServletResponse.SC_BAD_REQUEST, ErrorMessages.BAD_EMAIL_REQUEST_ERROR);
-  }
-
-  private void testBadRequest(int status, String errorMessage) throws IOException {
-    // Check that error response was sent with appropriate details
-    HashMap errorResponse = new HashMap<String, Object>() {{
-      put("status", status);
-      put("message", errorMessage);
-    }};
-
-    writer.flush(); // writer may not have been flushed yet
-
-    // Convert expected and result to Json Object to compare 
-    String resultsJsonStr = stringWriter.toString(); 
-    String expectedJsonStr = ServletUtil.convertMapToJson(errorResponse); 
-    JsonObject resultsJsonObj = new JsonParser().parse(resultsJsonStr).getAsJsonObject();
-    JsonObject expectedJsonObj = new JsonParser().parse(expectedJsonStr).getAsJsonObject(); 
-    assertEquals(resultsJsonObj.get("status"), expectedJsonObj.get("status"));
-    assertEquals(resultsJsonObj.get("message"), expectedJsonObj.get("message"));
-
-    // Verify error status code set
-    verify(mockedResponse, times(1)).setStatus(status);
+    
+    ServletTestUtil.expectBadRequest(HttpServletResponse.SC_BAD_REQUEST, 
+        ErrorMessages.BAD_EMAIL_REQUEST_ERROR, mockedResponse, stringWriter, writer);
   }
 }

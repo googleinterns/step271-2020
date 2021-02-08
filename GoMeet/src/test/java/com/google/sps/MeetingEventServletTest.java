@@ -39,6 +39,7 @@ import org.junit.Assert;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
 import org.junit.Test;
+import test.java.com.google.sps.ServletTestUtil; 
 
 /**
  * Tests for doGet and doPost of MeetingEventServlet
@@ -122,49 +123,63 @@ public final class MeetingEventServletTest {
   public void testNullMeetingNameQuery() throws IOException {
     when(mockedRequest.getParameter(MeetingEventFields.MEETING_NAME)).thenReturn(null);
     new MeetingEventServlet().doPost(mockedRequest, mockedResponse);
-    testBadRequest(HttpServletResponse.SC_BAD_REQUEST, ErrorMessages.BAD_POST_REQUEST_ERROR);
+
+    ServletTestUtil.expectBadRequest(HttpServletResponse.SC_BAD_REQUEST, 
+        ErrorMessages.BAD_POST_REQUEST_ERROR, mockedResponse, stringWriter, writer);
   }
 
   @Test 
   public void testNullDurationMinsQuery() throws IOException {
     when(mockedRequest.getParameter(MeetingEventFields.DURATION_MINS)).thenReturn(null);
     new MeetingEventServlet().doPost(mockedRequest, mockedResponse);
-    testBadRequest(HttpServletResponse.SC_BAD_REQUEST, ErrorMessages.BAD_POST_REQUEST_ERROR);
+
+    ServletTestUtil.expectBadRequest(HttpServletResponse.SC_BAD_REQUEST, 
+        ErrorMessages.BAD_POST_REQUEST_ERROR, mockedResponse, stringWriter, writer);
   }
 
   @Test 
   public void testNullDurationHoursQuery() throws IOException {
     when(mockedRequest.getParameter(MeetingEventFields.DURATION_HOURS)).thenReturn(null);
     new MeetingEventServlet().doPost(mockedRequest, mockedResponse);
-    testBadRequest(HttpServletResponse.SC_BAD_REQUEST, ErrorMessages.BAD_POST_REQUEST_ERROR);
+
+    ServletTestUtil.expectBadRequest(HttpServletResponse.SC_BAD_REQUEST, 
+        ErrorMessages.BAD_POST_REQUEST_ERROR, mockedResponse, stringWriter, writer);
   }
 
   @Test 
   public void testNullTimeFindMethodQuery() throws IOException {
     when(mockedRequest.getParameter(MeetingEventFields.TIME_FIND_METHOD)).thenReturn(null);
     new MeetingEventServlet().doPost(mockedRequest, mockedResponse);
-    testBadRequest(HttpServletResponse.SC_BAD_REQUEST, ErrorMessages.BAD_POST_REQUEST_ERROR);
+
+    ServletTestUtil.expectBadRequest(HttpServletResponse.SC_BAD_REQUEST, 
+        ErrorMessages.BAD_POST_REQUEST_ERROR, mockedResponse, stringWriter, writer);
   }
 
   @Test 
   public void testNullGuestListQuery() throws IOException {
     when(mockedRequest.getParameter(MeetingEventFields.GUEST_LIST)).thenReturn(null);
     new MeetingEventServlet().doPost(mockedRequest, mockedResponse);
-    testBadRequest(HttpServletResponse.SC_BAD_REQUEST, ErrorMessages.BAD_POST_REQUEST_ERROR);
+
+    ServletTestUtil.expectBadRequest(HttpServletResponse.SC_BAD_REQUEST, 
+        ErrorMessages.BAD_POST_REQUEST_ERROR, mockedResponse, stringWriter, writer);
   }
 
   @Test 
   public void testNullMeetingTimeIdsQuery() throws IOException {
     when(mockedRequest.getParameter(MeetingEventFields.MEETING_TIME_IDS)).thenReturn(null);
     new MeetingEventServlet().doPost(mockedRequest, mockedResponse);
-    testBadRequest(HttpServletResponse.SC_BAD_REQUEST, ErrorMessages.BAD_POST_REQUEST_ERROR);
+
+    ServletTestUtil.expectBadRequest(HttpServletResponse.SC_BAD_REQUEST, 
+        ErrorMessages.BAD_POST_REQUEST_ERROR, mockedResponse, stringWriter, writer);
   }
 
   @Test 
   public void testNullMeetingLocationIdsQuery() throws IOException {
     when(mockedRequest.getParameter(MeetingEventFields.MEETING_LOCATION_IDS)).thenReturn(null);
     new MeetingEventServlet().doPost(mockedRequest, mockedResponse);
-    testBadRequest(HttpServletResponse.SC_BAD_REQUEST, ErrorMessages.BAD_POST_REQUEST_ERROR);
+
+    ServletTestUtil.expectBadRequest(HttpServletResponse.SC_BAD_REQUEST, 
+        ErrorMessages.BAD_POST_REQUEST_ERROR, mockedResponse, stringWriter, writer);
   }
 
   // Tests for doGet
@@ -209,14 +224,18 @@ public final class MeetingEventServletTest {
   public void testDoGetNullKey() throws IOException {
     when(mockedRequest.getParameter(MeetingEventFields.MEETING_EVENT_ID)).thenReturn(null);
     new MeetingEventServlet().doGet(mockedRequest, mockedResponse);
-    testBadRequest(HttpServletResponse.SC_BAD_REQUEST, ErrorMessages.BAD_GET_REQUEST_ERROR);
+
+    ServletTestUtil.expectBadRequest(HttpServletResponse.SC_BAD_REQUEST, 
+        ErrorMessages.BAD_GET_REQUEST_ERROR, mockedResponse, stringWriter, writer);
   }
 
   @Test 
   public void testDoGetInvalidKey() throws IOException {
     when(mockedRequest.getParameter(MeetingEventFields.MEETING_EVENT_ID)).thenReturn("non-existent key");
     new MeetingEventServlet().doGet(mockedRequest, mockedResponse);
-    testBadRequest(HttpServletResponse.SC_BAD_REQUEST, ErrorMessages.INVALID_KEY_ERROR);
+
+    ServletTestUtil.expectBadRequest(HttpServletResponse.SC_BAD_REQUEST, 
+        ErrorMessages.INVALID_KEY_ERROR, mockedResponse, stringWriter, writer);
   }
 
   @Test
@@ -232,7 +251,9 @@ public final class MeetingEventServletTest {
 
     when(mockedRequest.getParameter(MeetingEventFields.MEETING_EVENT_ID)).thenReturn(fakeMeetingEventKeyStr);
     new MeetingEventServlet().doGet(mockedRequest, mockedResponse);
-    testBadRequest(HttpServletResponse.SC_NOT_FOUND, ErrorMessages.ENTITY_NOT_FOUND_ERROR);
+
+    ServletTestUtil.expectBadRequest(HttpServletResponse.SC_NOT_FOUND, 
+        ErrorMessages.ENTITY_NOT_FOUND_ERROR, mockedResponse, stringWriter, writer);
   }
 
   @After
@@ -247,22 +268,5 @@ public final class MeetingEventServletTest {
     PreparedQuery preparedQuery = datastore.prepare(query);
     List<Entity> results = preparedQuery.asList(FetchOptions.Builder.withDefaults());
     return results;
-  }
-
-  private void testBadRequest(int status, String errorMessage) throws IOException {
-    // Check that error response was sent with appropriate details
-    HashMap errorResponse = new HashMap<String, Object>() {{
-      put("status", status);
-      put("message", errorMessage);
-    }};
-
-    String errorJson = ServletUtil.convertMapToJson(errorResponse);
-
-    // Verify error status code set
-    verify(mockedResponse, times(1)).setStatus(status);
-
-    // Assert that error response is returned
-    writer.flush(); // writer may not have been flushed yet
-    assertTrue(stringWriter.toString().contains(errorJson));
   }
 }

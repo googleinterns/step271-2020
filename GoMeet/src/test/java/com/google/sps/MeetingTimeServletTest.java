@@ -99,23 +99,13 @@ public final class MeetingTimeServletTest {
     when(mockedRequest.getParameter(MeetingTimeFields.DATETIME)).thenReturn(null); // null datetime
     new MeetingTimeServlet().doPost(mockedRequest, mockedResponse);
 
-    // check that error response was sent with appropriate details
-    HashMap errorResponse = new HashMap<String, Object>() {{
-      put("status", HttpServletResponse.SC_BAD_REQUEST);
-      put("message", ErrorMessages.BAD_REQUEST_ERROR);
-    }};
-    String errorJson = ServletUtil.convertMapToJson(errorResponse);
-
-    // verify status code set
-    verify(mockedResponse, times(1)).setStatus(HttpServletResponse.SC_BAD_REQUEST);
+    ServletTestUtil.expectBadRequest(HttpServletResponse.SC_BAD_REQUEST, 
+        ErrorMessages.BAD_REQUEST_ERROR, 
+        mockedResponse, stringWriter, writer);
 
     // Check that nothing was stored
     List<Entity> results = getAllEntities();
     assertEquals(0, results.size());
-
-    // Assert that error response is returned
-    writer.flush(); // writer may not have been flushed yet
-    assertTrue(stringWriter.toString().contains(errorJson));
   }
 
   // Tests for doGet
@@ -154,37 +144,20 @@ public final class MeetingTimeServletTest {
         .thenReturn(null); // null key
     new MeetingTimeServlet().doGet(mockedRequest, mockedResponse);
     
-    // check that error response was sent with appropriate details
-    HashMap errorResponse = new HashMap<String, Object>() {{
-      put("status", HttpServletResponse.SC_BAD_REQUEST);
-      put("message", ErrorMessages.BAD_REQUEST_ERROR);
-    }};
-    String errorJson = ServletUtil.convertMapToJson(errorResponse);
-    // verify error status code set
-    verify(mockedResponse, times(1)).setStatus(HttpServletResponse.SC_BAD_REQUEST);
-
-    // Assert that error response is returned
-    writer.flush(); // writer may not have been flushed yet
-    assertTrue(stringWriter.toString().contains(errorJson));
+    ServletTestUtil.expectBadRequest(HttpServletResponse.SC_BAD_REQUEST, 
+        ErrorMessages.BAD_REQUEST_ERROR, 
+        mockedResponse, stringWriter, writer);
   }
   
   @Test 
   public void testDoGetInvalidKey() throws IOException {
-    when(mockedRequest.getParameter(MeetingTimeFields.MEETING_TIME_ID)).thenReturn("non-existent key");
+    when(mockedRequest.getParameter(MeetingTimeFields.MEETING_TIME_ID))
+        .thenReturn("non-existent key");
     new MeetingTimeServlet().doGet(mockedRequest, mockedResponse);
 
-    // check that error response was sent with appropriate details
-    HashMap errorResponse = new HashMap<String, Object>() {{
-      put("status", HttpServletResponse.SC_BAD_REQUEST);
-      put("message", ErrorMessages.INVALID_KEY_ERROR);
-    }};
-    String errorJson = ServletUtil.convertMapToJson(errorResponse);
-    // verify error status code set
-    verify(mockedResponse, times(1)).setStatus(HttpServletResponse.SC_BAD_REQUEST);
-
-    // Assert that error response is returned
-    writer.flush(); // writer may not have been flushed yet
-    assertTrue(stringWriter.toString().contains(errorJson));
+    ServletTestUtil.expectBadRequest(HttpServletResponse.SC_BAD_REQUEST, 
+        ErrorMessages.INVALID_KEY_ERROR, 
+        mockedResponse, stringWriter, writer);
   }
 
   @Test
@@ -198,21 +171,12 @@ public final class MeetingTimeServletTest {
     String fakeMeetingTimeKeyStr = KeyFactory.keyToString(fakeMeetingTimeKey);
     datastore.delete(fakeMeetingTimeKey);
 
-    when(mockedRequest.getParameter(MeetingTimeFields.MEETING_TIME_ID)).thenReturn(fakeMeetingTimeKeyStr);
+    when(mockedRequest.getParameter(MeetingTimeFields.MEETING_TIME_ID))
+        .thenReturn(fakeMeetingTimeKeyStr);
     new MeetingTimeServlet().doGet(mockedRequest, mockedResponse);
 
-    // check that error response was sent with appropriate details
-    HashMap errorResponse = new HashMap<String, Object>() {{
-      put("status", HttpServletResponse.SC_NOT_FOUND);
-      put("message", ErrorMessages.ENTITY_NOT_FOUND_ERROR);
-    }};
-    String errorJson = ServletUtil.convertMapToJson(errorResponse);
-    // verify error status code set
-    verify(mockedResponse, times(1)).setStatus(HttpServletResponse.SC_NOT_FOUND);
-
-    // Assert that error response is returned
-    writer.flush(); // writer may not have been flushed yet
-    assertTrue(stringWriter.toString().contains(errorJson));
+    ServletTestUtil.expectBadRequest(HttpServletResponse.SC_NOT_FOUND, 
+        ErrorMessages.ENTITY_NOT_FOUND_ERROR, mockedResponse, stringWriter, writer);
   }
 
   @After
