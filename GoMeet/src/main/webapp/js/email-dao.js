@@ -12,16 +12,19 @@ class EmailDAO {
    * @return JSON containing the sent status of the emails  
    */
   static async inviteGuestsToMeeting(meetingEventId, guestList) {
-    if (meetingEventId === null || meetingEventId === undefined) {
+    if (meetingEventId === null || meetingEventId === undefined ||
+        guestList === null || guestList === undefined) {
       throw new Error(INSUFFICIENT_REQUEST_PARAM);
     }
 
-    if (guestList === null || guestList === undefined) {
-      throw new Error(INSUFFICIENT_REQUEST_PARAM); 
+    if (typeof meetingEventId !== 'string' || typeof guestList !== 'object') {
+      throw new Error(INVALID_PARAM_TYPE); 
     }
 
-    if (typeof meetingEventId !== 'string' || typeof guestList !== 'object' || typeof guestList[1] !== 'string') {
-      throw new Error(INVALID_PARAM_TYPE); 
+    for (let i = 0; i < guestList.length; i++) {
+      if (typeof guestList[i] !== 'string') {
+        throw new Error(INVALID_PARAM_TYPE); 
+      }
     }
 
     // Encode the data to be sent in the query string
