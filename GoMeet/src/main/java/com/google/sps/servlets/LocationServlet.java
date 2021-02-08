@@ -12,6 +12,7 @@ import javax.servlet.http.HttpServletResponse;
 import main.java.com.google.sps.dao.Dao;
 import main.java.com.google.sps.dao.LocationDao;
 import main.java.com.google.sps.data.Location;
+import main.java.com.google.sps.exceptions.MaxEntitiesReachedException;
 import main.java.com.google.sps.exceptions.SimilarEntityExistsException;
 
 import org.jsoup.Jsoup;
@@ -58,6 +59,8 @@ public class LocationServlet extends HttpServlet {
     } catch (SimilarEntityExistsException e) {
       ServletUtil.sendErrorResponse(
           response, HttpServletResponse.SC_BAD_REQUEST, ErrorMessages.BAD_REQUEST_ERROR_LOCATION);
+    } catch (MaxEntitiesReachedException e) {
+      // TODO: Handle max entities reached.
     }
   }
 

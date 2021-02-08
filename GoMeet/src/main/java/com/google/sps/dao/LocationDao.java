@@ -14,10 +14,13 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import main.java.com.google.sps.data.Location;
+import main.java.com.google.sps.exceptions.MaxEntitiesReachedException;
 import main.java.com.google.sps.exceptions.SimilarEntityExistsException;
 
 /** Provides functionality for fetching, adding, updating and deleting Location entities. */
 public class LocationDao implements Dao<Location> {
+  // Maximum number of locations per meeting.
+  private static final int MAX_LOCATIONS = 5;
   private DatastoreService ds;
 
   public LocationDao() {
@@ -59,9 +62,13 @@ public class LocationDao implements Dao<Location> {
    * Returns the key string of the new entity.
    */
   @Override
-  public String save(Location location) throws SimilarEntityExistsException {
+  public String save(Location location) throws MaxEntitiesReachedException, SimilarEntityExistsException {
     if (!validTitle(location.getTitle())) {
       throw new SimilarEntityExistsException();
+    }
+
+    if (maxLocationsReached()) {
+      throw new MaxEntitiesReachedException();
     }
 
     // If we reach here, then the new location is valid and we can add it to the database.
@@ -105,5 +112,18 @@ public class LocationDao implements Dao<Location> {
     }
     return true;
   }
-}
 
+  /** 
+   * Returns true if there are already five locations entities stored on
+   * the database for that meeting.
+   * TODO: Update to use MeetingID.
+   */
+  private boolean maxLocationsReached() {
+    Query q = new Query("Location");
+    int numOfEntities = ds.prepare(q).countEntities();
+    if (numOfEntities < MAX_LOCATIONS) {
+      return false;
+    }
+    return true;
+  }
+}
