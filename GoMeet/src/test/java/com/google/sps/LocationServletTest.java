@@ -110,8 +110,8 @@ public class LocationServletTest {
     ArgumentCaptor<Location> captor = ArgumentCaptor.forClass(Location.class);
 
     try {
-       verify(mockedLocationDao, times(1)).save(captor.capture());
-       Location actual = captor.getValue();
+      verify(mockedLocationDao, times(1)).save(captor.capture());
+      Location actual = captor.getValue();
       assertEquals(LOCATION_A, actual);
     } catch (Exception e) {
       fail();
