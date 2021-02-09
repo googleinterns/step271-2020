@@ -189,6 +189,13 @@ describe ('Display Popular Location', function() {
     expect(listSize).toBe(1);
     expect(childNodes[0].textContent).toBe('There are no locations to display.');
   });
+
+  it ('Should handle error is MeetingLocationDAO throws an error', async function() {
+    spyOn(window, 'handleError');
+    spyOn(MeetingLocationDAO, 'fetchPopularLocations').and.throwError('Not Found.');
+    await displayPopularLocations();
+    expect(window.handleError).toHaveBeenCalled();
+  });
 });
 
 /** Tests for creating list element for popular location list. */

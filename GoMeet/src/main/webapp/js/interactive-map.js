@@ -156,12 +156,25 @@ async function displayPopularLocations() {
       document.getElementById('popular-locations-container');
   popularLocationElement.innerHTML = '';
 
-  let json = await MeetingLocationDAO.fetchPopularLocations();
-  if (!json.length) {
-    popularLocationElement.append('There are no locations to display.');
-  } else {
-    json.forEach((location) => {
-      popularLocationElement.appendChild(createPopularLocationElement(location)); 
-    });
-  }
+  try {
+    let json = await MeetingLocationDAO.fetchPopularLocations();
+
+    // If we make it here, that means that the popular locations were fetched.
+    // And we can display them.
+    if (!json.length) {
+        popularLocationElement.append('There are no locations to display.');
+    } else {
+      json.forEach((location) => {
+        popularLocationElement.appendChild(createPopularLocationElement(
+            location)); 
+      });
+    }
+  } catch (error) {
+    handleError(error);
+  }  
+}
+
+/** Used to handle error. */
+function handleError(error) {
+  alert('Error Occurred: ' + error.message + '\nPlease Try Again Later.');
 }
