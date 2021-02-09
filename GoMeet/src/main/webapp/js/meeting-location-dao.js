@@ -1,5 +1,27 @@
+/** Constructs a Data Access Object for location data. */
+class MeetingLocationDaoFactory {
+  /** 
+   * Returns a meetingLocationDAO object based on whether the map stores to a temporary
+   * or permanent location.
+   */
+  static getLocationDao(storageType) {
+    if (storageType === 'permanent') {
+      return new MeetingLocationDAO();
+    } else {
+      return new TempMeetingLocationDAO();
+    }
+  }
+}
+
+/** Data access object for storing location data to session storage. */
+class TempMeetingLocationDAO {
+  constructor() {};
+}
+
 /** Data access object for the /location-data servlet. */
 class MeetingLocationDAO {
+    
+  constructor() {};
 
   static storingEndPoint = '/location-data'; 
   static votingEndPoint = '/update-location-data';

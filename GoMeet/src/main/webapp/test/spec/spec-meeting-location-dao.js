@@ -1,5 +1,18 @@
 /** Tests for MeetingLocationDAO. */
 
+/** Tests for MeetingLocationDaoFactory. */
+describe('getLocationDao', function() {
+  it ('Should return Dao for permanent storage', function() {
+    const dao = MeetingLocationDaoFactory.getLocationDao('permanent');
+    expect(dao instanceof MeetingLocationDAO).toBe(true);
+  });
+
+  it ('Should return Dao for temporary storage', function() {
+    const dao = MeetingLocationDaoFactory.getLocationDao('temporary');
+    expect(dao instanceof TempMeetingLocationDAO).toBe(true);
+  });
+});
+
 /** Tests for fetchLocations(). */
 describe ('Fetch Locations', function() {
   let LOCATIONS = [{title: 'Sushi Place', lat: 22.0, lng: 32.0,
