@@ -138,7 +138,7 @@ describe ('Build Info Window Vote', function() {
   const TITLE_A = 'Taco Place';
   const COUNT_A = 2;
   const NOTE_A = 'Tacos taste yum!';
-  
+
   it ('Should display correctly with inputted args and button', function() {
     const infoWindowContent = buildInfoWindowVote(TITLE_A, COUNT_A, NOTE_A);
     const childNodes = infoWindowContent.children;
