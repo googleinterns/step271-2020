@@ -48,8 +48,8 @@ function getMeetingEventId() {
   let parser = document.createElement('a');
   parser.href = getCurrentURL();
   let query = parser.search.substring(1); // Discard the '?' at position 0 .
-	let vars = query.split('&');
-	for (let i = 0; i < vars.length; i++) {
+  let vars = query.split('&');
+  for (let i = 0; i < vars.length; i++) {
     // Disregard all pairs unless it is the meetingEventId.
     let pair = vars[i].split('=');
     if (pair[0] === 'meetingEventId') { 
