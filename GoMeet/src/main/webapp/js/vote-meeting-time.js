@@ -146,14 +146,7 @@ function generateVoteTimeForm(timeData, currentUser, votedTimes) {
 function sortTimesbyVotes(timeData) {
   // Sort the times by votes, in decreasing order.
   timeData.sort((time1, time2) => {
-    if (time1.voteCount > time2.voteCount) {
-      return -1;
-    }
-    if (time1.voteCount < time2.voteCount) {
-      return 1;
-    }
-    // 'voteCounts' equal
-    return 0;
+    return time2.voteCount - time1.voteCount;
   });
 }
 
