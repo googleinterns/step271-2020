@@ -55,7 +55,8 @@ class PermMeetingLocationDAO {
 
   /** 
    * Sends a new location to the servlet.
-   * Returns response from the servlet.
+   * @return {String} Key String from the servlet.
+   * Throws an error if title is blank.
    */
   async newLocation(title, lat, lng, note) {
     if (title === '') {

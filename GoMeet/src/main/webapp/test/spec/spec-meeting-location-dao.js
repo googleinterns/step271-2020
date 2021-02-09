@@ -48,7 +48,7 @@ describe('Fetch Popular Locations', function() {
 
     let errorMessage;
     try {
-      await new MeetingLocationDAO().fetchPopularLocations();
+      await new PermMeetingLocationDAO().fetchPopularLocations();
     } catch (error) {
       errorMessage = error.message;
     }
@@ -59,6 +59,7 @@ describe('Fetch Popular Locations', function() {
 /** Tests for newLocation(). */
 describe('New Location', function() {
   const TITLE_A = 'Taco Place';
+  const EMPTY = '';
   const LAT_A = 10.0; 
   const LNG_A = 15.0; 
   const NOTE_A = 'I like Tacos';
@@ -93,6 +94,16 @@ describe('New Location', function() {
 
     // Check if the response was returned.
     expect(receivedResponse).toEqual(KEY_STRING);
+  });
+
+  it ('Should throw an error if the title is empty', async function() {
+    let errorMessage;
+    try {
+      await new PermMeetingLocationDAO().newLocation(EMPTY, LAT_A, LNG_A, NOTE_A);
+    } catch (error) {
+      errorMessage = error.message;
+    }
+    expect(errorMessage).toEqual(BLANK_FIELDS_ALERT);
   });
 });
 

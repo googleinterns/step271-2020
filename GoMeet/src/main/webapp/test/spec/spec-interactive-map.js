@@ -68,7 +68,7 @@ describe('Build Info window input', function() {
   });
 
   it ('Should handle error if dao throws error', async function() {
-    const mockedLocationDao = new MeetingLocationDAO();
+    const mockedLocationDao = new PermMeetingLocationDAO();
     spyOn(mockedLocationDao, 'newLocation').and.throwError(BLANK_FIELDS_ALERT);
     spyOn(MeetingLocationDaoFactory, 'getLocationDao').and.returnValue(
         mockedLocationDao);
@@ -85,7 +85,7 @@ describe('Build Info window input', function() {
   });
 
   it ('Should call createLocationForDisplay with the correct params', async function() {
-    const mockedLocationDao = new MeetingLocationDAO();
+    const mockedLocationDao = new PermMeetingLocationDAO();
     spyOn(mockedLocationDao, 'newLocation').and.returnValue(KEY_STRING);
     spyOn(MeetingLocationDaoFactory, 'getLocationDao').and.returnValue(
         mockedLocationDao);
@@ -181,7 +181,7 @@ describe ('Build Info Window Vote', function() {
   it ('Should increment the voteCount when the vote button is pressed',
       async function() {
     // Create Dao spy.
-    const mockedLocationDao = new MeetingLocationDAO();
+    const mockedLocationDao = new PermMeetingLocationDAO();
     spyOn(mockedLocationDao, 'updateLocation');
     spyOn(MeetingLocationDaoFactory, 'getLocationDao').and.returnValue(
         mockedLocationDao);
@@ -256,9 +256,9 @@ describe ('Display Popular Location', function() {
     expect(childNodes[0].textContent).toBe('There are no locations to display.');
   });
 
-  it ('Should handle error is MeetingLocationDAO throws an error', async function() {
+  it ('Should handle error is PermMeetingLocationDAO throws an error', async function() {
     // Spy on Dao.  
-    const mockedLocationDao = new MeetingLocationDAO();
+    const mockedLocationDao = new PermMeetingLocationDAO();
     spyOn(mockedLocationDao, 'fetchPopularLocations').and.throwError('Not Found.');
     spyOn(MeetingLocationDaoFactory, 'getLocationDao').and.returnValue(
         mockedLocationDao);
