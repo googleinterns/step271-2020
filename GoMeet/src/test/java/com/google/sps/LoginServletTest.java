@@ -1,15 +1,23 @@
 package com.google.sps;
 
+import static org.mockito.Mockito.*;
+import static org.junit.Assert.assertEquals;
+
 import com.google.appengine.api.users.UserService;
 import com.google.appengine.api.users.UserServiceFactory;
 import com.google.appengine.api.users.User;
 import com.google.appengine.tools.development.testing.LocalServiceTestHelper;
 import com.google.appengine.tools.development.testing.LocalUserServiceTestConfig;
 import com.google.gson.Gson;
+import com.google.gson.JsonParser;
+import com.google.gson.JsonObject;
+import com.google.sps.data.ServletUtil;
 import java.io.IOException;
+import java.io.PrintWriter;
+import java.io.StringWriter;
+import java.util.HashMap;
+import com.google.sps.data.MeetingEventFields;
 import com.google.sps.servlets.LoginServlet;
-
-import static org.junit.Assert.assertEquals;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.After;
@@ -19,21 +27,33 @@ import org.junit.runners.JUnit4;
 import org.json.simple.JSONObject;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 /** Tests for LoginServlet.java */
 @RunWith(JUnit4.class)
 public class LoginServletTest {
-  private final LocalServiceTestHelper helper = new LocalServiceTestHelper(new LocalUserServiceTestConfig());
-  private MockHttpServletRequest request = new MockHttpServletRequest();
-  private MockHttpServletResponse response = new MockHttpServletResponse();
-  private Gson gson = new Gson(); 
-  private UserService userService = UserServiceFactory.getUserService();
+  private final String MEETING_EVENT_ID = "qwerty12345"; 
+
+  // Mocks
+  private final LocalServiceTestHelper helper =
+      new LocalServiceTestHelper(new LocalUserServiceTestConfig());
+  private HttpServletRequest mockedRequest;       
+  private HttpServletResponse mockedResponse;
+  private StringWriter stringWriter;
+  private PrintWriter writer;
 
   @Before
-  public void setup() {
+  public void setup() throws IOException {
     helper.setUp();
     helper.setEnvEmail("test@gmail.com");
     helper.setEnvAuthDomain("gmail.com");
+    mockedRequest = mock(HttpServletRequest.class);      
+    mockedResponse = mock(HttpServletResponse.class);
+    stringWriter = new StringWriter();
+    writer = new PrintWriter(stringWriter);
+    when(mockedResponse.getWriter()).thenReturn(writer);
+    when(mockedRequest.getParameter(MeetingEventFields.MEETING_EVENT_ID)).thenReturn(MEETING_EVENT_ID);
   }
 
   @After
@@ -44,59 +64,44 @@ public class LoginServletTest {
   @Test
   public void notLoggedIn() throws IOException {
     helper.setEnvIsLoggedIn(false);
-    new LoginServlet().doGet(request, response); 
+    new LoginServlet().doGet(mockedRequest, mockedResponse); 
 
-    // Check the response type is in json form 
-    String responseType = response.getContentType();
-    assertEquals(responseType, "application/json");
+    writer.flush();
 
-    // Note: Could not use .json() to directly read the response in json format
-    //       becuase the method does not exist in the MockHttpServletResponse class
-    // Fix:  Read the response as a string and then use Gson to convert to 
-    //       Json object and read key value pairs
-    String content = response.getContentAsString();
-    JSONObject jsonObject = gson.fromJson(content, JSONObject.class);
+    HashMap expectedResponse = new HashMap<String, String>() {{
+      put("loggedIn", "false");
+      put("loginUrl", "/_ah/login?continue\u003d%2Fmeeting-event.html%3FmeetingEventId%3Dqwerty12345");
+    }};
 
-    // Check loggedIn key value 
-    Object loggedIn = jsonObject.get("loggedIn"); 
-    assertEquals(loggedIn, "false"); 
-
-    // Check loginUrl key value 
-    Object loginUrl = jsonObject.get("loginUrl"); 
-    assertEquals(loginUrl, "/_ah/login?continue\u003d%2Fmeeting-event.html"); 
-
-    // Check number of key value pairs 
-    int numKeys = jsonObject.keySet().size(); 
-    assertEquals(numKeys, 2);
+    // Convert expected and result to Json Object to compare 
+    String resultsJsonStr = stringWriter.toString(); 
+    String expectedJsonStr = ServletUtil.convertMapToJson(expectedResponse); 
+    JsonObject resultsJsonObj = new JsonParser().parse(resultsJsonStr).getAsJsonObject();
+    JsonObject expectedJsonObj = new JsonParser().parse(expectedJsonStr).getAsJsonObject(); 
+    assertEquals(resultsJsonObj.get("loggedIn"), expectedJsonObj.get("loggedIn"));
+    assertEquals(resultsJsonObj.get("loginUrl"), expectedJsonObj.get("loginUrl"));
   }
 
   @Test 
   public void loggedIn() throws IOException {
     helper.setEnvIsLoggedIn(true);
-    new LoginServlet().doGet(request, response); 
+    new LoginServlet().doGet(mockedRequest, mockedResponse); 
 
-    // Check the response type is in json form 
-    String responseType = response.getContentType();
-    assertEquals(responseType, "application/json");
+    writer.flush();
 
-    // Get the response 
-    String content = response.getContentAsString();
-    JSONObject jsonObject = gson.fromJson(content, JSONObject.class);
+    HashMap expectedResponse = new HashMap<String, String>() {{
+      put("loggedIn", "true");
+      put("logoutUrl", "/_ah/logout?continue\u003d%2Fmeeting-event.html%3FmeetingEventId%3Dqwerty12345");
+      put("userEmail", "test@gmail.com");
+    }};
 
-    // Check the loggedIn key value 
-    Object status = jsonObject.get("loggedIn"); 
-    assertEquals(status, "true");
-    
-    // Check the logoutUrl key value 
-    Object logoutUrl = jsonObject.get("logoutUrl"); 
-    assertEquals(logoutUrl, "/_ah/logout?continue\u003d%2Fmeeting-event.html");
-
-    // Check the userEmail key value 
-    Object userEmail = jsonObject.get("userEmail"); 
-    assertEquals(userEmail, "test@gmail.com"); 
-
-    // Check number of key value pairs 
-    int numKeys = jsonObject.keySet().size(); 
-    assertEquals(numKeys, 3);
+    // Convert expected and result to Json Object to compare 
+    String resultsJsonStr = stringWriter.toString(); 
+    String expectedJsonStr = ServletUtil.convertMapToJson(expectedResponse); 
+    JsonObject resultsJsonObj = new JsonParser().parse(resultsJsonStr).getAsJsonObject();
+    JsonObject expectedJsonObj = new JsonParser().parse(expectedJsonStr).getAsJsonObject(); 
+    assertEquals(resultsJsonObj.get("loggedIn"), expectedJsonObj.get("loggedIn"));
+    assertEquals(resultsJsonObj.get("logoutUrl"), expectedJsonObj.get("logoutUrl"));
+    assertEquals(resultsJsonObj.get("userEmail"), expectedJsonObj.get("userEmail"));
   }
 }

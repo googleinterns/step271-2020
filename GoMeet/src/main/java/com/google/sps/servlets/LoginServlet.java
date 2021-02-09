@@ -8,6 +8,8 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import com.google.gson.Gson;
+import com.google.sps.data.MeetingEventFields;
+
 import java.io.IOException;
 import java.util.HashMap;
 
@@ -18,10 +20,12 @@ public class LoginServlet extends HttpServlet {
   public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
     response.setContentType("application/json");
 
+    String meetingEventId = request.getParameter(MeetingEventFields.MEETING_EVENT_ID);
+    String redirectUrl = "/meeting-event.html?meetingEventId=" + meetingEventId; 
+
     UserService userService = UserServiceFactory.getUserService();
     HashMap<String, String> userStatus = new HashMap<String, String>();
-    String redirectUrl = "/meeting-event.html"; 
-
+    
     if (userService.isUserLoggedIn()) {
       String logoutUrl = userService.createLogoutURL(redirectUrl);
       String userEmail = userService.getCurrentUser().getEmail(); 
