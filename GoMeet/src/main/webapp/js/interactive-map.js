@@ -91,16 +91,6 @@ function buildInfoWindowInput(lat, lng, editLocation, map) {
   return containerDiv;
 }
 
-/** 
- * Check if user input is valid. 
- * Throws an error if title in an invalid input.
- */
-function validateTitle(title) {
-  if (title === '') {
-    throw (new Error(BLANK_FIELDS_ALERT));
-  }
-}
-
 /** Fetches the location data. */
 async function fetchLocations(map) {
   // Get Dao.
