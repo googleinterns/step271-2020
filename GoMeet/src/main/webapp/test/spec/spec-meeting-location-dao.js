@@ -31,14 +31,14 @@ describe ('Fetch Locations', function() {
     promiseHelper.resolve(response);
     spyOn(window, 'fetch').and.returnValue(fetchPromise);
 
-    let responseJson = await MeetingLocationDAO.fetchLocations();
+    let responseJson = await new MeetingLocationDAO().fetchLocations();
 
     expect(responseJson).toEqual(LOCATIONS);
   });
 });
 
 /** Tests for fetchPopularLocatios(). */
-describe('Fetch Popuar Locations', function() {
+describe('Fetch Popular Locations', function() {
   const BAD_REQUEST_RESPONSE =
       {status: 404, statusText : 'Not Found.'};
 
@@ -48,7 +48,7 @@ describe('Fetch Popuar Locations', function() {
 
     let errorMessage;
     try {
-      await MeetingLocationDAO.fetchPopularLocations();
+      await new MeetingLocationDAO().fetchPopularLocations();
     } catch (error) {
       errorMessage = error.message;
     }
@@ -78,7 +78,7 @@ describe('New Location', function() {
 
     spyOn(window, 'fetch').and.returnValue(fetchPromise);
 
-    let receivedResponse = await MeetingLocationDAO.newLocation(
+    let receivedResponse = await new MeetingLocationDAO().newLocation(
         TITLE_A, LAT_A, LNG_A, NOTE_A);
 
     let expectedParams = new URLSearchParams();
@@ -106,7 +106,7 @@ describe('Update Location', function() {
     let expectedParams = new URLSearchParams();
     expectedParams.append('key', KEY_STRING);
 
-    MeetingLocationDAO.updateLocation(KEY_STRING);
+    new MeetingLocationDAO().updateLocation(KEY_STRING);
 
     // Check if fetch was called with the right params.
     expect(window.fetch).toHaveBeenCalledWith('/update-location-data',

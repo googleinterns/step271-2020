@@ -57,6 +57,10 @@ function createLocationForDisplay(map, lat, lng, title, voteCount, note, keyStri
  * button.
  */
 function buildInfoWindowInput(lat, lng, editLocation, map) {
+  // Get Dao.
+  const storageType = document.querySelector('#map').dataset.mem;
+  const dao = MeetingLocationDaoFactory.getLocationDao(storageType);
+
   const titleTextbox = document.createElement('textarea');
   titleTextbox.setAttribute('id', 'titleTextbox');
 
@@ -68,15 +72,14 @@ function buildInfoWindowInput(lat, lng, editLocation, map) {
   button.appendChild(document.createTextNode('CONFIRM'));
   button.onclick = async () => {
     try {
-      validateTitle(titleTextbox.value);
-      const keyString = await MeetingLocationDAO.newLocation(
+      const keyString = await dao.newLocation(
           titleTextbox.value, lat, lng, noteTextbox.value);
       createLocationForDisplay(
           map, lat, lng, titleTextbox.value, INITIAL_VOTE_COUNT,
           noteTextbox.value, keyString);
       editLocation.setMap(null);
-    } catch (err) {
-      alert(err.message);
+    } catch (error) {
+      handleError(error);
     }
   };
 
@@ -100,7 +103,11 @@ function validateTitle(title) {
 
 /** Fetches the location data. */
 async function fetchLocations(map) {
-  let json = await MeetingLocationDAO.fetchLocations();
+  // Get Dao.
+  const storageType = document.querySelector('#map').dataset.mem;
+  const dao = MeetingLocationDaoFactory.getLocationDao(storageType);
+ 
+  let json = await dao.fetchLocations();
   json.forEach((location) => {
     createLocationForDisplay(map, location.lat, location.lng,
         location.title, location.voteCount, location.note, location.keyString);
@@ -109,15 +116,19 @@ async function fetchLocations(map) {
 
 /** Builds a HTML element to display the location's data and a vote button. */
 function buildInfoWindowVote(title, voteCount, note, keyString) {
+   // Get Dao.
+  const storageType = document.querySelector('#map').dataset.mem;
+  const dao = MeetingLocationDaoFactory.getLocationDao(storageType);
+
   const titleContainer = createSpanContainer(title, 'displayTitle');
   const noteContainer = createSpanContainer(note, 'displayNote');
   const voteContainer = createSpanContainer(voteCount, 'displayVoteCount');
-
+ 
   const button = document.createElement('button');
   button.setAttribute('id', 'voteButton');
   button.appendChild(document.createTextNode('VOTE'));
   button.onclick = async () => {
-    await MeetingLocationDAO.updateLocation(keyString);
+    await dao.updateLocation(keyString);
     const currVote = voteContainer.innerText;
     voteContainer.innerText = parseInt(currVote) + 1;
   };
@@ -147,12 +158,16 @@ function createPopularLocationElement(location) {
 
 /** Fetches the popular location data and adds it to the DOM. */
 async function displayPopularLocations() {
+   // Get Dao.
+  const storageType = document.querySelector('#map').dataset.mem;
+  const dao = MeetingLocationDaoFactory.getLocationDao(storageType);
+
   const popularLocationElement = 
       document.getElementById('popular-locations-container');
   popularLocationElement.innerHTML = '';
 
   try {
-    let json = await MeetingLocationDAO.fetchPopularLocations();
+    let json = await dao.fetchPopularLocations();
 
     // If we make it here, that means that the popular locations were fetched.
     // And we can display them.
