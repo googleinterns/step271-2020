@@ -20,18 +20,19 @@ class TempMeetingLocationDAO {
 
 /** Data access object for the /location-data servlet. */
 class MeetingLocationDAO {
-    
-  constructor() {};
 
-  static storingEndPoint = '/location-data'; 
-  static votingEndPoint = '/update-location-data';
-  static popularEndPoint = '/popular-location-data';
+  /** Constructs a Data Access object for permanent storage. */
+  constructor() {
+    this.storingEndPoint = '/location-data';
+    this.votingEndPoint = '/update-location-data';
+    this.popularEndPoint = '/popular-location-data';
+  };
 
   /**
    * Fetches the location data from the servlet.
    * Returns a JSON array of the location data.
    */
-  static async fetchLocations() {
+  async fetchLocations() {
     let locations = await fetch(this.storingEndPoint).then(
         (response) => response.json());
     return locations;
@@ -42,7 +43,7 @@ class MeetingLocationDAO {
    * @return a JSON array of the popular location data.
    * @throws an error if the response status is not between 200 and 299.
    */
-  static async fetchPopularLocations() {
+  async fetchPopularLocations() {
     let response = await fetch(this.popularEndPoint);
     if (response.status >= 200 && response.status <= 299) {
       let locations = await response.json();
@@ -56,7 +57,10 @@ class MeetingLocationDAO {
    * Sends a new location to the servlet.
    * Returns response from the servlet.
    */
-  static async newLocation(title, lat, lng, note) {
+  async newLocation(title, lat, lng, note) {
+    if (title === '') {
+      throw new Error(BLANK_FIELDS_ALERT);
+    }
     const params = new URLSearchParams();
     params.append('title', title);
     params.append('lat', lat);
@@ -68,7 +72,7 @@ class MeetingLocationDAO {
   }
 
   /** Sends a request to the servlet to update a location entity's voteCount.*/
-  static async updateLocation(keyString) {
+  async updateLocation(keyString) {
     const params = new URLSearchParams();
     params.append('key', keyString);
     await fetch(this.votingEndPoint, {method: 'POST', body: params});
