@@ -133,7 +133,11 @@ function generateVoteTimeForm(timeData, currentUser, votedTimes) {
 
 /**
  * Sorts the timeData objects given by their 'voteCount'
- * property in descending order
+ * property in descending order.
+ * NOTE: Sorting the timeData objects client-side, because likely not every single 
+ * client-side use case of the timeData requires the data to be sorted in vote order. 
+ * Hence, sorting the timeData server-side will add unnecessary additional complexity 
+ * to the server code (and consequently the fetch() calls to the servlet).
  * @param {Array[Object]} timeData an array of timeData objects
  * retrieved from the '/meeting-time' servlet via GET request, in 
  * the format:
