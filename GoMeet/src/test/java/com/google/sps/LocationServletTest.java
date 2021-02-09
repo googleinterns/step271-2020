@@ -21,6 +21,7 @@ import com.google.sps.data.ErrorMessages;
 import main.java.com.google.sps.servlets.LocationServlet;
 import main.java.com.google.sps.dao.LocationDao;
 import main.java.com.google.sps.data.Location;
+import main.java.com.google.sps.exceptions.MaxEntitiesReachedException;
 import main.java.com.google.sps.exceptions.SimilarEntityExistsException;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -122,6 +123,41 @@ public class LocationServletTest {
   }
 
   /**
+   * Tests if an error message is sent if LocationDao throws a MaxEntitiesReachedException.
+   */
+  @Test
+  public void doPostMaxEntityTest() throws IOException {
+    // Set up request mock
+    when(request.getParameter("title")).thenReturn(LOCATION_A.getTitle());
+    when(request.getParameter("lat")).thenReturn(Double.toString(LOCATION_A.getLat()));
+    when(request.getParameter("lng")).thenReturn(Double.toString(LOCATION_A.getLng()));
+    when(request.getParameter("note")).thenReturn(LOCATION_A.getNote());
+
+    // Set up mock Dao
+    try {
+      doThrow(new MaxEntitiesReachedException()).when(mockedLocationDao).save((Location)notNull());
+    } catch (Exception e) {
+      fail();
+    }
+
+    LocationServlet servlet = new LocationServlet();
+    servlet.setDao(mockedLocationDao);
+    servlet.doPost(request, response);
+
+    // Check if error response is sent.
+    // TODO: Update to use testUtil.
+    stringWriter.flush();
+    String responseString = stringWriter.toString();
+
+    Type responseMap = new TypeToken<HashMap<String, Object>>() {}.getType();
+    Map<String, Object> map = gson.fromJson(responseString, responseMap);
+
+    // Check hashmap with the correct values was sent.
+    assertEquals((Double) map.get("status"), Double.valueOf(HttpServletResponse.SC_BAD_REQUEST));
+    assertEquals((String) map.get("message"), ErrorMessages.MAX_ENTITIES);
+  }
+
+   /**
    * Tests if an error message is sent if LocationDao throws a SimilarEntityExistsException.
    */
   @Test

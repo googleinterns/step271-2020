@@ -60,7 +60,8 @@ public class LocationServlet extends HttpServlet {
       ServletUtil.sendErrorResponse(
           response, HttpServletResponse.SC_BAD_REQUEST, ErrorMessages.BAD_REQUEST_ERROR_LOCATION);
     } catch (MaxEntitiesReachedException e) {
-      // TODO: Handle max entities reached.
+      ServletUtil.sendErrorResponse(
+          response, HttpServletResponse.SC_BAD_REQUEST, ErrorMessages.MAX_ENTITIES);
     }
   }
 

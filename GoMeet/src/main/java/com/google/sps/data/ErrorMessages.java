@@ -26,4 +26,6 @@ public class ErrorMessages {
       "Too many results returned";
   public static final String BAD_REQUEST_ERROR_LOCATION = 
       "Invalid location";
+  public static final String MAX_ENTITIES = 
+      "Maximum number of entities reached";
 }
