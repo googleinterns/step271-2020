@@ -137,8 +137,16 @@ function createPopularLocationElement(location) {
   const liElement = document.createElement('li');
   liElement.className = 'location';
 
-  liElement.append('Title: ', location.title, document.createElement('br'),
-      'Number of Votes: ', location.voteCount);
+  let titleContainer = document.createElement('span');
+  titleContainer.setAttribute('id', 'popularLocationTitle');
+  titleContainer.innerText = location.title;
+
+  let voteCountContianer = document.createElement('span');
+  voteCountContianer.setAttribute('id', 'popularLocationVoteCount');
+  voteCountContianer.innerText = location.voteCount;
+
+  liElement.append('Title: ', titleContainer, document.createElement('br'),
+      'Number of Votes: ', voteCountContianer);
   return liElement;
 }
 
