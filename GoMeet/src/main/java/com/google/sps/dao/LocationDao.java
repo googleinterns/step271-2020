@@ -68,7 +68,8 @@ public class LocationDao implements Dao<Location> {
    * meeting with the same title.
    */
   @Override
-  public String save(Location location) throws MaxEntitiesReachedException, SimilarEntityExistsException {
+  public String save(Location location) throws MaxEntitiesReachedException,
+      SimilarEntityExistsException {
     if (!validTitle(location.getTitle())) {
       throw new SimilarEntityExistsException();
     }
