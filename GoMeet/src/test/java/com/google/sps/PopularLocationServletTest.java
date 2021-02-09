@@ -120,7 +120,7 @@ public class PopularLocationServletTest {
     Type locationListType = new TypeToken<ArrayList<Location>>(){}.getType();
     ArrayList<Location> locationList = gson.fromJson(stringWriter.toString(), locationListType);
 
-   assertTrue(locationList.isEmpty());
+    assertTrue(locationList.isEmpty());
   }
 
   /** 
