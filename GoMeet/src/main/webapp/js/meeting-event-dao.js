@@ -51,6 +51,15 @@ class MeetingEventDAO {
     return ids; 
   }
 
+  static async getMeetingLocationIds() {
+    let ids = [];
+    let json = await MeetingLocationDAO.fetchLocations();
+    json.forEach((location) => {
+      ids.push(location.keyString); 
+    });
+    return ids; 
+  }
+
   static async newMeetingEvent() {
     let meetingName = this.getMeetingName(); 
     let durationMins = this.getDurationMins(); 
@@ -58,13 +67,14 @@ class MeetingEventDAO {
     let timeFindMethod = this.getTimeFindMethod(); 
     let guestList = this.getGuestList(); 
     let meetingTimes = this.getMeetingTimes(); 
-    let meetingTimeIds = this.getMeetingTimeIds(meetingTimes); 
+    let meetingTimeIds = await this.getMeetingTimeIds(meetingTimes); 
+    let meetingLocationIds = await this.getMeetingLocationIds();
 
     // Encode the data to be sent in the query string
     let urlString = DAOUtils.url(MeetingEventDAO.endpoint, {'meetingName': meetingName, 
     'durationMins': durationMins, 'durationHours': durationHours, 
     'timeFindMethod': timeFindMethod, 'guestList': guestList, 
-    'meetingTimeIds': meetingTimeIds}); 
+    'meetingTimeIds': meetingTimeIds, 'meetingLocationIds': meetingLocationIds}); 
 
     let responseInit = {method: 'POST'}
     let response = await fetch(urlString, responseInit).then((response) => response.json());
