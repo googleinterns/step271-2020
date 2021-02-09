@@ -59,7 +59,13 @@ public class LocationDao implements Dao<Location> {
 
   /** 
    * Stores a new location on datastore.
-   * Returns the key string of the new entity.
+   * 
+   * @param location the new location to save to the database.
+   * @return the key string of the new entity.
+   * @throws MaxEntitiesReachException if the maximum number of entities for a 
+   * meeting has been reached.
+   * @throws SimilarEntityExistsException if there is already a location for that
+   * meeting with the same title.
    */
   @Override
   public String save(Location location) throws MaxEntitiesReachedException, SimilarEntityExistsException {
@@ -83,7 +89,11 @@ public class LocationDao implements Dao<Location> {
     return KeyFactory.keyToString(entity.getKey());
   }
 
-  /** Increments the vote count of the location entity with the give keyString. */
+  /** 
+   * Increments the vote count of the location entity with the give keyString.
+   * 
+   * @param keyString the key string of the entity to update.
+   */
   @Override 
   public void updateVote(String keyString) throws EntityNotFoundException {
     Key entityKey = KeyFactory.stringToKey(keyString);
@@ -99,8 +109,10 @@ public class LocationDao implements Dao<Location> {
   }
 
  /** 
-   * Returns true if the provided title is valid. 
-   * A title is valid if there is no other locations in the meeting with the same title.
+   * Checks if the title is valid. A title is valid if there is no other locations in the
+   * meeting with the same title.
+   * 
+   * @return true if there is no other location with the same title.
    * TODO: Update to use MeetingID.
    */
   private boolean validTitle(String targetTitle) {
