@@ -144,3 +144,74 @@ describe ('Build Info Window Vote', function() {
     expect(noteText).toBe(NOTE_A);
   });
 });
+
+/** Tests for displaying popular locations. */
+describe ('Display Popular Location', function() {
+  const LOCATIONS =
+      [{title: 'Hamburger Place', lat: 10.0, lng: 15.0, voteCount: 5,
+      note: 'I like Hamburgers!'},
+      {title: 'Sushi Place', lat: 15.0, lng: 22.0, voteCount: 5,
+      note: 'I like Unagi!'},
+      {title: 'Pizza Place', lat: 15.0, lng: 22.0, voteCount: 5,
+      note: 'I like tomato!'}];
+
+  it ('Should add 3 list elements to the popular location list',
+      async function() {     
+    spyOn(MeetingLocationDAO, 'fetchPopularLocations').and.returnValue(LOCATIONS);
+    spyOn(window, 'createPopularLocationElement').and.callThrough();
+
+    await displayPopularLocations();
+
+    let listSize = 
+        document.getElementById('popular-locations-container').childNodes.length;
+
+    expect(listSize).toBe(3);
+
+    // Test if the location details were correctly passed to 
+    // createPopularLoationElement.
+    expect(window.createPopularLocationElement)
+        .toHaveBeenCalledWith(LOCATIONS[0]);
+    expect(window.createPopularLocationElement)
+        .toHaveBeenCalledWith(LOCATIONS[1]);
+    expect(window.createPopularLocationElement)
+        .toHaveBeenCalledWith(LOCATIONS[2]);
+  });
+
+  it ('Should display a message when there are no locations', async function() {
+    const locations = [];
+    spyOn(MeetingLocationDAO, 'fetchPopularLocations').and.returnValue(locations);
+
+    await displayPopularLocations();
+
+    let childNodes =
+        document.getElementById('popular-locations-container').childNodes;
+    let listSize = childNodes.length;
+    expect(listSize).toBe(1);
+    expect(childNodes[0].textContent).toBe('There are no locations to display.');
+  });
+
+  it ('Should handle error is MeetingLocationDAO throws an error', async function() {
+    spyOn(window, 'handleError');
+    spyOn(MeetingLocationDAO, 'fetchPopularLocations').and.throwError('Not Found.');
+    await displayPopularLocations();
+    expect(window.handleError).toHaveBeenCalled();
+  });
+});
+
+/** Tests for creating list element for popular location list. */
+describe ('Create Popular Location Element', function() {
+  const LOCATION = 
+      {title : 'My Place', lat: 10.0, lng: 15.0, note: 'I like hats',
+      voteCount : 5};
+
+  it ('Should display the location title and vote count', function() {
+    const returnedElement = createPopularLocationElement(LOCATION);
+
+    // Check if the title and votecount are displayed.
+    let titleText = returnedElement.querySelector('#popularLocationTitle').innerText;
+    let voteCountText = returnedElement.querySelector('#popularLocationVoteCount').innerText;
+
+    expect(titleText).toBe(LOCATION.title);
+    expect(voteCountText).toBe(LOCATION.voteCount.toString());
+  });
+});

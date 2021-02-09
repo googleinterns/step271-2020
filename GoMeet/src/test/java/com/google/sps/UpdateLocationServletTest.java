@@ -4,6 +4,7 @@ import static com.google.appengine.api.datastore.FetchOptions.Builder.withLimit;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
+import static org.mockito.Mockito.*;
 
 import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
@@ -15,20 +16,14 @@ import com.google.appengine.tools.development.testing.LocalServiceTestHelper;
 import com.google.appengine.api.datastore.KeyFactory;
 import com.google.appengine.api.datastore.Key;
 import com.google.appengine.api.datastore.EntityNotFoundException;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
+import com.google.sps.data.ErrorMessages;
 import main.java.com.google.sps.servlets.UpdateLocationServlet;
 import main.java.com.google.sps.data.Location;
-import com.google.gson.Gson;
-import javax.servlet.annotation.WebServlet;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
+import main.java.com.google.sps.dao.LocationDao;
 import main.java.com.google.sps.servlets.LocationServlet;
-import main.java.com.google.sps.data.Location;
-import main.java.com.google.sps.data.LocationDao;
-import com.google.sps.data.ErrorMessages;
-
-import java.beans.Transient;
+import java.lang.reflect.Type;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
@@ -36,17 +31,16 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
-
+import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.After;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
-import static org.mockito.Mockito.*;
-
-import com.google.gson.reflect.TypeToken;
-import java.lang.reflect.Type;
 
 /** Tests for UpdateLocationServlet.java */
 @RunWith(JUnit4.class)

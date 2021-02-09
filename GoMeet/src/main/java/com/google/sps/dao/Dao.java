@@ -1,7 +1,6 @@
-package main.java.com.google.sps.data;
+package main.java.com.google.sps.dao;
 
 import com.google.appengine.api.datastore.EntityNotFoundException;
-
 import java.util.List;
 import java.util.Optional;
 

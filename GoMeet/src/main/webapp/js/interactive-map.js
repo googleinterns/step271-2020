@@ -131,3 +131,50 @@ function buildInfoWindowVote(title, voteCount, note, keyString) {
       document.createElement('br'), button);
   return containerDiv;
 }
+
+/** Creates a list element that represents a location. */
+function createPopularLocationElement(location) {
+  const liElement = document.createElement('li');
+  liElement.className = 'location';
+
+  let titleContainer = document.createElement('span');
+  titleContainer.setAttribute('id', 'popularLocationTitle');
+  titleContainer.innerText = location.title;
+
+  let voteCountContianer = document.createElement('span');
+  voteCountContianer.setAttribute('id', 'popularLocationVoteCount');
+  voteCountContianer.innerText = location.voteCount;
+
+  liElement.append('Title: ', titleContainer, document.createElement('br'),
+      'Number of Votes: ', voteCountContianer);
+  return liElement;
+}
+
+/** Fetches the popular location data and adds it to the DOM. */
+async function displayPopularLocations() {
+  const popularLocationElement = 
+      document.getElementById('popular-locations-container');
+  popularLocationElement.innerHTML = '';
+
+  try {
+    let json = await MeetingLocationDAO.fetchPopularLocations();
+
+    // If we make it here, that means that the popular locations were fetched.
+    // And we can display them.
+    if (!json.length) {
+        popularLocationElement.append('There are no locations to display.');
+    } else {
+      json.forEach((location) => {
+        popularLocationElement.appendChild(createPopularLocationElement(
+            location)); 
+      });
+    }
+  } catch (error) {
+    handleError(error);
+  }  
+}
+
+/** Used to handle error. */
+function handleError(error) {
+  alert('Error Occurred: ' + error.message + '\nPlease Try Again Later.');
+}

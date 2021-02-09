@@ -1,4 +1,4 @@
-package main.java.com.google.sps.data;
+package main.java.com.google.sps.dao;
 
 import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;

@@ -30,7 +30,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import main.java.com.google.sps.servlets.LocationServlet;
 import main.java.com.google.sps.data.Location;
-import main.java.com.google.sps.data.LocationDao;
+import main.java.com.google.sps.dao.LocationDao;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
