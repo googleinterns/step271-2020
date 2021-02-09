@@ -60,6 +60,7 @@ public class LocationServletTest {
   private LocationDao mockedLocationDao;
   private StringWriter stringWriter = new StringWriter();
   private PrintWriter writer = new PrintWriter(stringWriter);
+  private LocationServlet servlet;
 
   private final LocalServiceTestHelper helper =
       new LocalServiceTestHelper(new LocalDatastoreServiceTestConfig());
@@ -73,6 +74,8 @@ public class LocationServletTest {
     response = mock(HttpServletResponse.class);  
     mockedLocationDao = mock(LocationDao.class);
     when(response.getWriter()).thenReturn(writer);
+    servlet = new LocationServlet();
+    servlet.setDao(mockedLocationDao);
   }
 
   @After
@@ -101,8 +104,6 @@ public class LocationServletTest {
       fail();
     }
      
-    LocationServlet servlet = new LocationServlet();
-    servlet.setDao(mockedLocationDao);
     servlet.doPost(request, response);
     
     // Check the mockedDao was called with the correct parameters
@@ -140,8 +141,6 @@ public class LocationServletTest {
       fail();
     }
 
-    LocationServlet servlet = new LocationServlet();
-    servlet.setDao(mockedLocationDao);
     servlet.doPost(request, response);
 
     // Check if error response is sent.
@@ -175,8 +174,6 @@ public class LocationServletTest {
       fail();
     }
 
-    LocationServlet servlet = new LocationServlet();
-    servlet.setDao(mockedLocationDao);
     servlet.doPost(request, response);
 
     // Check if error response is sent.
@@ -202,8 +199,6 @@ public class LocationServletTest {
     List<Location> listToReturn = new ArrayList<>(Arrays.asList(LOCATION_A));
     when(mockedLocationDao.getAll()).thenReturn(listToReturn);
 
-    LocationServlet servlet = new LocationServlet();
-    servlet.setDao(mockedLocationDao);
     servlet.doGet(request, response);
 
     stringWriter.flush();
