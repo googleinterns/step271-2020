@@ -2,7 +2,8 @@
  * Toggles meeting event display depending on login status of user.
  */
 function toggleMeetingDisplay() {
-  LoginStatus.doGet().then((loginStatus) => {
+  // TO DO: Get the meeting event id from query string instead of using hard coded meeting event ID 
+  LoginStatus.doGet("aglub19hcHBfaWRyGQsSDE1lZXRpbmdFdmVudBiAgICAgIDICQw").then((loginStatus) => {
     let prompt; 
     let style; 
     if (loginStatus.loggedIn === 'true') {
