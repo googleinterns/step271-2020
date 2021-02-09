@@ -40,8 +40,8 @@ class MeetingLocationDAO {
     params.append('lat', lat);
     params.append('lng', lng);
     params.append('note', note);
-    let result = await fetch(this.storingEndPoint, {method: 'POST', body: params})
-      .then((response) => response.json());
+    let response = await fetch(this.storingEndPoint, {method: 'POST', body: params});
+    let result = await response.json();
     return result;
   }
 
