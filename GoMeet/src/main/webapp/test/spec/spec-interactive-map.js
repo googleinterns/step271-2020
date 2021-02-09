@@ -163,7 +163,7 @@ describe ('Build Info Window Vote', function() {
   });
 
   it ('Should increment the voteCount when the vote button is pressed',
-      function() {
+      async function() {
     spyOn(MeetingLocationDAO, 'updateLocation');
     let currDisplayVote;
     const infoWindowContent = buildInfoWindowVote(TITLE_A, COUNT_A, NOTE_A);
@@ -173,7 +173,7 @@ describe ('Build Info Window Vote', function() {
     expect(parseInt(currDisplayVote)).toBe(COUNT_A);
 
     const button = infoWindowContent.querySelector('#voteButton');
-    button.click();
+    await button.onclick();
     currDisplayVote = infoWindowContent.querySelector('#displayVoteCount')
         .innerText;
     expect(parseInt(currDisplayVote)).toBe(COUNT_A + 1);

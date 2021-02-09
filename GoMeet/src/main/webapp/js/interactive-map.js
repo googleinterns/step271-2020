@@ -116,8 +116,8 @@ function buildInfoWindowVote(title, voteCount, note, keyString) {
   const button = document.createElement('button');
   button.setAttribute('id', 'voteButton');
   button.appendChild(document.createTextNode('VOTE'));
-  button.onclick = () => {
-    MeetingLocationDAO.updateLocation(keyString);
+  button.onclick = async () => {
+    await MeetingLocationDAO.updateLocation(keyString);
     const currVote = voteContainer.innerText;
     voteContainer.innerText = parseInt(currVote) + 1;
   };
