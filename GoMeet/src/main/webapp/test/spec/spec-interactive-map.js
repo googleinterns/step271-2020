@@ -199,6 +199,23 @@ describe ('Build Info Window Vote', function() {
         .innerText;
     expect(parseInt(currDisplayVote)).toBe(COUNT_A + 1);
   });
+  
+  it ('Should handle error if dao throws an error', async function() {
+    // Set up dao mock. 
+    const mockedLocationDao = new PermMeetingLocationDAO();
+    spyOn(mockedLocationDao, 'updateLocation').and.throwError(ENTITY_NOT_FOUND);
+    spyOn(MeetingLocationDaoFactory, 'getLocationDao').and.returnValue(
+        mockedLocationDao);
+
+    spyOn(window, 'handleErrorConsole');
+
+    const infoWindowContent = buildInfoWindowVote(TITLE_A, COUNT_A, NOTE_A);
+
+    const button = infoWindowContent.querySelector('#voteButton');
+    await button.onclick();
+
+    expect(window.handleErrorConsole).toHaveBeenCalled();
+  });
 });
 
 /** Tests for displaying popular locations. */

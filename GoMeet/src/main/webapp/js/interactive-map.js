@@ -118,9 +118,13 @@ function buildInfoWindowVote(title, voteCount, note, keyString) {
   button.setAttribute('id', 'voteButton');
   button.appendChild(document.createTextNode('VOTE'));
   button.onclick = async () => {
-    await dao.updateLocation(keyString);
-    const currVote = voteContainer.innerText;
-    voteContainer.innerText = parseInt(currVote) + 1;
+    try {
+      await dao.updateLocation(keyString);
+      const currVote = voteContainer.innerText;
+      voteContainer.innerText = parseInt(currVote) + 1;
+    } catch (error) {
+      handleErrorConsole(error);
+    }
   };
 
   const containerDiv = document.createElement('div');
@@ -185,4 +189,12 @@ function createSpanContainer(innerText, id) {
   container.setAttribute('id', id);
   container.innerText = innerText;
   return container;
+}
+
+/** 
+ * Used to handle errors that the user will not be made aware of. 
+ * For example, internal problems with the server.
+ */
+function handleErrorConsole(error) {
+  console.error(error.message);
 }
