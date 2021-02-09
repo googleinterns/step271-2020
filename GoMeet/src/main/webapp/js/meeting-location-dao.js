@@ -6,7 +6,7 @@ class MeetingLocationDaoFactory {
    */
   static getLocationDao(storageType) {
     if (storageType === 'permanent') {
-      return new MeetingLocationDAO();
+      return new PermMeetingLocationDAO();
     } else {
       return new TempMeetingLocationDAO();
     }
@@ -19,7 +19,7 @@ class TempMeetingLocationDAO {
 }
 
 /** Data access object for the /location-data servlet. */
-class MeetingLocationDAO {
+class PermMeetingLocationDAO {
 
   /** Constructs a Data Access object for permanent storage. */
   constructor() {

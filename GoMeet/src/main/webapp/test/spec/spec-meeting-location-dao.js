@@ -1,10 +1,10 @@
-/** Tests for MeetingLocationDAO. */
+/** Tests for PermMeetingLocationDAO. */
 
 /** Tests for MeetingLocationDaoFactory. */
 describe('getLocationDao', function() {
   it ('Should return Dao for permanent storage', function() {
     const dao = MeetingLocationDaoFactory.getLocationDao('permanent');
-    expect(dao instanceof MeetingLocationDAO).toBe(true);
+    expect(dao instanceof PermMeetingLocationDAO).toBe(true);
   });
 
   it ('Should return Dao for temporary storage', function() {
@@ -31,7 +31,7 @@ describe ('Fetch Locations', function() {
     promiseHelper.resolve(response);
     spyOn(window, 'fetch').and.returnValue(fetchPromise);
 
-    let responseJson = await new MeetingLocationDAO().fetchLocations();
+    let responseJson = await new PermMeetingLocationDAO().fetchLocations();
 
     expect(responseJson).toEqual(LOCATIONS);
   });
@@ -78,7 +78,7 @@ describe('New Location', function() {
 
     spyOn(window, 'fetch').and.returnValue(fetchPromise);
 
-    let receivedResponse = await new MeetingLocationDAO().newLocation(
+    let receivedResponse = await new PermMeetingLocationDAO().newLocation(
         TITLE_A, LAT_A, LNG_A, NOTE_A);
 
     let expectedParams = new URLSearchParams();
@@ -106,7 +106,7 @@ describe('Update Location', function() {
     let expectedParams = new URLSearchParams();
     expectedParams.append('key', KEY_STRING);
 
-    new MeetingLocationDAO().updateLocation(KEY_STRING);
+    new PermMeetingLocationDAO().updateLocation(KEY_STRING);
 
     // Check if fetch was called with the right params.
     expect(window.fetch).toHaveBeenCalledWith('/update-location-data',
