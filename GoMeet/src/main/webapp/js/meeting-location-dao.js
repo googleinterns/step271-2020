@@ -72,10 +72,16 @@ class PermMeetingLocationDAO {
     return result;
   }
 
-  /** Sends a request to the servlet to update a location entity's voteCount.*/
+  /** Sends a request to the servlet to update a location entity's voteCount.
+   * Throws an error if there is no location on the database with the 
+   * given key string.
+   */
   async updateLocation(keyString) {
     const params = new URLSearchParams();
     params.append('key', keyString);
-    await fetch(this.votingEndPoint, {method: 'POST', body: params});
+    let response = await fetch(this.votingEndPoint, {method: 'POST', body: params});
+    if (response.status == 400) {
+      throw new Error(ENTITY_NOT_FOUND);
+    }
   }
 }

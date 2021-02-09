@@ -110,9 +110,11 @@ describe('New Location', function() {
 /** Tests for updateLocation(). */
 describe('Update Location', function() {
   const KEY_STRING = '1234';
+  const OK_RESPONSE = {status : 200};
+  const BAD_REQUEST_RESPONSE = {status : 400};
 
   it ('Should send a post request with the correct params', function() {
-    spyOn(window, 'fetch');
+    spyOn(window, 'fetch').and.returnValue(OK_RESPONSE);
 
     let expectedParams = new URLSearchParams();
     expectedParams.append('key', KEY_STRING);
@@ -122,5 +124,16 @@ describe('Update Location', function() {
     // Check if fetch was called with the right params.
     expect(window.fetch).toHaveBeenCalledWith('/update-location-data',
         {method: 'POST', body: expectedParams}); 
+  });
+
+  it ('Should throw an error if fetch return status code of 400', async function() {    
+    spyOn(window, 'fetch').and.returnValue(BAD_REQUEST_RESPONSE);
+    let errorMessage;
+    try {
+      await new PermMeetingLocationDAO().updateLocation(KEY_STRING);
+    } catch (error) {
+       errorMessage = error.message;
+    }
+    expect(errorMessage).toEqual(ENTITY_NOT_FOUND);
   });
 });
