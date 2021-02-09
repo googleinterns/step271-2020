@@ -117,7 +117,7 @@ describe ('Fetch Locations', function() {
     const locations =
         [{title: TITLE, lat: LAT, lng: LNG, note: NOTE}];
 
-    const mockedLocationDao = new MeetingLocationDAO();
+    const mockedLocationDao = new PermMeetingLocationDAO();
     spyOn(mockedLocationDao, 'fetchLocations').and.returnValue(locations);
     spyOn(MeetingLocationDaoFactory, 'getLocationDao').and.returnValue(
         mockedLocationDao);
@@ -215,7 +215,7 @@ describe ('Display Popular Location', function() {
   it ('Should add 3 list elements to the popular location list',
       async function() {     
     // Spy on Dao.     
-    const mockedLocationDao = new MeetingLocationDAO();
+    const mockedLocationDao = new PermMeetingLocationDAO();
     spyOn(mockedLocationDao, 'fetchPopularLocations').and.returnValue(
         LOCATIONS);
     spyOn(MeetingLocationDaoFactory, 'getLocationDao').and.returnValue(
@@ -242,7 +242,7 @@ describe ('Display Popular Location', function() {
 
   it ('Should display a message when there are no locations', async function() {
     // Spy on Dao.  
-    const mockedLocationDao = new MeetingLocationDAO();
+    const mockedLocationDao = new PermMeetingLocationDAO();
     spyOn(mockedLocationDao, 'fetchPopularLocations').and.returnValue(EMPTY);
     spyOn(MeetingLocationDaoFactory, 'getLocationDao').and.returnValue(
         mockedLocationDao);
