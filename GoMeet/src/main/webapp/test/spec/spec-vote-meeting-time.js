@@ -1,7 +1,7 @@
 const CURRENT_USER = 'anna@test.com';
 const MEETING_TIME_IDS = ['abc123', 'def456', 'ghi789'];
 // The times that CURRENT_USER has voted for.
-const VOTED_TIMES = new Set(['abc123', 'def456', 'ghi789']); 
+const VOTED_TIMES = new Set(MEETING_TIME_IDS); 
 const MEETING_TIME_DATA = [
   {
     datetime: '2021-01-28T17:20',
@@ -44,7 +44,7 @@ describe('getLoggedInUser', function() {
     expect(loggedInUser).toEqual(LOGGED_IN.userEmail);
     let loggedOutUser = await getLoggedInUser();
     expect(loggedOutUser).toBe(null);
-  })
+  });
 });
 
 // TESTS FOR fetchAndProcess(meetingTimeIds)
@@ -190,6 +190,7 @@ describe('generateVoteTimeForm', function() {
       expect(voteButton.disabled).toBe(false); // 'currentUser' has not voted at all
     }
   });
+
   afterEach(function() {
     // Reset the 'meeting-times-table' table to JUST include the headers.
     let table = document.getElementById('meeting-times-table');
@@ -202,6 +203,7 @@ describe('generateVoteTimeForm', function() {
 // TESTS FOR sortTimeByVotes
 describe('sortTimeByVotes', function() {
   let sortedTimeData;
+  let sortedTimeDataLength;
   beforeEach(function() {
     sortedTimeData = [
       {
@@ -220,6 +222,7 @@ describe('sortTimeByVotes', function() {
         voters: ['anna@test.com'],
       }
     ];
+    sortedTimeDataLength = sortedTimeData.length;
   });
 
   it('sorts the timeData objects by voteCount in decreasing order', function() {
@@ -241,6 +244,7 @@ describe('sortTimeByVotes', function() {
       }
     ];
     sortTimesbyVotes(timeData);
+    expect(timeData.length).toEqual(sortedTimeDataLength);
     expect(timeData).toEqual(sortedTimeData);
   });
 
@@ -264,6 +268,7 @@ describe('sortTimeByVotes', function() {
       }
     ];
     sortTimesbyVotes(sortedTimeDataDuplicate);
+    expect(sortedTimeDataDuplicate.length).toEqual(sortedTimeDataLength);
     expect(sortedTimeDataDuplicate).toEqual(sortedTimeData);
   });
 
