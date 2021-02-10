@@ -1,3 +1,5 @@
+const INITIAL_VOTE_COUNT = 1;
+
 /** Initialises the map. */
 function initMap() {
   // Create the map object
@@ -27,7 +29,7 @@ function createLocationForEdit(map, lat, lng) {
 
   const infoWindow =
       new google.maps.InfoWindow({content: buildInfoWindowInput(lat, lng,
-         editLocation)});
+         editLocation, map)});
 
   // When the user closes the editable info window, remove the marker.
   google.maps.event.addListener(infoWindow, 'closeclick', () => {
@@ -54,17 +56,24 @@ function createLocationForDisplay(map, lat, lng, title, voteCount, note, keyStri
  * Builds and returns HTML elements that show an editable textbox and a submit
  * button.
  */
-function buildInfoWindowInput(lat, lng, editLocation) {
+function buildInfoWindowInput(lat, lng, editLocation, map) {
   const titleTextbox = document.createElement('textarea');
+  titleTextbox.setAttribute('id', 'titleTextbox');
+
   const noteTextbox = document.createElement('textarea');
+  noteTextbox.setAttribute('id', 'noteTextbox');
 
   const button = document.createElement('button');
+  button.setAttribute('id', 'confirmButton');
   button.appendChild(document.createTextNode('CONFIRM'));
-  button.onclick = () => {
+  button.onclick = async () => {
     try {
       validateTitle(titleTextbox.value);
-      MeetingLocationDAO.newLocation(titleTextbox.value, lat, lng,
-          noteTextbox.value);
+      const keyString = await MeetingLocationDAO.newLocation(
+          titleTextbox.value, lat, lng, noteTextbox.value);
+      createLocationForDisplay(
+          map, lat, lng, titleTextbox.value, INITIAL_VOTE_COUNT,
+          noteTextbox.value, keyString);
       editLocation.setMap(null);
     } catch (err) {
       alert(err.message);
@@ -77,16 +86,6 @@ function buildInfoWindowInput(lat, lng, editLocation) {
       document.createElement('br'), noteTextbox, document.createElement('br'),
       button);
   return containerDiv;
-}
-
-/** Sends a POST request with the location data. */
-function postLocation(title, lat, lng, note) {
-  const params = new URLSearchParams();
-  params.append('title', title);
-  params.append('lat', lat);
-  params.append('lng', lng);
-  params.append('note', note);
-  MeetingLocationDAO.postLocation('/location-data', params);
 }
 
 /** 
@@ -110,23 +109,22 @@ async function fetchLocations(map) {
 
 /** Builds a HTML element to display the location's data and a vote button. */
 function buildInfoWindowVote(title, voteCount, note, keyString) {
-  let titleContainer = document.createElement('span');
-  titleContainer.setAttribute('id', 'displayTitle');
-  titleContainer.innerText = title;
-
-  let noteContainer = document.createElement('span');
-  noteContainer.setAttribute('id', 'displayNote');
-  noteContainer.innerText = note;
+  const titleContainer = createSpanContainer(title, 'displayTitle');
+  const noteContainer = createSpanContainer(note, 'displayNote');
+  const voteContainer = createSpanContainer(voteCount, 'displayVoteCount');
 
   const button = document.createElement('button');
+  button.setAttribute('id', 'voteButton');
   button.appendChild(document.createTextNode('VOTE'));
-  button.onclick = () => {
-    MeetingLocationDAO.updateLocation(keyString);
+  button.onclick = async () => {
+    await MeetingLocationDAO.updateLocation(keyString);
+    const currVote = voteContainer.innerText;
+    voteContainer.innerText = parseInt(currVote) + 1;
   };
 
   const containerDiv = document.createElement('div');
   containerDiv.append('Location title: ', titleContainer, 
-      document.createElement('br'), 'Vote Count: ', voteCount, 
+      document.createElement('br'), 'Vote Count: ', voteContainer, 
       document.createElement('br'), 'Note: ', noteContainer,
       document.createElement('br'), button);
   return containerDiv;
@@ -137,16 +135,13 @@ function createPopularLocationElement(location) {
   const liElement = document.createElement('li');
   liElement.className = 'location';
 
-  let titleContainer = document.createElement('span');
-  titleContainer.setAttribute('id', 'popularLocationTitle');
-  titleContainer.innerText = location.title;
-
-  let voteCountContianer = document.createElement('span');
-  voteCountContianer.setAttribute('id', 'popularLocationVoteCount');
-  voteCountContianer.innerText = location.voteCount;
+  let titleContainer =
+      createSpanContainer(location.title, 'popularLocationTitle');
+  let voteCountContainer = 
+      createSpanContainer(location.voteCount, 'popularLocationVoteCount');
 
   liElement.append('Title: ', titleContainer, document.createElement('br'),
-      'Number of Votes: ', voteCountContianer);
+      'Number of Votes: ', voteCountContainer);
   return liElement;
 }
 
@@ -156,12 +151,33 @@ async function displayPopularLocations() {
       document.getElementById('popular-locations-container');
   popularLocationElement.innerHTML = '';
 
-  let json = await MeetingLocationDAO.fetchPopularLocations();
-  if (!json.length) {
-    popularLocationElement.append('There are no locations to display.');
-  } else {
-    json.forEach((location) => {
-      popularLocationElement.appendChild(createPopularLocationElement(location)); 
-    });
-  }
+  try {
+    let json = await MeetingLocationDAO.fetchPopularLocations();
+
+    // If we make it here, that means that the popular locations were fetched.
+    // And we can display them.
+    if (!json.length) {
+        popularLocationElement.append('There are no locations to display.');
+    } else {
+      json.forEach((location) => {
+        popularLocationElement.appendChild(createPopularLocationElement(
+            location)); 
+      });
+    }
+  } catch (error) {
+    handleError(error);
+  }  
+}
+
+/** Used to handle error. */
+function handleError(error) {
+  alert('Error Occurred: ' + error.message + '\nPlease Try Again Later.');
+}
+
+/** Returns a container with the given id and innerText. */
+function createSpanContainer(innerText, id) {
+  const container = document.createElement('span');
+  container.setAttribute('id', id);
+  container.innerText = innerText;
+  return container;
 }

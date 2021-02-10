@@ -39,15 +39,20 @@ describe('Create location for edit', function() {
 describe('Build Info window input', function() {
   const LAT_A = 33.0;
   const LNG_A = 150.0;
+  const TITLE_A = 'My meeting place';
   const EMPTY_TITLE = '';
+  const NOTE_A = 'My note!';
+  const MAP = {};
+  const KEY_STRING = '1234';
   let mockedLocation;
+  let infoWindowContent;
   
   beforeAll(function() {
     mockedLocation = jasmine.createSpyObj('Marker', ['setMap']);
+    infoWindowContent = buildInfoWindowInput(LAT_A, LNG_A, mockedLocation, MAP);
   });
 
   it ('Should have two textareas and one button', function() {
-    const infoWindowContent = buildInfoWindowInput(LAT_A, LNG_A, mockedLocation);
     const childNodes = infoWindowContent.children;
 
     let textareaCount = 0;
@@ -67,12 +72,25 @@ describe('Build Info window input', function() {
 
   it ('Should call alert if title is empty', function() {
     spyOn(window, 'alert');
-    const infoWindowContent = buildInfoWindowInput(LAT_A, LNG_A, mockedLocation);
     const titleTextbox = infoWindowContent.children[1];
     const button = infoWindowContent.children[6];
     titleTextbox.value = EMPTY_TITLE;
     button.click();
     expect(window.alert).toHaveBeenCalled(); 
+  });
+
+  it ('Should call createLocationForDisplay with the corerct params', async function() {
+    spyOn(MeetingLocationDAO, 'newLocation').and.returnValue(KEY_STRING)
+    spyOn(window, 'createLocationForDisplay');
+
+    infoWindowContent.querySelector('#titleTextbox').value = TITLE_A;
+    infoWindowContent.querySelector('#noteTextbox').value = NOTE_A;
+    const button = infoWindowContent.querySelector('#confirmButton');
+
+    await button.onclick();
+
+    expect(window.createLocationForDisplay).toHaveBeenCalledWith(
+        MAP, LAT_A, LNG_A, TITLE_A, 1, NOTE_A, KEY_STRING);
   });
 });
 
@@ -143,6 +161,23 @@ describe ('Build Info Window Vote', function() {
     expect(titleText).toBe(TITLE_A);
     expect(noteText).toBe(NOTE_A);
   });
+
+  it ('Should increment the voteCount when the vote button is pressed',
+      async function() {
+    spyOn(MeetingLocationDAO, 'updateLocation');
+    let currDisplayVote;
+    const infoWindowContent = buildInfoWindowVote(TITLE_A, COUNT_A, NOTE_A);
+
+    currDisplayVote = infoWindowContent.querySelector('#displayVoteCount')
+        .innerText;
+    expect(parseInt(currDisplayVote)).toBe(COUNT_A);
+
+    const button = infoWindowContent.querySelector('#voteButton');
+    await button.onclick();
+    currDisplayVote = infoWindowContent.querySelector('#displayVoteCount')
+        .innerText;
+    expect(parseInt(currDisplayVote)).toBe(COUNT_A + 1);
+  });
 });
 
 /** Tests for displaying popular locations. */
@@ -188,6 +223,13 @@ describe ('Display Popular Location', function() {
     let listSize = childNodes.length;
     expect(listSize).toBe(1);
     expect(childNodes[0].textContent).toBe('There are no locations to display.');
+  });
+
+  it ('Should handle error is MeetingLocationDAO throws an error', async function() {
+    spyOn(window, 'handleError');
+    spyOn(MeetingLocationDAO, 'fetchPopularLocations').and.throwError('Not Found.');
+    await displayPopularLocations();
+    expect(window.handleError).toHaveBeenCalled();
   });
 });
 

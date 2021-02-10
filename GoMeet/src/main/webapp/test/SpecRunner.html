@@ -14,6 +14,7 @@
   <!-- include source files here... -->
   <script src="../js/meeting-location-dao.js"></script>
   <script src="../js/error-messages.js"></script>
+  <script src="../js/dao-utils.js"></script>
   <script src="../js/create-meeting-shared.js"></script>
   <script src="../js/create-meeting-step1.js"></script>
   <script src="../js/create-meeting-step2.js"></script>
@@ -22,7 +23,11 @@
   <script src="../js/load-map.js"></script> 
   <script src="../js/interactive-map.js"></script>
   <script src="../js/manual-time-proposal.js"></script>
+  <script src="../js/meeting-event-dao.js"></script>
   <script src="../js/meeting-time-dao.js"></script>
+  <script src="../js/email-dao.js"></script>
+  <script src="../js/vote-meeting-time-dao.js"></script>
+  <script src="../js/vote-meeting-time.js"></script>
   
   <!-- include spec files (files containing test code) here... -->
   <script src="spec/spec-create-meeting-step1.js"></script>
@@ -31,8 +36,13 @@
   <script src="spec/spec-meeting-display.js"></script>
   <script src="spec/spec-interactive-map.js"></script>
   <script src="spec/spec-manual-time-proposal.js"></script>
+  <script src="spec/spec-meeting-event-dao.js"></script>
   <script src="spec/spec-meeting-time-dao.js"></script>
-   <script src="spec/spec-meeting-location-dao.js"></script>
+  <script src="spec/spec-meeting-location-dao.js"></script>
+  <script src="spec/spec-email-dao.js"></script>
+  <script src="spec/spec-meeting-location-dao.js"></script>
+  <script src="spec/spec-vote-meeting-time-dao.js"></script>
+  <script src="spec/spec-vote-meeting-time.js"></script>
 </head>
 <body>
   <ul id="guest-list"></ul>
@@ -59,6 +69,16 @@
       <input>
       <button></button>
     </div>
+  </div>
+  <div id="vote-meeting-times" style="display: none;">
+    <table id="meeting-times-table">
+      <tr>
+        <th>Date and Time</th>
+        <th>Votes</th>
+        <th>Voters</th>
+        <th>Vote for this time</th>
+      </tr>
+    </table>
   </div>
 </body>
 </html>

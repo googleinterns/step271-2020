@@ -9,6 +9,9 @@
     <script src="js/meeting-display.js"></script>
     <script src="js/login-status.js"></script>
     <link rel="stylesheet" href="style.css">
+    <script src="js/meeting-time-dao.js"></script>
+    <script src="js/vote-meeting-time.js"></script>
+    <script src="js/vote-meeting-time-dao.js"></script>
   </head>
   <body onload="toggleMeetingDisplay(); initMap()">
     <h1 class="center">GoMeet</h1>
@@ -17,7 +20,17 @@
     <div id="vote-meeting-times">
       <h3>Meeting times here</h3>
     </div>
-    <div id="vote-meeting-locations">
+    <div id="vote-meeting-times">
+      <table id="meeting-times-table">
+        <tr>
+          <th>Date and Time</th>
+          <th>Votes</th>
+          <th>Voters</th>
+          <th>Vote for this time</th>
+        </tr>
+      </table>
+    </div>
+    <div id="vote-meeting-locations"></div>
       <h2>Meeting Locations</h2>
       <p>Click on the map to propose a new location.</p>
       <div id="map"></div></br>

@@ -24,6 +24,25 @@ describe ('Fetch Locations', function() {
   });
 });
 
+/** Tests for fetchPopularLocatios(). */
+describe('Fetch Popuar Locations', function() {
+  const BAD_REQUEST_RESPONSE =
+      {status: 404, statusText : 'Not Found.'};
+
+  it ('Should throw an error if the response status is not between 200 and 299',
+      async function() {
+    spyOn(window, 'fetch').and.returnValue(BAD_REQUEST_RESPONSE);
+
+    let errorMessage;
+    try {
+      await MeetingLocationDAO.fetchPopularLocations();
+    } catch (error) {
+      errorMessage = error.message;
+    }
+    expect(errorMessage).toEqual(BAD_REQUEST_RESPONSE.statusText);
+  });
+});
+ 
 /** Tests for newLocation(). */
 describe('New Location', function() {
   const TITLE_A = 'Taco Place';
