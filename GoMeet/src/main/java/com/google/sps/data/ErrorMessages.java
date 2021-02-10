@@ -18,4 +18,6 @@ public class ErrorMessages {
       "A valid Id must be provided to fetch the entity";
   public static final String USER_HAS_VOTED_ERROR =
       "The user has voted once already";
+  public static final String BAD_LOGIN_STATUS_REQUEST_ERROR = 
+      "Please provide a meething event ID to the request"; 
 }

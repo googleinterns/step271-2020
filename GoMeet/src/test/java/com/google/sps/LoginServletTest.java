@@ -8,27 +8,25 @@ import com.google.appengine.api.users.UserServiceFactory;
 import com.google.appengine.api.users.User;
 import com.google.appengine.tools.development.testing.LocalServiceTestHelper;
 import com.google.appengine.tools.development.testing.LocalUserServiceTestConfig;
-import com.google.gson.Gson;
 import com.google.gson.JsonParser;
 import com.google.gson.JsonObject;
+import com.google.sps.data.ErrorMessages;
+import com.google.sps.data.MeetingEventFields;
 import com.google.sps.data.ServletUtil;
+import com.google.sps.servlets.LoginServlet;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.HashMap;
-import com.google.sps.data.MeetingEventFields;
-import com.google.sps.servlets.LoginServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.After;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
-import org.json.simple.JSONObject;
-import org.springframework.mock.web.MockHttpServletRequest;
-import org.springframework.mock.web.MockHttpServletResponse;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import test.java.com.google.sps.ServletTestUtil; 
 
 /** Tests for LoginServlet.java */
 @RunWith(JUnit4.class)
@@ -59,6 +57,15 @@ public class LoginServletTest {
   @After
   public void tearDown() {
     helper.tearDown();
+  }
+
+  @Test 
+  public void noMeetingEventIdParam() throws IOException {
+    when(mockedRequest.getParameter(MeetingEventFields.MEETING_EVENT_ID)).thenReturn(null);
+    new LoginServlet().doGet(mockedRequest, mockedResponse); 
+
+    ServletTestUtil.expectBadRequest(HttpServletResponse.SC_BAD_REQUEST, 
+        ErrorMessages.BAD_LOGIN_STATUS_REQUEST_ERROR, mockedResponse, stringWriter, writer);
   }
 
   @Test
