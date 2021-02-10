@@ -221,14 +221,14 @@ describe ('Build Info Window Vote', function() {
     spyOn(MeetingLocationDaoFactory, 'getLocationDao').and.returnValue(
         mockedLocationDao);
 
-    spyOn(window, 'handleErrorConsole');
+    spyOn(window, 'handleError');
 
     const infoWindowContent = buildInfoWindowVote(TITLE_A, COUNT_A, NOTE_A);
 
     const button = infoWindowContent.querySelector('#voteButton');
     await button.onclick();
 
-    expect(window.handleErrorConsole).toHaveBeenCalled();
+    expect(window.handleError).toHaveBeenCalled();
   });
 });
 
