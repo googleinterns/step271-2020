@@ -62,7 +62,7 @@ class TempMeetingLocationDAO {
    * @throws an error when the meeting creator tries to vote for location.
    */
   updateLocation(keyString) {
-    throw new Error(USER_HAS_VOTED_ERROR);
+    throw new Error(USER_HAS_VOTED);
   }
 
   /**
