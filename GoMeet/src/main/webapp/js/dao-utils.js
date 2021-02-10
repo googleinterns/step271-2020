@@ -17,4 +17,21 @@ class DAOUtils {
     }
     return endpoint + '?' + queryString.toString();
   }
+
+  /**
+   * Returns a URL string iwth key value pairs for multiple values for a single field.
+   */
+  static urlArray(endpoint, fieldValues) {
+    let queryString = new URLSearchParams();
+    for (const [field, value] of Object.entries(fieldValues)) {
+      if (Array.isArray(value)) {
+        for (let i = 0; i < value.length; i++) {
+          queryString.append(field, value[i]);
+        }
+      } else {
+        queryString.append(field, value);
+      }
+    }
+    return endpoint + '?' + queryString.toString();
+  }
 }

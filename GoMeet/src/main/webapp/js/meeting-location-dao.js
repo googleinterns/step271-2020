@@ -108,7 +108,10 @@ class PermMeetingLocationDao {
    * Returns a JSON array of the location data.
    */
   async fetchLocations() {
-    let response = await fetch(this.storingEndPoint);
+    let locationKeys = await this.getMeetingLocationKeys();
+    let urlString = DAOUtils.urlArray(this.storingEndPoint, {'locationKeys' : locationKeys});
+    let response = await fetch(urlString);
+
     if (response.status >= 200 && response.status <= 299) {
       let locations = await response.json();
       return locations;
@@ -162,5 +165,14 @@ class PermMeetingLocationDao {
     if (response.status == 400) {
       throw new Error(ENTITY_NOT_FOUND);
     }
+  }
+
+  async getMeetingLocationKeys() {
+    // Note: Hard-coded keys for now.
+    const locationKeys = [
+        'aglub19hcHBfaWRyFQsSCExvY2F0aW9uGICAgICAgIwIDA',
+        'aglub19hcHBfaWRyFQsSCExvY2F0aW9uGICAgICAgKwIDA'
+    ];
+    return locationKeys;
   }
 }
