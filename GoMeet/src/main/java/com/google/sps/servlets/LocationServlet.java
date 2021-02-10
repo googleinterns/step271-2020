@@ -1,8 +1,10 @@
 package main.java.com.google.sps.servlets;
 
+import com.google.appengine.api.datastore.EntityNotFoundException;
 import com.google.gson.Gson;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import javax.servlet.annotation.WebServlet;
@@ -29,10 +31,15 @@ public class LocationServlet extends HttpServlet {
   public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
     response.setContentType("application/json");
 
-    List<Location> locations = locationDao.getAll();
-    String json = ServletUtil.convertToJson(locations);
+    String[] locationKeys = request.getParameterValues("locationKeys");
 
-    response.getWriter().println(json);
+    try {
+      List<Location> locations = locationDao.getAll(locationKeys);
+      String json = ServletUtil.convertToJson(locations);
+      response.getWriter().println(json);
+    } catch (EntityNotFoundException e ) {
+      // TODO: Handle entity not found.
+    }
   }
 
   /** Accepts a POST request containing a new location. */

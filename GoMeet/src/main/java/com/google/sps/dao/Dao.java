@@ -9,7 +9,7 @@ public interface Dao<T> {
 
   T get(String keyString) throws EntityNotFoundException;
 
-  List<T> getAll();
+  List<T> getAll(String[] keyStrings) throws EntityNotFoundException;
 
   String save(T t);
 

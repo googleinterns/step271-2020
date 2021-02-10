@@ -36,26 +36,12 @@ public class LocationDao implements Dao<Location> {
     return location;
   }
 
-  /** Returns a list of the location entites on the database. */
+  /** Returns a list of the location entites with the given keyStrings. */
   @Override
-  public List<Location> getAll() {
-
+  public List<Location> getAll(String[] keyStrings) throws EntityNotFoundException {
     List<Location> locations = new ArrayList<>();
-    
-    Query query = new Query("Location");
-    PreparedQuery results = ds.prepare(query);
-
-    for (Entity entity : results.asIterable()) {
-      double lat = (double) entity.getProperty("lat");
-      double lng = (double) entity.getProperty("lng");
-      String title = (String) entity.getProperty("title");
-      String note = (String) entity.getProperty("note");
-      int voteCount = ((Long) entity.getProperty("voteCount")).intValue();
-      String keyString = KeyFactory.keyToString(entity.getKey()); 
-      // TODO: Handle situation when one of these properties is missing
-
-      Location location = new Location(title, lat, lng, note, voteCount, keyString);
-      locations.add(location);
+    for (String keyString : keyStrings) {
+      locations.add(get(keyString));
     }
     return locations;
   }

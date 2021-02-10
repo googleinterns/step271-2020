@@ -4,6 +4,7 @@ import static com.google.appengine.api.datastore.FetchOptions.Builder.withLimit;
 import static org.mockito.Mockito.*;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
@@ -44,6 +45,7 @@ import org.mockito.Captor;
 public class LocationServletTest {
   // Values to use for testing
   private final Location LOCATION_A = new Location("Sushi Train", 15.0, 150.0, "I like sushi!", 1);
+  private final String KEY = "1234";
 
   // Acceptable difference from original location's lat/lng.
   // A difference of 0.00001 is roughly equivalent to one meter.
@@ -114,8 +116,19 @@ public class LocationServletTest {
   public void doGetTest() throws IOException {
     // Set up DAO mock
     List<Location> listToReturn = new ArrayList<>(Arrays.asList(LOCATION_A));
-    when(mockedLocationDao.getAll()).thenReturn(listToReturn);
 
+    try {
+      // Note: When mocking a function that throws an exception, the exception
+      // must be caught or throw to compile.
+      when(mockedLocationDao.getAll(any(String[].class))).thenReturn(listToReturn);
+    } catch (Exception e) {
+      fail();
+    }
+
+    // Set up reqest mock.
+    String[] keyString = new String[]{KEY};
+    when(request.getParameterValues("locationKeys")).thenReturn(keyString);
+    
     LocationServlet servlet = new LocationServlet();
     servlet.setDao(mockedLocationDao);
     servlet.doGet(request, response);

@@ -3,6 +3,7 @@ package test.java.com.google.sps;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 import static org.mockito.Mockito.*;
 
 import com.google.gson.Gson;
@@ -38,6 +39,7 @@ public class PopularLocationServletTest {
       new Location("Pastry Patisserie", 20.0, 10.0, "Pastries are yum!", 5);
   private final Location LOCATION_C =
       new Location("Pizza Place", 20.0, 10.0, "Nice Cheese!", 5);
+  private final String KEY = "1234";
 
   private HttpServletRequest request;
   private HttpServletResponse response;
@@ -55,6 +57,10 @@ public class PopularLocationServletTest {
     when(response.getWriter()).thenReturn(writer);
     servlet = new PopularLocationServlet();
     servlet.setDao(mockedLocationDao);
+
+    // Set up reqest mock.
+    String[] keyString = new String[]{KEY};
+    when(request.getParameterValues("locationKeys")).thenReturn(keyString);
   }
 
   /** 
@@ -65,7 +71,13 @@ public class PopularLocationServletTest {
   public void doGetTestSingle() throws IOException {
     // Set up DAO mock
     List<Location> listToReturn = new ArrayList<>(Arrays.asList(LOCATION_A, LOCATION_B));
-    when(mockedLocationDao.getAll()).thenReturn(listToReturn);
+    try {
+      // Note: When mocking a function that throws an exception, the exception
+      // must be caught or throw to compile.
+      when(mockedLocationDao.getAll(any(String[].class))).thenReturn(listToReturn);
+    } catch (Exception e) {
+      fail();
+    }
 
     PopularLocationServlet servlet = new PopularLocationServlet();
     servlet.setDao(mockedLocationDao);
@@ -90,7 +102,11 @@ public class PopularLocationServletTest {
     // Set up DAO mock
     List<Location> listToReturn =
         new ArrayList<>(Arrays.asList(LOCATION_A, LOCATION_B, LOCATION_C));
-    when(mockedLocationDao.getAll()).thenReturn(listToReturn);
+    try {
+      when(mockedLocationDao.getAll(any(String[].class))).thenReturn(listToReturn);
+    } catch (Exception e) {
+      fail();
+    }
 
     PopularLocationServlet servlet = new PopularLocationServlet();
     servlet.setDao(mockedLocationDao);
@@ -111,7 +127,11 @@ public class PopularLocationServletTest {
   @Test
   public void doGetEmptyDatabase() throws IOException {
     List<Location> emptyList = new ArrayList<>();
-    when(mockedLocationDao.getAll()).thenReturn(emptyList);
+    try {
+      when(mockedLocationDao.getAll(any(String[].class))).thenReturn(emptyList);
+    } catch (Exception e) {
+      fail();
+    }
 
     servlet.doGet(request, response); 
 
@@ -131,7 +151,11 @@ public class PopularLocationServletTest {
   public void doGetSameVoteCount() throws IOException {
     // Set up DAO mock
     List<Location> listToReturn = new ArrayList<>(Arrays.asList(LOCATION_B, LOCATION_C));
-    when(mockedLocationDao.getAll()).thenReturn(listToReturn);
+    try {
+      when(mockedLocationDao.getAll(any(String[].class))).thenReturn(listToReturn);
+    } catch (Exception e) {
+      fail();
+    }
 
     servlet.doGet(request, response); 
 

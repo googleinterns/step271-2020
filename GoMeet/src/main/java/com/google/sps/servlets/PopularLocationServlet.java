@@ -29,9 +29,15 @@ public class PopularLocationServlet extends HttpServlet {
   public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
     response.setContentType("application/json");
 
-    List<Location> popularLocations = getPopularLocation();
-    String json = ServletUtil.convertToJson(popularLocations);
-    response.getWriter().println(json);
+    String[] locationKeys = request.getParameterValues("locationKeys");
+
+    try {
+      List<Location> popularLocations = getPopularLocation(locationKeys);
+      String json = ServletUtil.convertToJson(popularLocations);
+      response.getWriter().println(json);
+    } catch (EntityNotFoundException e ) {
+      // TODO: Handle entity not found.
+    }
   }
 
   /** 
@@ -39,9 +45,9 @@ public class PopularLocationServlet extends HttpServlet {
    * There can be multiple locations in the database with the highest vote count.
    * All of these would be returned in the list.
    */
-  private List<Location> getPopularLocation() {
+  private List<Location> getPopularLocation(String[] keyStrings) throws EntityNotFoundException {
     List<Location> popularLocations = new ArrayList<>();
-    List<Location> allLocations = locationDao.getAll();
+    List<Location> allLocations = locationDao.getAll(keyStrings);
 
     int maxVoteCount = 0;
     for (Location location : allLocations) {

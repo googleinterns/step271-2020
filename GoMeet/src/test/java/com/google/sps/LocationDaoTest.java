@@ -108,9 +108,12 @@ public class LocationDaoTest {
         new Location(LOCATION_A.getTitle(), LOCATION_A.getLat(), LOCATION_A.getLng(),
         LOCATION_A.getNote(), LOCATION_A.getVoteCount(), key1);
     
-    List<Location> result = locationDao.getAll(); 
-
-    assertEquals(updatedLocationA, result.get(0));
+    try {
+       List<Location> result = locationDao.getAll(new String[]{key1}); 
+       assertEquals(updatedLocationA, result.get(0));
+    } catch (Exception e) {
+      fail();
+    }
   }
 
   /**
@@ -123,10 +126,13 @@ public class LocationDaoTest {
     String key1 = addLocationToDatabase(LOCATION_A);
     String key2 = addLocationToDatabase(LOCATION_B);
 
-    List<Location> result = locationDao.getAll(); 
-    
-    assertTrue(result.contains(LOCATION_A));
-    assertTrue(result.contains(LOCATION_B));
+    try {
+      List<Location> result = locationDao.getAll(new String[]{key1, key2});   
+      assertTrue(result.contains(LOCATION_A));
+      assertTrue(result.contains(LOCATION_B));
+    } catch (Exception e) {
+      fail();
+    }
   }
 
   /** Tests if a location is saved to datastore with the correct properties. */
