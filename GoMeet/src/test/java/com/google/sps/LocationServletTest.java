@@ -44,8 +44,8 @@ import org.mockito.Captor;
 @RunWith(JUnit4.class)
 public class LocationServletTest {
   // Values to use for testing
-  private final Location LOCATION_A = new Location("Sushi Train", 15.0, 150.0, "I like sushi!", 1);
-  private final String KEY = "1234";
+  private final Location LOCATION_A =
+      new Location("Sushi Train", 15.0, 150.0, "I like sushi!", 1, "key");
 
   // Acceptable difference from original location's lat/lng.
   // A difference of 0.00001 is roughly equivalent to one meter.
@@ -126,13 +126,21 @@ public class LocationServletTest {
     }
 
     // Set up reqest mock.
-    String[] keyString = new String[]{KEY};
-    when(request.getParameterValues("locationKeys")).thenReturn(keyString);
+    String[] keyStrings = new String[] {LOCATION_A.getKeyString()};
+    when(request.getParameterValues("locationKeys")).thenReturn(keyStrings);
     
     LocationServlet servlet = new LocationServlet();
     servlet.setDao(mockedLocationDao);
     servlet.doGet(request, response);
 
+    try {
+      // Check that the key strings in the request were sent to the dao.
+      verify(mockedLocationDao).getAll(keyStrings);
+    } catch (Exception e) {
+      fail();
+    }
+  
+    // Check that the corresponding locations were sent in the key string.
     stringWriter.flush();
     String responseString = stringWriter.toString();
 
@@ -147,5 +155,6 @@ public class LocationServletTest {
     assertEquals(LOCATION_A.getLat(), (double) printedLocation.getLat(), DELTA);
     assertEquals(LOCATION_A.getLng(), (double) printedLocation.getLng(), DELTA);
     assertEquals(LOCATION_A.getNote(), printedLocation.getNote());
+    assertEquals(LOCATION_A.getKeyString(), printedLocation.getKeyString());
   }
 }
