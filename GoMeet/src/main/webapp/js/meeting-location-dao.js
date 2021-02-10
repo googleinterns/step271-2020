@@ -13,9 +13,44 @@ class MeetingLocationDaoFactory {
   }
 }
 
-/** Data access object for storing location data to session storage. */
+/** Stores location data to session storage. */
 class TempMeetingLocationDAO {
-  constructor() {};
+  constructor() {
+    this.emptyKeyString = '';
+  }
+
+  /** Fetches the location data stored in session storage. */
+  fetchLocations() {
+    if (sessionStorage.getItem('locations') == null) {
+      return [];
+    } else {
+      return JSON.parse(sessionStorage.getItem('locations'));
+    } 
+  }
+
+  /** Saves a new location to session storage. */
+  newLocation(title, lat, lng, note) {
+    let locationList;
+    if (sessionStorage.getItem('locations') == null) {
+      locationList = [];
+    } else {
+      locationList = JSON.parse(sessionStorage.getItem('locations'));
+    }
+    const newLocation = {title: title, lat: lat, lng: lng,
+        note: note, keyString: this.emptyKeyString};
+    locationList.push(newLocation);
+    sessionStorage.setItem('locations', JSON.stringify(locationList));
+  }
+
+  /**
+   * Called when the user clicks the VOTE button.
+   * Note: Temporary storage is only used during the meeting creation.
+   * The meeting creator cannot vote more than once.
+   * @throws an error when the meeting creator tries to vote for location.
+   */
+  updateLocation(keyString) {
+    throw new Error(USER_HAS_VOTED_ERROR);
+  }
 }
 
 /** Data access object for the /location-data servlet. */
@@ -38,7 +73,7 @@ class PermMeetingLocationDAO {
     return locations;
   }
 
-   /**
+  /**
    * Fetches the popular location data from the servlet.
    * @return a JSON array of the popular location data.
    * @throws an error if the response status is not between 200 and 299.
