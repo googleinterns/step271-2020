@@ -22,9 +22,18 @@ public class LocationDao implements Dao<Location> {
   }
 
   @Override 
-  public Optional<Location> get(String keyString) {
-    // TODO:
-    return Optional.empty();
+  public Location get(String keyString) throws EntityNotFoundException {
+    Key key = KeyFactory.stringToKey(keyString);
+    Entity entity = ds.get(key);
+
+    // Covert the entity to a location object.
+    double lat = (double) entity.getProperty("lat");
+    double lng = (double) entity.getProperty("lng");
+    String title = (String) entity.getProperty("title");
+    String note = (String) entity.getProperty("note");
+    int voteCount = ((Long) entity.getProperty("voteCount")).intValue();
+    Location location = new Location(title, lat, lng, note, voteCount, keyString);
+    return location;
   }
 
   /** Returns a list of the location entites on the database. */

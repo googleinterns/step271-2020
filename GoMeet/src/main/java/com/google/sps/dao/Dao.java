@@ -7,7 +7,7 @@ import java.util.Optional;
 public interface Dao<T> {
   // TODO: Visibility
 
-  Optional<T> get(String keyString);
+  T get(String keyString) throws EntityNotFoundException;
 
   List<T> getAll();
 

@@ -78,6 +78,25 @@ public class LocationDaoTest {
     return KeyFactory.keyToString(entity.getKey());
   }
 
+  /** Test if get() return a location on the database if the location exists. */
+  @Test
+  public void getValidKeyTest() {
+    String keyString = addLocationToDatabase(LOCATION_A);
+    try {
+      Location result = locationDao.get(keyString);
+      assertEquals(LOCATION_A, result);
+    } catch (Exception e) {
+      fail();
+    }
+  }
+
+  /** Test if get() throws an exception if the location does not exist. */
+  @Test(expected = EntityNotFoundException.class)
+  public void getInvalidKeyTest() throws Exception {
+    String keyString = KeyFactory.createKeyString("Location", LOCATION_A.getTitle());
+    Location result = locationDao.get(keyString);
+  }
+  
   /** Tests if getAll() returns the location entities on the database. */
   @Test
   public void getAllTestSingle() {
