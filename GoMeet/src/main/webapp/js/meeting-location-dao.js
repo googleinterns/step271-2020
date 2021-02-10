@@ -30,6 +30,15 @@ class TempMeetingLocationDAO {
 
   /** Saves a new location to session storage. */
   newLocation(title, lat, lng, note) {
+    // Check if the new location can be added.
+    if (title === '') {
+      throw new Error(BLANK_FIELDS_ALERT);
+    }
+    if (!this.validTitle(title)) {
+      throw new Error(SAME_TITLE);
+    }
+
+    // Add the new location.
     let locationList;
     if (sessionStorage.getItem('locations') == null) {
       locationList = [];
@@ -50,6 +59,25 @@ class TempMeetingLocationDAO {
    */
   updateLocation(keyString) {
     throw new Error(USER_HAS_VOTED_ERROR);
+  }
+
+  /**
+   * Checks if the title is unique and therefore valid. i.e.
+   * There is no other location for this meeting with the same title.
+   * @param {String} targetTitle the title of the location being added.
+   * @return true if the title is valid.
+   */
+  validTitle(targetTitle) {
+    const locations = this.fetchLocations();
+    if (locations.length === 0) {
+      return true;
+    }
+    for (let i = 0; i < locations.length; i++) {
+      if (locations[i].title === targetTitle) {
+        return false;
+      }
+    }
+    return true;
   }
 }
 

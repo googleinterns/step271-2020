@@ -221,3 +221,39 @@ describe('Fetch Locations', function() {
     expect(results.length).toBe(0);
   });
 });
+
+describe('validTitle', function() {
+  const LOCATION_A =
+      {title: 'Pizza Place', lat: 10.0, lng: 15.0, note: 'I like cheese!',
+      keyString: ''};
+  const dao = new TempMeetingLocationDAO();
+  let fakeSessionStorage;
+
+  beforeEach(function() {
+    // Set up fake session storage.
+    fakeSessionStorage = {};
+    fakeSessionStorage['locations'] = JSON.stringify([LOCATION_A]);
+    spyOn(sessionStorage, 'setItem').and.callFake(function(key, value) {
+      fakeSessionStorage[key] = value;
+    });
+    spyOn(sessionStorage, 'getItem').and.callFake(function(key) {
+      return fakeSessionStorage[key];
+    });
+  });
+
+  it ('Should return false if the new location title is a repeat',
+      function() {
+    let result = dao.validTitle(LOCATION_A.title);
+    expect(result).toBe(false);
+  });
+
+  it ('Should return true if the new location title is not a repeat',
+      function() {
+    let result = dao.validTitle('Anti-Pizza Place');
+    expect(result).toBe(true);
+  });
+});
+
+describe('maxEntitiesReached', function() {
+
+});
