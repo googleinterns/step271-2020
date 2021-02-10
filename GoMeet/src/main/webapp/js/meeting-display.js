@@ -2,13 +2,27 @@
  * Toggles meeting event display depending on login status of user.
  */
 async function toggleMeetingDisplay() {
-  let meetingEventId = getMeetingEventId(); 
+  let meetingEventId = getMeetingEventId();
   await LoginStatus.doGet(meetingEventId).then((loginStatus) => {
     let prompt; 
     let style; 
     if (loginStatus.loggedIn === 'true') {
-      style = 'block'; 
       prompt = '<a href=' + loginStatus.logoutUrl + '>Logout</a>';
+      // Check if the meeting event ID is valid (i.e. there exists a MeetingEvent entity 
+      // in Datastore with that key)
+      let meetingEventEntity = MeetingEventDAO.fetchMeetingEvent(meetingEventId); 
+      if (meetingEventEntity['status'] === undefined) { // No error response was sent 
+        style = 'block';
+        let meetingName = meetingEventEntity['meetingName'];
+        let durationMins = meetingEventEntity['durationMins'];
+        let durationHours = meetingEventEntity['durationHours']; 
+        let timeFindMethod = meetingEventEntity['timeFindMethod']; 
+        let guestList = meetingEventEntity['guestList']; 
+        let meetingTimeIds = meetingEventEntity['meetingTimeIds']; 
+        let meetingLocationIds = meetingEventEntity['meetingLocationIds'];
+        // TO DO: Call neccessary functions to display meeting event data
+        displayMeetingTimeForm(); 
+      }
     } else {
       style = 'none'; 
       prompt = '<p>Please log in to view the meeting event details</p>'
