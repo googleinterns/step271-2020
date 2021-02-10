@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>GoMeet Submit Meeting</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="js/email-dao.js"></script>
+    <script src="js/error-messages.js"></script>
+    <script src="js/dao-utils.js"></script>
+    <script src="js/meeting-event-dao.js"></script>
+    <script src="js/meeting-location-dao.js"></script>
+    <script src="js/meeting-time-dao.js"></script>
+    <script src="js/submit-meeting.js"></script>
+  </head>
+  <body>
+    <h1 class="center">GoMeet</h1>
+    <h2>Submit Meeting</h2>
+    <button onclick="submitMeeting()">SUBMIT</button>
+    <div id="message"></div>
+    <div id="meeting-event-link"></div>
+    <p id="sent-text"></p>
+    <ul id="sent-list"></ul>
+    <p id="failed-text"></p>
+    <ul id="failed-list"></ul>
+  </body>
+</html>
