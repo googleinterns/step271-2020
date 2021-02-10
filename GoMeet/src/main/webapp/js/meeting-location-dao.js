@@ -174,7 +174,8 @@ class PermMeetingLocationDao {
     // Note: Hard-coded keys for now.
     const locationKeys = [
         'aglub19hcHBfaWRyFQsSCExvY2F0aW9uGICAgICAgIwIDA',
-        'aglub19hcHBfaWRyFQsSCExvY2F0aW9uGICAgICAgKwIDA'
+        'aglub19hcHBfaWRyFQsSCExvY2F0aW9uGICAgICAgKwIDA',
+        'aglub19hcHBfaWRyFQsSCExvY2F0aW9uGICAgICAgLQIDA'
     ];
     return locationKeys;
   }
