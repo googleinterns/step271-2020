@@ -108,9 +108,13 @@ class PermMeetingLocationDAO {
    * Returns a JSON array of the location data.
    */
   async fetchLocations() {
-    let locations = await fetch(this.storingEndPoint).then(
-        (response) => response.json());
-    return locations;
+    let response = await fetch(this.storingEndPoint);
+    if (response.status >= 200 && response.status <= 299) {
+      let locations = await response.json();
+      return locations;
+    } else {
+      throw new Error(response.statusText);
+    }    
   }
 
   /**

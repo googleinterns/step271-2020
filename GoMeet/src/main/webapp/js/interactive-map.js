@@ -96,12 +96,19 @@ async function fetchLocations(map) {
   // Get Dao.
   const storageType = document.querySelector('#map').dataset.mem;
   const dao = MeetingLocationDaoFactory.getLocationDao(storageType);
- 
-  let json = await dao.fetchLocations();
-  json.forEach((location) => {
-    createLocationForDisplay(map, location.lat, location.lng,
-        location.title, location.voteCount, location.note, location.keyString);
-  });
+
+  try {
+    let json = await dao.fetchLocations();
+    
+    // If we reach here, that means that the locations were successfully
+    // fetched and we can put them on the map.
+    json.forEach((location) => {
+      createLocationForDisplay(map, location.lat, location.lng,
+          location.title, location.voteCount, location.note, location.keyString);
+    });
+  } catch (error) {
+    handleError(error);
+  }
 }
 
 /** Builds a HTML element to display the location's data and a vote button. */
