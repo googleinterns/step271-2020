@@ -120,10 +120,7 @@ public class LocationDao implements Dao<Location> {
     Query q = new Query("Location").setFilter(new FilterPredicate("title", FilterOperator.EQUAL,
         targetTitle));
     int numOfSameEntities = ds.prepare(q).countEntities();
-    if (numOfSameEntities > 0) {
-      return false;
-    }
-    return true;
+    return (numOfSameEntities == 0);
   }
 
   /** 
@@ -134,9 +131,6 @@ public class LocationDao implements Dao<Location> {
   private boolean maxLocationsReached() {
     Query q = new Query("Location");
     int numOfEntities = ds.prepare(q).countEntities();
-    if (numOfEntities < MAX_LOCATIONS) {
-      return false;
-    }
-    return true;
+    return (numOfEntities >= MAX_LOCATIONS);
   }
 }
