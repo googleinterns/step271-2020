@@ -147,6 +147,20 @@ describe ('Fetch Locations', function() {
     expect(titleText).toBe(TITLE);
     expect(noteText).toBe(NOTE);
   }); 
+
+  it ('Should call handle error if Dao throws an error', async function() {
+    // Spy on Dao.  
+    const mockedLocationDao = new PermMeetingLocationDAO();
+    spyOn(mockedLocationDao, 'fetchLocations').and.throwError('Not Found.');
+    spyOn(MeetingLocationDaoFactory, 'getLocationDao').and.returnValue(
+        mockedLocationDao);
+
+    spyOn(window, 'handleError');
+
+    await fetchLocations();
+
+    expect(window.handleError).toHaveBeenCalled();
+  });
 });
 
 /** Test for building info window for voting. */
