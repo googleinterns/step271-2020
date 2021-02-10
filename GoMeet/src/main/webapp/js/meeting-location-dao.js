@@ -126,7 +126,10 @@ class PermMeetingLocationDao {
    * @throws an error if the response status is not between 200 and 299.
    */
   async fetchPopularLocations() {
-    let response = await fetch(this.popularEndPoint);
+    let locationKeys = await this.getMeetingLocationKeys();
+    let urlString = DAOUtils.urlArray(this.popularEndPoint, {'locationKeys' : locationKeys});
+    let response = await fetch(urlString);
+
     if (response.status >= 200 && response.status <= 299) {
       let locations = await response.json();
       return locations;
