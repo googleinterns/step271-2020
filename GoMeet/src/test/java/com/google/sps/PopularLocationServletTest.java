@@ -34,12 +34,11 @@ import org.junit.runners.JUnit4;
 public class PopularLocationServletTest {
   // Values to use for testing
   private final Location LOCATION_A =
-      new Location("Burger Bonanza", 15.0, 150.0, "I like burgers!", 1);
+      new Location("Burger Bonanza", 15.0, 150.0, "I like burgers!", 1, "keyA");
   private final Location LOCATION_B =
-      new Location("Pastry Patisserie", 20.0, 10.0, "Pastries are yum!", 5);
+      new Location("Pastry Patisserie", 20.0, 10.0, "Pastries are yum!", 5, "keyB");
   private final Location LOCATION_C =
-      new Location("Pizza Place", 20.0, 10.0, "Nice Cheese!", 5);
-  private final String KEY = "1234";
+      new Location("Pizza Place", 20.0, 10.0, "Nice Cheese!", 5, "keyC");
 
   private HttpServletRequest request;
   private HttpServletResponse response;
@@ -48,6 +47,7 @@ public class PopularLocationServletTest {
   private PrintWriter writer = new PrintWriter(stringWriter);
   private Gson gson = new Gson();
   private PopularLocationServlet servlet;
+  private String[] keyStrings;
 
   @Before
   public void setUp() throws IOException {
@@ -59,8 +59,8 @@ public class PopularLocationServletTest {
     servlet.setDao(mockedLocationDao);
 
     // Set up reqest mock.
-    String[] keyString = new String[]{KEY};
-    when(request.getParameterValues("locationKeys")).thenReturn(keyString);
+    keyStrings = new String[]{LOCATION_A.getKeyString(), LOCATION_B.getKeyString()};
+    when(request.getParameterValues("locationKeys")).thenReturn(keyStrings);
   }
 
   /** 
@@ -82,6 +82,13 @@ public class PopularLocationServletTest {
     PopularLocationServlet servlet = new PopularLocationServlet();
     servlet.setDao(mockedLocationDao);
     servlet.doGet(request, response);
+
+    try {
+      // Check that the key strings in the request were sent to the dao.
+      verify(mockedLocationDao).getAll(keyStrings);
+    } catch (Exception e) {
+      fail();
+    }
 
     // Check if the popular location was sent in the response
     stringWriter.flush();
