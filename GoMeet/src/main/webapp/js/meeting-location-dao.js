@@ -17,7 +17,7 @@ class MeetingLocationDaoFactory {
 class TempMeetingLocationDAO {
   constructor() {
     this.emptyKeyString = '';
-    this.MAX_ENTITIES = 5;
+    this.MAX_NUM_ENTITIES = 5;
   }
 
   /** Fetches the location data stored in session storage. */
@@ -89,7 +89,7 @@ class TempMeetingLocationDAO {
    */
   maxEntitiesReached() {
     const locations = this.fetchLocations();
-    return (locations.length === this.MAX_ENTITIES);
+    return (locations.length === this.MAX_NUM_ENTITIES);
   }
 }
 
