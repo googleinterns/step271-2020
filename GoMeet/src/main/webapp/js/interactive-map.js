@@ -187,7 +187,7 @@ async function displayPopularLocations() {
 
 /** Used to handle error. */
 function handleError(error) {
-  alert('Error Occurred: ' + error.message + '\nPlease Try Again Later.');
+  alert(error.message);
 }
 
 /** Returns a container with the given id and innerText. */
