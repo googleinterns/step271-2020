@@ -17,6 +17,7 @@ class MeetingLocationDaoFactory {
 class TempMeetingLocationDAO {
   constructor() {
     this.emptyKeyString = '';
+    this.MAX_ENTITIES = 5;
   }
 
   /** Fetches the location data stored in session storage. */
@@ -36,6 +37,9 @@ class TempMeetingLocationDAO {
     }
     if (!this.validTitle(title)) {
       throw new Error(SAME_TITLE);
+    }
+    if (this.maxEntitiesReached()) {
+      throw new Error(MAX_ENTITIES);
     }
 
     // Add the new location.
@@ -78,6 +82,14 @@ class TempMeetingLocationDAO {
       }
     }
     return true;
+  }
+
+   /** 
+   * Returns true if the maximum number of entities has been reached.
+   */
+  maxEntitiesReached() {
+    const locations = this.fetchLocations();
+    return (locations.length === this.MAX_ENTITIES);
   }
 }
 
