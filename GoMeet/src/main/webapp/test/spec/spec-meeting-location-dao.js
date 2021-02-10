@@ -255,5 +255,41 @@ describe('validTitle', function() {
 });
 
 describe('maxEntitiesReached', function() {
+  const LOCATION_A =
+      {title: 'Pizza Place', lat: 10.0, lng: 15.0, note: 'I like cheese!',
+      keyString: ''};
+  const dao = new TempMeetingLocationDAO();
+  let fakeSessionStorage;
 
+  beforeEach(function() {
+    // Set up fake session storage.
+    fakeSessionStorage = {};
+    spyOn(sessionStorage, 'setItem').and.callFake(function(key, value) {
+      fakeSessionStorage[key] = value;
+    });
+    spyOn(sessionStorage, 'getItem').and.callFake(function(key) {
+      return fakeSessionStorage[key];
+    });
+  });
+
+  it ('Should return false if the number of locations is less than the maximum',
+      function() {
+    fakeSessionStorage['locations'] = JSON.stringify([LOCATION_A]);
+    const result = dao.maxEntitiesReached();
+    expect(result).toBe(false);
+  });
+
+  it ('Should return false if locations is empty', function() {
+    const result = dao.maxEntitiesReached();
+    expect(result).toBe(false);
+  });
+
+  it ('Should return true if the number of locations is greater than the maximum',
+      function() {
+    fakeSessionStorage['locations'] =
+        JSON.stringify(
+            [LOCATION_A, LOCATION_A, LOCATION_A,LOCATION_A, LOCATION_A]);
+    const result = dao.maxEntitiesReached();
+    expect(result).toBe(true);
+  });
 });
