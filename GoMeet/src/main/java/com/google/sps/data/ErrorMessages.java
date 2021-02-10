@@ -10,6 +10,10 @@ public class ErrorMessages {
       "Entity not found";
   public static final String TOO_MANY_RESULTS_ERROR = 
       "Too many results returned";
+  public static final String BAD_REQUEST_ERROR_LOCATION = 
+      "Invalid location";
+  public static final String MAX_ENTITIES = 
+      "Maximum number of entities reached";
   public static final String BAD_EMAIL_REQUEST_ERROR = 
       "MeetingId and guest list must both be provided to send email invitations";
   public static final String BAD_POST_REQUEST_ERROR = 

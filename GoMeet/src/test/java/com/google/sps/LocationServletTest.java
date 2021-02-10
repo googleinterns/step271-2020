@@ -4,6 +4,7 @@ import static com.google.appengine.api.datastore.FetchOptions.Builder.withLimit;
 import static org.mockito.Mockito.*;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
@@ -16,9 +17,12 @@ import com.google.appengine.api.datastore.KeyFactory;
 import com.google.appengine.api.datastore.Key;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
+import com.google.sps.data.ErrorMessages;
 import main.java.com.google.sps.servlets.LocationServlet;
 import main.java.com.google.sps.dao.LocationDao;
 import main.java.com.google.sps.data.Location;
+import main.java.com.google.sps.exceptions.MaxEntitiesReachedException;
+import main.java.com.google.sps.exceptions.SimilarEntityExistsException;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
@@ -29,7 +33,9 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.After;
@@ -54,6 +60,7 @@ public class LocationServletTest {
   private LocationDao mockedLocationDao;
   private StringWriter stringWriter = new StringWriter();
   private PrintWriter writer = new PrintWriter(stringWriter);
+  private LocationServlet servlet;
 
   private final LocalServiceTestHelper helper =
       new LocalServiceTestHelper(new LocalDatastoreServiceTestConfig());
@@ -67,6 +74,8 @@ public class LocationServletTest {
     response = mock(HttpServletResponse.class);  
     mockedLocationDao = mock(LocationDao.class);
     when(response.getWriter()).thenReturn(writer);
+    servlet = new LocationServlet();
+    servlet.setDao(mockedLocationDao);
   }
 
   @After
@@ -88,22 +97,96 @@ public class LocationServletTest {
    
     // Set up DAO mock
     String keyString = KeyFactory.keyToString(KeyFactory.createKey("Location", 123));
-    when(mockedLocationDao.save((Location)notNull())).thenReturn(keyString);
 
-    LocationServlet servlet = new LocationServlet();
-    servlet.setDao(mockedLocationDao);
+    try {
+      when(mockedLocationDao.save((Location)notNull())).thenReturn(keyString);
+    } catch (Exception e) {
+      fail();
+    }
+     
     servlet.doPost(request, response);
     
     // Check the mockedDao was called with the correct parameters
     ArgumentCaptor<Location> captor = ArgumentCaptor.forClass(Location.class);
-    verify(mockedLocationDao, times(1)).save(captor.capture());
-    Location actual = captor.getValue();
-    assertEquals(LOCATION_A, actual);
+
+    try {
+      verify(mockedLocationDao, times(1)).save(captor.capture());
+      Location actual = captor.getValue();
+      assertEquals(LOCATION_A, actual);
+    } catch (Exception e) {
+      fail();
+    }
 
     // Check the entity's key was sent in the response.
     stringWriter.flush();
     String sentString = gson.fromJson(stringWriter.toString(), String.class);
     assertEquals(keyString, sentString);
+  }
+
+  /**
+   * Tests if an error message is sent if LocationDao throws a MaxEntitiesReachedException.
+   */
+  @Test
+  public void doPostMaxEntityTest() throws IOException {
+    // Set up request mock
+    when(request.getParameter("title")).thenReturn(LOCATION_A.getTitle());
+    when(request.getParameter("lat")).thenReturn(Double.toString(LOCATION_A.getLat()));
+    when(request.getParameter("lng")).thenReturn(Double.toString(LOCATION_A.getLng()));
+    when(request.getParameter("note")).thenReturn(LOCATION_A.getNote());
+
+    // Set up mock Dao
+    try {
+      doThrow(new MaxEntitiesReachedException()).when(mockedLocationDao).save((Location)notNull());
+    } catch (Exception e) {
+      fail();
+    }
+
+    servlet.doPost(request, response);
+
+    // Check if error response is sent.
+    // TODO: Update to use testUtil.
+    stringWriter.flush();
+    String responseString = stringWriter.toString();
+
+    Type responseMap = new TypeToken<HashMap<String, Object>>() {}.getType();
+    Map<String, Object> map = gson.fromJson(responseString, responseMap);
+
+    // Check hashmap with the correct values was sent.
+    assertEquals((Double) map.get("status"), Double.valueOf(HttpServletResponse.SC_BAD_REQUEST));
+    assertEquals((String) map.get("message"), ErrorMessages.MAX_ENTITIES);
+  }
+
+   /**
+   * Tests if an error message is sent if LocationDao throws a SimilarEntityExistsException.
+   */
+  @Test
+  public void doPostRepeatedTitleTest() throws IOException {
+    // Set up request mock
+    when(request.getParameter("title")).thenReturn(LOCATION_A.getTitle());
+    when(request.getParameter("lat")).thenReturn(Double.toString(LOCATION_A.getLat()));
+    when(request.getParameter("lng")).thenReturn(Double.toString(LOCATION_A.getLng()));
+    when(request.getParameter("note")).thenReturn(LOCATION_A.getNote());
+
+    // Set up mock Dao
+    try {
+      doThrow(new SimilarEntityExistsException()).when(mockedLocationDao).save((Location)notNull());
+    } catch (Exception e) {
+      fail();
+    }
+
+    servlet.doPost(request, response);
+
+    // Check if error response is sent.
+    // TODO: Update to use testUtil.
+    stringWriter.flush();
+    String responseString = stringWriter.toString();
+
+    Type responseMap = new TypeToken<HashMap<String, Object>>() {}.getType();
+    Map<String, Object> map = gson.fromJson(responseString, responseMap);
+
+    // Check hashmap with the correct values was sent.
+    assertEquals((Double) map.get("status"), Double.valueOf(HttpServletResponse.SC_BAD_REQUEST));
+    assertEquals((String) map.get("message"), ErrorMessages.BAD_REQUEST_ERROR_LOCATION);
   }
 
   /** 
@@ -116,8 +199,6 @@ public class LocationServletTest {
     List<Location> listToReturn = new ArrayList<>(Arrays.asList(LOCATION_A));
     when(mockedLocationDao.getAll()).thenReturn(listToReturn);
 
-    LocationServlet servlet = new LocationServlet();
-    servlet.setDao(mockedLocationDao);
     servlet.doGet(request, response);
 
     stringWriter.flush();

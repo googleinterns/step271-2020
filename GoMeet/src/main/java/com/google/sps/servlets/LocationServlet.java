@@ -12,9 +12,13 @@ import javax.servlet.http.HttpServletResponse;
 import main.java.com.google.sps.dao.Dao;
 import main.java.com.google.sps.dao.LocationDao;
 import main.java.com.google.sps.data.Location;
+import main.java.com.google.sps.exceptions.MaxEntitiesReachedException;
+import main.java.com.google.sps.exceptions.SimilarEntityExistsException;
+
 import org.jsoup.Jsoup;
 import org.jsoup.safety.Whitelist;
 
+import com.google.sps.data.ErrorMessages;
 import com.google.sps.data.ServletUtil;
 
 /** Handles fetching and saving location data. */
@@ -46,11 +50,19 @@ public class LocationServlet extends HttpServlet {
     String title = Jsoup.clean(request.getParameter("title"), Whitelist.none());
 
     Location location = new Location(title, lat, lng, note, INITIAL_VOTE_COUNT);
-    String entityKeyString = locationDao.save(location);
-
     response.setContentType("application/json");
-    String json = ServletUtil.convertToJson(entityKeyString);
-    response.getWriter().println(json);
+
+    try {
+      String entityKeyString = locationDao.save(location);
+      String json = ServletUtil.convertToJson(entityKeyString);
+      response.getWriter().println(json);
+    } catch (SimilarEntityExistsException e) {
+      ServletUtil.sendErrorResponse(
+          response, HttpServletResponse.SC_BAD_REQUEST, ErrorMessages.BAD_REQUEST_ERROR_LOCATION);
+    } catch (MaxEntitiesReachedException e) {
+      ServletUtil.sendErrorResponse(
+          response, HttpServletResponse.SC_BAD_REQUEST, ErrorMessages.MAX_ENTITIES);
+    }
   }
 
   public void setDao(LocationDao locationDao) {

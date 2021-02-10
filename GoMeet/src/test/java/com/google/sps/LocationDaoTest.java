@@ -31,6 +31,8 @@ import javax.servlet.http.HttpServletResponse;
 import main.java.com.google.sps.servlets.LocationServlet;
 import main.java.com.google.sps.data.Location;
 import main.java.com.google.sps.dao.LocationDao;
+import main.java.com.google.sps.exceptions.MaxEntitiesReachedException;
+import main.java.com.google.sps.exceptions.SimilarEntityExistsException;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -43,7 +45,14 @@ import org.junit.runners.JUnit4;
 public class LocationDaoTest {
   private final long INIT_VOTE_COUNT = 1;
   private final Location LOCATION_A = new Location("Cake Shop", 10.0, 15.0, "I like Cakes!", 1);
-  private final Location LOCATION_B = new Location("Fruit Shop", 22.0, 60.0, "", 1);
+  private final Location LOCATION_B = new Location("Fruit Shop", 22.0, 60.0, "Cabbages", 1);
+  private final Location LOCATION_C = new Location("Cabbage Cart", 250.0, 60.0, "My Cabbages!", 1);
+  private final Location LOCATION_D = new Location("Tart Shop", 120.0, 60.0, "", 1);
+  private final Location LOCATION_E = new Location("Smoothie Shop", 400.0, 60.0, "", 1);
+  private final Location LOCATION_F =
+      new Location("Super Soup", 350.0, 60.0, "Where is my super sourp?", 1);
+  private final Location REPEAT_TITLE_LOCATION =
+      new Location("Fruit Shop", 25.0, 60.0, "I like oranges.", 1);
 
   private final LocalServiceTestHelper helper =
       new LocalServiceTestHelper(new LocalDatastoreServiceTestConfig());
@@ -113,8 +122,14 @@ public class LocationDaoTest {
   /** Tests if a location is saved to datastore with the correct properties. */
   @Test
   public void saveTest() {
-    String keyString = locationDao.save(LOCATION_A);
-  
+    String keyString = "";
+
+    try {
+      keyString = locationDao.save(LOCATION_A);
+    } catch (Exception e) {
+      fail();
+    }
+    
     // Check location entity was added to Datastore
     assertEquals(1, ds.prepare(new Query("Location")).countEntities(withLimit(10)));
 
@@ -133,6 +148,29 @@ public class LocationDaoTest {
     assertEquals(KeyFactory.keyToString(result.getKey()), keyString);
   }
 
+  /** Tests if EntityExistException is thrown when an invalid title is given. */
+  @Test(expected = SimilarEntityExistsException.class)
+  public void saveInvalidTitleTest() throws Exception {
+    addLocationToDatabase(LOCATION_B);
+    locationDao.save(REPEAT_TITLE_LOCATION);
+  }
+
+   /** 
+    * Tests if MaxEntitiesReachedLocation is thrown when there are five 
+    * entities in the database.
+    */
+  @Test(expected = MaxEntitiesReachedException.class)
+  public void saveMaxLocationsReachedTest() throws Exception {
+    // Add the maximum number of locations to the database. 
+    addLocationToDatabase(LOCATION_A);
+    addLocationToDatabase(LOCATION_B);
+    addLocationToDatabase(LOCATION_C);
+    addLocationToDatabase(LOCATION_D);
+    addLocationToDatabase(LOCATION_E);
+
+    locationDao.save(LOCATION_F);
+  }
+  
   /** Tests that update() adds one to the entity's voteCount. */
   @Test
   public void updateTest() {
