@@ -32,7 +32,14 @@ function validateDuration() {
 function saveDurationAndMethod() {
   try {
     if (validateDuration() && saveMeeting()) {
-      location.href = 'create-meeting-step2-manual.html';
+      // Check whether the user selected 'manual' or 'gcal' 
+      // as their time find method. 
+      let method = sessionStorage.getItem("time-find-method");
+      if (method === 'gcal') {
+        location.href = 'create-meeting-step2-gcal.html';
+      } else {
+        location.href = 'create-meeting-step2-manual.html';
+      } 
     }
   } catch(err) {
     alert(err.message);
