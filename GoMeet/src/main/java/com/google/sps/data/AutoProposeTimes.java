@@ -1,7 +1,7 @@
 package com.google.sps.data;
 
-import com.google.api.client.util.DateTime;
 import com.google.api.client.googleapis.json.GoogleJsonResponseException;
+import com.google.api.client.util.DateTime;
 import com.google.api.services.calendar.Calendar.Freebusy.Query;
 import com.google.api.services.calendar.Calendar.Freebusy;
 import com.google.api.services.calendar.Calendar;
@@ -20,7 +20,6 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
-import java.util.Map;
 
 public class AutoProposeTimes {
   private final String RFC3339_FORMAT = "yyyy-MM-dd'T'HH:mm:ssXXX";
