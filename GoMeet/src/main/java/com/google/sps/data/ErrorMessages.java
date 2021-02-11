@@ -24,4 +24,8 @@ public class ErrorMessages {
       "The user has voted once already";
   public static final String BAD_LOGIN_STATUS_REQUEST_ERROR = 
       "Please provide a meething event ID to the request"; 
+  public static final String INVALID_ARG_FORMAT = 
+      "Invalid argument format in query string.";
+  public static final String SECURITY_ERROR = 
+      "Security error.";
 }
