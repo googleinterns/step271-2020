@@ -116,6 +116,7 @@ describe ('MeetingEventDAO - fetchMeetingEvent', function() {
     timeFindMethod: 'manual',
     guestList: ['guest1@gmail.com', 'guest2@gmail.com', 'another@guest.com'],
     meetingTimeIds: ['abcd1234', 'efgh5678'],
+    meetingLocationIds: ['abcd4321', 'efgh8765']
   };
 
   beforeEach(function() {
@@ -182,10 +183,12 @@ describe ('MeetingEventDAO - newMeetingEvent', function() {
   const GUEST_LIST = ['guest1@gmail.com', 'guest2@gmail.com', 'another@guest.com'];
   const MEETING_TIMES = ['2021-01-25T17:52', '2021-02-25T17:52'];
   const MEETING_TIME_IDS = ['abcd1234', 'efgh5678']; 
+  const MEETING_LOCATION_IDS = ['abcd4321', 'efgh8765'];
   const QUERY_STRING = '?meetingName=' + MEETING_NAME_URI +  
     '&durationMins=' + DURATION_MINS + '&durationHours=' + DURATION_HOURS + 
     '&timeFindMethod=' + TIME_FIND_METHOD + '&guestList=' + encodeURIComponent(GUEST_LIST) + 
-    '&meetingTimeIds=' + encodeURIComponent(MEETING_TIME_IDS);
+    '&meetingTimeIds=' + encodeURIComponent(MEETING_TIME_IDS) + '&meetingLocationIds=' +
+    encodeURIComponent(MEETING_LOCATION_IDS);
   const RESPONSE_INIT = {method: 'POST'};
 
   beforeEach(function() {
@@ -200,6 +203,7 @@ describe ('MeetingEventDAO - newMeetingEvent', function() {
     spyOn(MeetingEventDAO, 'getGuestList').and.returnValue(GUEST_LIST); 
     spyOn(MeetingEventDAO, 'getMeetingTimes').and.returnValue(MEETING_TIMES);
     spyOn(MeetingEventDAO, 'getMeetingTimeIds').and.returnValue(MEETING_TIME_IDS);    
+    spyOn(MeetingEventDAO, 'getMeetingLocationIds').and.returnValue(MEETING_LOCATION_IDS); 
   });
 
   it ('Returns a JSON string with the meetingEventId of the new meetingEvent entity', async function() {

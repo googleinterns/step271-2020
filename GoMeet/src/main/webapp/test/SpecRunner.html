@@ -28,6 +28,7 @@
   <script src="../js/email-dao.js"></script>
   <script src="../js/vote-meeting-time-dao.js"></script>
   <script src="../js/vote-meeting-time.js"></script>
+  <script src="../js/submit-meeting.js"></script>
   
   <!-- include spec files (files containing test code) here... -->
   <script src="spec/spec-create-meeting-step1.js"></script>
@@ -43,6 +44,8 @@
   <script src="spec/spec-meeting-location-dao.js"></script>
   <script src="spec/spec-vote-meeting-time-dao.js"></script>
   <script src="spec/spec-vote-meeting-time.js"></script>
+  <script src="spec/spec-login-status.js"></script>
+  <script src="spec/spec-submit-meeting.js"></script>
 </head>
 <body>
   <ul id="guest-list"></ul>
@@ -80,5 +83,11 @@
       </tr>
     </table>
   </div>
+  <div style="display: none;" id="message"></div>
+  <div style="display: none;" id="meeting-event-link"></div>
+  <p style="display: none;" id="sent-text"></p>
+  <ul style="display: none;" id="sent-list"></ul>
+  <p style="display: none;" id="failed-text"></p>
+  <ul style="display: none;" id="failed-list"></ul>
 </body>
 </html>

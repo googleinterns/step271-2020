@@ -1,24 +1,38 @@
 /**
  * Toggles meeting event display depending on login status of user.
  */
-function toggleMeetingDisplay() {
-  LoginStatus.doGet().then((loginStatus) => {
-    let prompt; 
-    let style; 
-    if (loginStatus.loggedIn === 'true') {
-      style = 'block'; 
-      prompt = '<a href=' + loginStatus.logoutUrl + '>Logout</a>';
-    } else {
-      style = 'none'; 
-      prompt = '<p>Please log in to view the meeting event details</p>'
-      + '<a href=' + loginStatus.loginUrl + '>Login</a>';
+async function toggleMeetingDisplay() {
+  let meetingEventId = getMeetingEventId();
+  let loginStatus = await LoginStatus.doGet(meetingEventId); 
+  let prompt; 
+  let style; 
+  if (loginStatus.loggedIn === 'true') {
+    prompt = '<a href=' + loginStatus.logoutUrl + '>Logout</a>';
+    // Check if the meeting event ID is valid (i.e. there exists a MeetingEvent entity 
+    // in Datastore with that key)
+    let meetingEventEntity = MeetingEventDAO.fetchMeetingEvent(meetingEventId); 
+    if (meetingEventEntity['status'] === undefined) { // No error response was sent 
+      style = 'block';
+      let meetingName = meetingEventEntity['meetingName'];
+      let durationMins = meetingEventEntity['durationMins'];
+      let durationHours = meetingEventEntity['durationHours']; 
+      let timeFindMethod = meetingEventEntity['timeFindMethod']; 
+      let guestList = meetingEventEntity['guestList']; 
+      let meetingTimeIds = meetingEventEntity['meetingTimeIds']; 
+      let meetingLocationIds = meetingEventEntity['meetingLocationIds'];
+      // TO DO: Call neccessary functions to display meeting event data
+      displayMeetingTimeForm(); 
     }
-    document.getElementById('meeting-title').style.display = style;
-    document.getElementById('vote-meeting-times').style.display = style;
-    document.getElementById('vote-meeting-locations').style.display = style;
-    document.getElementById('votes-table').style.display = style;
-    document.getElementById('login-or-logout-prompt').innerHTML = prompt;
-  });
+  } else {
+    style = 'none'; 
+    prompt = '<p>Please log in to view the meeting event details</p>'
+        + '<a href=' + loginStatus.loginUrl + '>Login</a>';
+  }
+  document.getElementById('meeting-title').style.display = style;
+  document.getElementById('vote-meeting-times').style.display = style;
+  document.getElementById('vote-meeting-locations').style.display = style;
+  document.getElementById('votes-table').style.display = style;
+  document.getElementById('login-or-logout-prompt').innerHTML = prompt;
 }
 
 /**
