@@ -24,9 +24,9 @@ import java.util.Map;
 
 public class AutoProposeTimes {
   private final String RFC3339_FORMAT = "yyyy-MM-dd'T'HH:mm:ssXXX";
-  private final String API_KEY = ""; // API KEY HERE
 
   Calendar service;
+  String apiKey; 
   ArrayList<String> calendarId; // The List of Calendar IDs to generate meeting times for
   DateTime startTime; // The start time of the period to look for possible meeting times
   DateTime endTime; // The end time of the period to look for possible meeting times
@@ -37,15 +37,17 @@ public class AutoProposeTimes {
     * NOTE: Calendar service is dependency injected to allow for easier testing.
     * @param service The com.google.api.services.calendar.Calendar service to use to 
     * call APIs from.
+    * @param apiKey The API Key to use the Google Calendar API.
     * @param calId This list of calendar IDs of calendars to automatically generate
     * meeting times from.
     * @param startTime The start of the period in which to search for meeting times.
     * @param endTime The end of the period in which search for meeting times.
     * @param duration The duration of the meeting, in milliseconds.
     */
-  public AutoProposeTimes(Calendar service, ArrayList<String> calId, 
+  public AutoProposeTimes(Calendar service, String apiKey, ArrayList<String> calId, 
       Date startTime, Date endTime, int duration) {
     this.service = service;
+    this.apiKey = apiKey;
     this.calendarId = calId;
     this.startTime = new DateTime(startTime);
     this.endTime = new DateTime(endTime);
@@ -76,7 +78,7 @@ public class AutoProposeTimes {
     List<TimePeriod> busyPeriods = new ArrayList<TimePeriod>();
     List<TimePeriod> freePeriods = new ArrayList<TimePeriod>();
     for (int i = 0; i < calendarId.size(); i++) {
-      busyPeriods.addAll(freebusyRequest(calendarId.get(i), API_KEY));
+      busyPeriods.addAll(freebusyRequest(calendarId.get(i)));
     }
 
     // If there are no busyPeriods, add a free time that is the whole period, and return
@@ -132,7 +134,7 @@ public class AutoProposeTimes {
     if (durationEndOfDay >= this.meetingDuration) {
       freePeriods.add(newTimePeriod(lastBusyPeriodEnd, this.endTime));
     }
-    
+
     return freePeriods;
   }
 
@@ -143,13 +145,12 @@ public class AutoProposeTimes {
    * initialised with.
    * @param calId The calendar identifier of the calendar to retireve busy
    * data from.
-   * @param apiKey The API key to access the Google Calendar API.
    * @return The List of TimePeriods representing busy times in the calendar
    * identified by the calId.
    * @throws IOException
    * @throws GeneralSecurityException
    */
-  public List<TimePeriod> freebusyRequest(String calId, String apiKey) 
+  public List<TimePeriod> freebusyRequest(String calId) 
       throws IOException, GeneralSecurityException {
     FreeBusyRequestItem currentCalItem = new FreeBusyRequestItem().setId(calId);
     FreeBusyRequest req = new FreeBusyRequest()
@@ -157,7 +158,7 @@ public class AutoProposeTimes {
         .setTimeMax(this.endTime)
         .setItems(Arrays.asList(currentCalItem));
     Freebusy freebusy = this.service.freebusy();
-    Query query = freebusy.query(req).setKey(apiKey);
+    Query query = freebusy.query(req).setKey(this.apiKey);
     FreeBusyResponse resp = query.execute();
     // Variable 'currentCal' will store the FreeBusy info of the calendar
     // with calId as its identifier.

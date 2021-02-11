@@ -44,6 +44,7 @@ public class AutoProposeTimesTest {
   private AutoProposeTimes proposerSpy;
 
   // Hardcoded data.
+  private final String FAKE_API_KEY = "key";
   private final int DURATION_MS = 30 * 60 * 1000; // 30 mins duration in milliseconds.
   private final String DATE_FORMAT = "yyyy-MM-dd HH:mm:ss";
   private final SimpleDateFormat FORMATTER = new SimpleDateFormat(DATE_FORMAT);
@@ -77,7 +78,8 @@ public class AutoProposeTimesTest {
     // Initialise the Dates here to recognise the ParseException.
     startTime = FORMATTER.parse(START_TIME_STR);
     endTime = FORMATTER.parse(END_TIME_STR);
-    proposer = new AutoProposeTimes(serviceSpy, CAL_ID, startTime, endTime, DURATION_MS);
+    proposer = 
+        new AutoProposeTimes(serviceSpy, FAKE_API_KEY, CAL_ID, startTime, endTime, DURATION_MS);
     proposerSpy = spy(proposer);
   }
 
@@ -96,9 +98,9 @@ public class AutoProposeTimesTest {
     );
 
     doReturn(busyTimesPerson1).when(proposerSpy)
-        .freebusyRequest(eq(CAL_ID.get(0)), anyString());
+        .freebusyRequest(eq(CAL_ID.get(0)));
     doReturn(busyTimesPerson2).when(proposerSpy)
-        .freebusyRequest(eq(CAL_ID.get(1)), anyString());
+        .freebusyRequest(eq(CAL_ID.get(1)));
 
     List<TimePeriod> expectedReturn = Arrays.asList(
       timePeriodFromDatestring(TIME_10AM, TIME_12PM),
@@ -126,9 +128,9 @@ public class AutoProposeTimesTest {
     );
 
     doReturn(busyTimesPerson1).when(proposerSpy)
-        .freebusyRequest(eq(CAL_ID.get(0)), anyString());
+        .freebusyRequest(eq(CAL_ID.get(0)));
     doReturn(busyTimesPerson2).when(proposerSpy)
-        .freebusyRequest(eq(CAL_ID.get(1)), anyString());
+        .freebusyRequest(eq(CAL_ID.get(1)));
 
     List<TimePeriod> expectedReturn = Arrays.asList(
       timePeriodFromDatestring(TIME_10AM, TIME_12PM),
@@ -155,9 +157,9 @@ public class AutoProposeTimesTest {
     );
 
     doReturn(busyTimesPerson1).when(proposerSpy)
-        .freebusyRequest(eq(CAL_ID.get(0)), anyString());
+        .freebusyRequest(eq(CAL_ID.get(0)));
     doReturn(busyTimesPerson2).when(proposerSpy)
-        .freebusyRequest(eq(CAL_ID.get(1)), anyString());
+        .freebusyRequest(eq(CAL_ID.get(1)));
 
     List<TimePeriod> expectedReturn = Arrays.asList(
       timePeriodFromDatestring(TIME_10AM, TIME_12PM),
@@ -188,9 +190,9 @@ public class AutoProposeTimesTest {
     );
 
     doReturn(busyTimesPerson1).when(proposerSpy)
-        .freebusyRequest(eq(CAL_ID.get(0)), anyString());
+        .freebusyRequest(eq(CAL_ID.get(0)));
     doReturn(busyTimesPerson2).when(proposerSpy)
-        .freebusyRequest(eq(CAL_ID.get(1)), anyString());
+        .freebusyRequest(eq(CAL_ID.get(1)));
 
     List<TimePeriod> expectedReturn = Arrays.asList(
       timePeriodFromDatestring(TIME_12PM, TIME_1230PM)
@@ -210,7 +212,7 @@ public class AutoProposeTimesTest {
     List<TimePeriod> busyTimes = Arrays.asList();
 
     doReturn(busyTimes).when(proposerSpy)
-        .freebusyRequest(anyString(), anyString());
+        .freebusyRequest(anyString());
 
     List<TimePeriod> expectedReturn = Arrays.asList(
       timePeriodFromDatestring(TIME_10AM, TIME_10AM_NEXTDAY)
@@ -239,9 +241,9 @@ public class AutoProposeTimesTest {
     );
 
     doReturn(busyTimesPerson1).when(proposerSpy)
-        .freebusyRequest(eq(CAL_ID.get(0)), anyString());
+        .freebusyRequest(eq(CAL_ID.get(0)));
     doReturn(busyTimesPerson2).when(proposerSpy)
-        .freebusyRequest(eq(CAL_ID.get(1)), anyString());
+        .freebusyRequest(eq(CAL_ID.get(1)));
 
     List<TimePeriod> expectedReturn = Arrays.asList();
     List<TimePeriod> result = proposerSpy.proposeTimes();
@@ -265,8 +267,8 @@ public class AutoProposeTimesTest {
   // Tests for freebusyRequest()
   @Test(expected = GoogleJsonResponseException.class)
   public void verifyCorrectAPICalls() throws Exception {
-    // This will throw an exception, since empty-string API key provided
-    proposer.freebusyRequest("test@example.com", "");
+    // This will throw an exception, since fake API key provided
+    proposer.freebusyRequest("test@example.com");
 
     // Verify that the correct API call was made
     FreeBusyRequestItem currentCalItem = 
@@ -276,7 +278,7 @@ public class AutoProposeTimesTest {
         .setTimeMax(new DateTime(endTime))
         .setItems(Arrays.asList(currentCalItem));
     
-    verify(serviceSpy).freebusy().query(req).setKey("").execute();
+    verify(serviceSpy).freebusy().query(req).setKey(FAKE_API_KEY).execute();
   }
   
   private TimePeriod timePeriodFromDatestring(String start, String end) 
