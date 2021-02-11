@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+  <!-- Create Meeting Step 2 GCal: Automatically propose times with Google Calendar -->
+  <head>
+    <meta charset="UTF-8">
+    <title>Create Meeting</title>
+  </head>
+  <body>
+    <div>
+      <h2>Step 2</h2>
+      <h2>Find a Meeting Time</h2>
+      <h2>Automatically generate meeting times</h2>
+    </div>
+    <div>
+      <p>Generate times between: </p>
+      <label for="period-start">Start</label>
+      <input type="datetime-local" name="period-start">
+      <label for="period-end">End</label>
+      <input type="datetime-local" name="period-end">
+      <button>Generate Times</button>
+    </div>
+    <div id="generated-times">
+      <!-- The automatically generated times to be displayed here. -->
+    </div>
+    <div>
+      <button>Next</button>
+    </div>
+  </body>
+</html>
