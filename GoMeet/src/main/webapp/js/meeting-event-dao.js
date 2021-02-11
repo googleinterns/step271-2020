@@ -52,11 +52,21 @@ class MeetingEventDAO {
   }
 
   static async getMeetingLocationIds() {
+    let dao;
+    // Get locations from session storage.
+    dao = MeetingLocationDaoFactory.getLocationDao('temporary');
+    const locations = dao.fetchLocations();
+
+    // Send locations to server.
     let ids = [];
-    let json = await MeetingLocationDAO.fetchLocations();
-    json.forEach((location) => {
-      ids.push(location.keyString); 
-    });
+    dao = MeetingLocationDaoFactory.getLocationDao('permanent');
+    for (let i = 0; i < locations.length; i++) {
+      const currLocation = locations[i];
+      let id =
+          await dao.newLocation(currLocation.title, currLocation.lat,
+          currLocation.lng, currLocation.note);
+      ids.push(id);
+    }
     return ids; 
   }
 
