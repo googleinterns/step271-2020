@@ -5,7 +5,7 @@ describe('Draw Chart', function() {
 
   it ('Should fetch locations and add data to chart', async function() {
     // Spy on Dao.
-    const mockedDao = new PermMeetingLocationDAO();
+    const mockedDao = new PermMeetingLocationDao();
     spyOn(mockedDao, 'fetchLocations').and.returnValue(LOCATIONS);
     spyOn(MeetingLocationDaoFactory, 'getLocationDao').and.returnValue(
         mockedDao);
