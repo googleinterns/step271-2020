@@ -68,7 +68,7 @@ describe('Build Info window input', function() {
   });
 
   it ('Should handle error if dao throws error', async function() {
-    const mockedLocationDao = new PermMeetingLocationDAO();
+    const mockedLocationDao = new PermMeetingLocationDao();
     spyOn(mockedLocationDao, 'newLocation').and.throwError(BLANK_FIELDS_ALERT);
     spyOn(MeetingLocationDaoFactory, 'getLocationDao').and.returnValue(
         mockedLocationDao);
@@ -85,7 +85,7 @@ describe('Build Info window input', function() {
   });
 
   it ('Should call createLocationForDisplay with the correct params', async function() {
-    const mockedLocationDao = new PermMeetingLocationDAO();
+    const mockedLocationDao = new PermMeetingLocationDao();
     spyOn(mockedLocationDao, 'newLocation').and.returnValue(KEY_STRING);
     spyOn(MeetingLocationDaoFactory, 'getLocationDao').and.returnValue(
         mockedLocationDao);
@@ -117,7 +117,7 @@ describe ('Fetch Locations', function() {
     const locations =
         [{title: TITLE, lat: LAT, lng: LNG, note: NOTE}];
 
-    const mockedLocationDao = new PermMeetingLocationDAO();
+    const mockedLocationDao = new PermMeetingLocationDao();
     spyOn(mockedLocationDao, 'fetchLocations').and.returnValue(locations);
     spyOn(MeetingLocationDaoFactory, 'getLocationDao').and.returnValue(
         mockedLocationDao);
@@ -150,7 +150,7 @@ describe ('Fetch Locations', function() {
 
   it ('Should call handle error if Dao throws an error', async function() {
     // Spy on Dao.  
-    const mockedLocationDao = new PermMeetingLocationDAO();
+    const mockedLocationDao = new PermMeetingLocationDao();
     spyOn(mockedLocationDao, 'fetchLocations').and.throwError('Not Found.');
     spyOn(MeetingLocationDaoFactory, 'getLocationDao').and.returnValue(
         mockedLocationDao);
@@ -195,7 +195,7 @@ describe ('Build Info Window Vote', function() {
   it ('Should increment the voteCount when the vote button is pressed',
       async function() {
     // Create Dao spy.
-    const mockedLocationDao = new PermMeetingLocationDAO();
+    const mockedLocationDao = new PermMeetingLocationDao();
     spyOn(mockedLocationDao, 'updateLocation');
     spyOn(MeetingLocationDaoFactory, 'getLocationDao').and.returnValue(
         mockedLocationDao);
@@ -216,7 +216,7 @@ describe ('Build Info Window Vote', function() {
   
   it ('Should handle error if dao throws an error', async function() {
     // Set up dao mock. 
-    const mockedLocationDao = new PermMeetingLocationDAO();
+    const mockedLocationDao = new PermMeetingLocationDao();
     spyOn(mockedLocationDao, 'updateLocation').and.throwError(ENTITY_NOT_FOUND);
     spyOn(MeetingLocationDaoFactory, 'getLocationDao').and.returnValue(
         mockedLocationDao);
@@ -246,7 +246,7 @@ describe ('Display Popular Location', function() {
   it ('Should add 3 list elements to the popular location list',
       async function() {     
     // Spy on Dao.     
-    const mockedLocationDao = new PermMeetingLocationDAO();
+    const mockedLocationDao = new PermMeetingLocationDao();
     spyOn(mockedLocationDao, 'fetchPopularLocations').and.returnValue(
         LOCATIONS);
     spyOn(MeetingLocationDaoFactory, 'getLocationDao').and.returnValue(
@@ -273,7 +273,7 @@ describe ('Display Popular Location', function() {
 
   it ('Should display a message when there are no locations', async function() {
     // Spy on Dao.  
-    const mockedLocationDao = new PermMeetingLocationDAO();
+    const mockedLocationDao = new PermMeetingLocationDao();
     spyOn(mockedLocationDao, 'fetchPopularLocations').and.returnValue(EMPTY);
     spyOn(MeetingLocationDaoFactory, 'getLocationDao').and.returnValue(
         mockedLocationDao);
@@ -287,9 +287,9 @@ describe ('Display Popular Location', function() {
     expect(childNodes[0].textContent).toBe('There are no locations to display.');
   });
 
-  it ('Should handle error is PermMeetingLocationDAO throws an error', async function() {
+  it ('Should handle error is PermMeetingLocationDao throws an error', async function() {
     // Spy on Dao.  
-    const mockedLocationDao = new PermMeetingLocationDAO();
+    const mockedLocationDao = new PermMeetingLocationDao();
     spyOn(mockedLocationDao, 'fetchPopularLocations').and.throwError('Not Found.');
     spyOn(MeetingLocationDaoFactory, 'getLocationDao').and.returnValue(
         mockedLocationDao);

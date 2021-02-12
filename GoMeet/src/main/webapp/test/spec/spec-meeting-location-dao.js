@@ -1,15 +1,15 @@
-/** Tests for PermMeetingLocationDAO. */
+/** Tests for PermMeetingLocationDao. */
 
 /** Tests for MeetingLocationDaoFactory. */
 describe('getLocationDao', function() {
   it ('Should return Dao for permanent storage', function() {
     const dao = MeetingLocationDaoFactory.getLocationDao('permanent');
-    expect(dao instanceof PermMeetingLocationDAO).toBe(true);
+    expect(dao instanceof PermMeetingLocationDao).toBe(true);
   });
 
   it ('Should return Dao for temporary storage', function() {
     const dao = MeetingLocationDaoFactory.getLocationDao('temporary');
-    expect(dao instanceof TempMeetingLocationDAO).toBe(true);
+    expect(dao instanceof TempMeetingLocationDao).toBe(true);
   });
 });
 
@@ -31,7 +31,7 @@ describe ('Fetch Locations', function() {
     promiseHelper.resolve(response);
     spyOn(window, 'fetch').and.returnValue(fetchPromise);
 
-    let responseJson = await new PermMeetingLocationDAO().fetchLocations();
+    let responseJson = await new PermMeetingLocationDao().fetchLocations();
 
     expect(responseJson).toEqual(LOCATIONS);
   });
@@ -48,7 +48,7 @@ describe('Fetch Popular Locations', function() {
 
     let errorMessage;
     try {
-      await new PermMeetingLocationDAO().fetchPopularLocations();
+      await new PermMeetingLocationDao().fetchPopularLocations();
     } catch (error) {
       errorMessage = error.message;
     }
@@ -79,7 +79,7 @@ describe('New Location', function() {
 
     spyOn(window, 'fetch').and.returnValue(fetchPromise);
 
-    let receivedResponse = await new PermMeetingLocationDAO().newLocation(
+    let receivedResponse = await new PermMeetingLocationDao().newLocation(
         TITLE_A, LAT_A, LNG_A, NOTE_A);
 
     let expectedParams = new URLSearchParams();
@@ -99,7 +99,7 @@ describe('New Location', function() {
   it ('Should throw an error if the title is empty', async function() {
     let errorMessage;
     try {
-      await new PermMeetingLocationDAO().newLocation(EMPTY, LAT_A, LNG_A, NOTE_A);
+      await new PermMeetingLocationDao().newLocation(EMPTY, LAT_A, LNG_A, NOTE_A);
     } catch (error) {
       errorMessage = error.message;
     }
@@ -119,7 +119,7 @@ describe('Update Location', function() {
     let expectedParams = new URLSearchParams();
     expectedParams.append('key', KEY_STRING);
 
-    new PermMeetingLocationDAO().updateLocation(KEY_STRING);
+    new PermMeetingLocationDao().updateLocation(KEY_STRING);
 
     // Check if fetch was called with the right params.
     expect(window.fetch).toHaveBeenCalledWith('/update-location-data',
@@ -130,7 +130,7 @@ describe('Update Location', function() {
     spyOn(window, 'fetch').and.returnValue(BAD_REQUEST_RESPONSE);
     let errorMessage;
     try {
-      await new PermMeetingLocationDAO().updateLocation(KEY_STRING);
+      await new PermMeetingLocationDao().updateLocation(KEY_STRING);
     } catch (error) {
        errorMessage = error.message;
     }
@@ -148,7 +148,7 @@ describe('New Location Temp', function() {
       {title: 'Super Soup', lat: 10.0, lng: 15.0,
       note: 'Where is my super soup?', keyString: ''};
   let fakeSessionStorage;
-  const dao = new TempMeetingLocationDAO();
+  const dao = new TempMeetingLocationDao();
 
   beforeEach(function() {
     // Set up fake session storage.
@@ -193,7 +193,7 @@ describe('New Location Temp', function() {
 describe('Fetch Locations', function() {
   const LOCATION_A =
       {title: 'Pizza Place', lat: 10.0, lng: 15.0, note: 'I like cheese!', keyString: ''};
-  const dao = new TempMeetingLocationDAO();
+  const dao = new TempMeetingLocationDao();
   let fakeSessionStorage;
 
   beforeEach(function() {
@@ -226,7 +226,7 @@ describe('validTitle', function() {
   const LOCATION_A =
       {title: 'Pizza Place', lat: 10.0, lng: 15.0, note: 'I like cheese!',
       keyString: ''};
-  const dao = new TempMeetingLocationDAO();
+  const dao = new TempMeetingLocationDao();
   let fakeSessionStorage;
 
   beforeEach(function() {
@@ -258,7 +258,7 @@ describe('maxEntitiesReached', function() {
   const LOCATION_A =
       {title: 'Pizza Place', lat: 10.0, lng: 15.0, note: 'I like cheese!',
       keyString: ''};
-  const dao = new TempMeetingLocationDAO();
+  const dao = new TempMeetingLocationDao();
   let fakeSessionStorage;
 
   beforeEach(function() {
