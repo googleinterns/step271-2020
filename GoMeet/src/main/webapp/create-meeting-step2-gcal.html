@@ -4,6 +4,12 @@
   <head>
     <meta charset="UTF-8">
     <title>Create Meeting</title>
+    <script src="js/error-messages.js"></script>
+    <script src="js/time-proposal-util.js"></script>
+    <script src="js/dao-utils.js"></script>
+    <script src="js/meeting-event-dao.js"></script>
+    <script src="js/google-calendar-times-dao.js"></script>
+    <script src="js/gcal-time-proposal.js"></script>
   </head>
   <body>
     <div>
@@ -14,10 +20,10 @@
     <div>
       <p>Generate times between: </p>
       <label for="period-start">Start</label>
-      <input type="datetime-local" name="period-start">
+      <input id="period-start" type="datetime-local" name="period-start">
       <label for="period-end">End</label>
-      <input type="datetime-local" name="period-end">
-      <button>Generate Times</button>
+      <input id="period-end" type="datetime-local" name="period-end">
+      <button onclick="generateTimes()">Generate Times</button>
     </div>
     <div id="generated-times">
       <!-- The automatically generated times to be displayed here. -->
