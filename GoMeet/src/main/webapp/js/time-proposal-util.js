@@ -53,12 +53,27 @@ class TimeProposalUtil {
    * otherwise false
    */
   static verifyUniqueFutureTime(time, enteredTimes) {
+    if (TimeProposalUtil.verifyFutureTime(time) && 
+        !(enteredTimes.has(time))) {
+      enteredTimes.add(time);
+      return true;
+    } else {
+      return false;
+    }
+  }
+
+  /**
+   * Verifies that the time is a time in the future from now,
+   * AEDT time.
+   * @param {String} time The datetime string to be verified.
+   * @returns True if the time is in the future, false otherwise.
+   */
+  static verifyFutureTime(time) {
     let timeEntered = new Date(time);
     let now = new Date(TimeProposalUtil.getDatetimeNow());
-    if (enteredTimes.has(time) || !(timeEntered > now)) {
+    if (!(timeEntered > now)) {
       return false;
     } else {
-      enteredTimes.add(time);
       return true;
     }
   }
