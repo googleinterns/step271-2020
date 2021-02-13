@@ -23,13 +23,13 @@
       <input id="period-start" type="datetime-local" name="period-start">
       <label for="period-end">End</label>
       <input id="period-end" type="datetime-local" name="period-end">
-      <button onclick="generateTimes()">Generate Times</button>
+      <button id="generate-times-button" onclick="generateTimes()">Generate Times</button>
     </div>
     <div id="generated-times">
       <!-- The automatically generated times to be displayed here. -->
     </div>
     <div>
-      <button>Next</button>
+      <button disabled id="next-button">Next</button>
     </div>
   </body>
 </html>
