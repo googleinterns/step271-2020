@@ -26,6 +26,7 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
+import java.util.TimeZone;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -47,6 +48,7 @@ public class AutoProposeTimesTest {
   private final String FAKE_API_KEY = "key";
   private final int DURATION_MS = 30 * 60 * 1000; // 30 mins duration in milliseconds.
   private final String DATE_FORMAT = "yyyy-MM-dd HH:mm:ss";
+  private final String TIMEZONE = "AET";
   private final SimpleDateFormat FORMATTER = new SimpleDateFormat(DATE_FORMAT);
   private final ArrayList<String> CAL_ID = 
       new ArrayList<String> (Arrays.asList("person1@test.com", "person2@test.com"));
@@ -78,6 +80,7 @@ public class AutoProposeTimesTest {
     // Initialise the Dates here to recognise the ParseException.
     startTime = FORMATTER.parse(START_TIME_STR);
     endTime = FORMATTER.parse(END_TIME_STR);
+    AutoProposeTimes.setTimezone(TIMEZONE);
     proposer = 
         new AutoProposeTimes(serviceSpy, FAKE_API_KEY, CAL_ID, startTime, endTime, DURATION_MS);
     proposerSpy = spy(proposer);
@@ -283,8 +286,11 @@ public class AutoProposeTimesTest {
   
   private TimePeriod timePeriodFromDatestring(String start, String end) 
       throws ParseException {
-    DateTime startDateTime = new DateTime(FORMATTER.parse(start));
-    DateTime endDateTime = new DateTime(FORMATTER.parse(end));
+    SimpleDateFormat formatter = new SimpleDateFormat(DATE_FORMAT);
+    DateTime startDateTime = 
+        new DateTime(FORMATTER.parse(start), TimeZone.getTimeZone(TIMEZONE));
+    DateTime endDateTime = 
+        new DateTime(FORMATTER.parse(end), TimeZone.getTimeZone(TIMEZONE));
     TimePeriod time = new TimePeriod()
         .setStart(startDateTime)
         .setEnd(endDateTime);

@@ -20,9 +20,11 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
+import java.util.TimeZone;
 
 public class AutoProposeTimes {
   private final String RFC3339_FORMAT = "yyyy-MM-dd'T'HH:mm:ssXXX";
+  private static String TIMEZONE = "AET"; // Australian Eastern Time
 
   Calendar service;
   String apiKey; 
@@ -48,8 +50,8 @@ public class AutoProposeTimes {
     this.service = service;
     this.apiKey = apiKey;
     this.calendarId = calId;
-    this.startTime = new DateTime(startTime);
-    this.endTime = new DateTime(endTime);
+    this.startTime = new DateTime(startTime, TimeZone.getTimeZone(TIMEZONE));
+    this.endTime = new DateTime(endTime, TimeZone.getTimeZone(TIMEZONE));
     this.meetingDuration = duration;
   }
 
@@ -155,7 +157,8 @@ public class AutoProposeTimes {
     FreeBusyRequest req = new FreeBusyRequest()
         .setTimeMin(this.startTime)
         .setTimeMax(this.endTime)
-        .setItems(Arrays.asList(currentCalItem));
+        .setItems(Arrays.asList(currentCalItem))
+        .setTimeZone(TIMEZONE); // The timezone that the times returned will be in.
     Freebusy freebusy = this.service.freebusy();
     Query query = freebusy.query(req).setKey(this.apiKey);
     FreeBusyResponse resp = query.execute();
@@ -163,6 +166,18 @@ public class AutoProposeTimes {
     // with calId as its identifier.
     FreeBusyCalendar currentCal = resp.getCalendars().get(calId); 
     return currentCal.getBusy();
+  }
+
+  /**
+   * Sets the timezone that the algorithm will be applying to times.
+   * Timezone is AET (Australian Eastern Time) by default.
+   * startTime and endTime provided to constructor will be assumed to be
+   * this timezone, all auto generated times will be returned in this timezone.
+   * @param timezoneString The string that represents the timezone.
+   * Must be one of the timezones as returned by TimeZone.getAvailableIDs()
+   */
+  public static void setTimezone(String timezone) {
+    TIMEZONE = timezone;
   }
 
   /**
