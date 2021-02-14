@@ -9,6 +9,8 @@ import com.google.api.client.googleapis.json.GoogleJsonResponseException;
 import com.google.api.client.util.DateTime;
 import com.google.api.services.calendar.model.TimePeriod;
 import com.google.gson.Gson;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonParser;
 import com.google.sps.data.ErrorMessages;
 import com.google.sps.servlets.GoogleCalendarTimesServlet;
 import java.io.IOException;
@@ -126,7 +128,20 @@ public final class GoogleCalendarTimesServletTest {
     );
     Gson gson = new Gson();
     writer.flush();
-    assertTrue(stringWriter.toString().contains(gson.toJson(expectedReturn))); 
+    String actual = stringWriter.toString();
+    String expected = gson.toJson(expectedReturn);
+    assertTrue(actual.contains(expected)); 
+
+    // Check that the size of the returned JSON arrays are equal
+    // This will prevent the case where actual and expected are both null
+    JsonArray resultsJsonObj = new JsonParser().parse(actual).getAsJsonArray();
+    JsonArray expectedJsonObj = new JsonParser().parse(expected).getAsJsonArray(); 
+    assertEquals(resultsJsonObj.size(), expectedJsonObj.size());
+    
+    // Check each individual entry in returned list
+    for (int i = 0; i < resultsJsonObj.size(); i++) {
+      assertEquals(resultsJsonObj.get(i), expectedJsonObj.get(i));
+    }
   }
    
   @Test 
