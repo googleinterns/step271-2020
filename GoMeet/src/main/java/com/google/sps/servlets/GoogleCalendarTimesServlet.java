@@ -20,6 +20,7 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.TimeZone;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -27,6 +28,9 @@ import javax.servlet.http.HttpServletResponse;
 
 @WebServlet("/gcal-find-times")
 public class GoogleCalendarTimesServlet extends HttpServlet {
+  // The timezone that the servlet will treat PERIOD_START and PERIOD_END in
+  private static String TIMEZONE = "AET"; // Australian Eastern Time by default
+
   // TODO: Load the API_KEY from a file.
   private static String API_KEY = "";
   
@@ -74,6 +78,7 @@ public class GoogleCalendarTimesServlet extends HttpServlet {
     
     try {
       SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm");
+      formatter.setTimeZone(TimeZone.getTimeZone(TIMEZONE));
       periodStart = formatter.parse(periodStartStr);
       periodEnd = formatter.parse(periodEndStr);
     } catch (ParseException e) {
@@ -108,7 +113,7 @@ public class GoogleCalendarTimesServlet extends HttpServlet {
     // Return times that are the start times of each TimePeriod in times
     List<String> timesStr = new ArrayList<String>();
     for (int i = 0; i < times.size(); i++) {
-      String current = times.get(i).getStart().toString();
+      String current = times.get(i).getStart().toStringRfc3339();
       timesStr.add(current);
     }
     Gson gson = new Gson();
@@ -133,6 +138,9 @@ public class GoogleCalendarTimesServlet extends HttpServlet {
   public List<TimePeriod> autoProposeTimes(HttpServletResponse response, 
       ArrayList<String> guestList, Date periodStart, 
       Date periodEnd, int totalDurationMs) throws IOException {
+    
+    // Ensure that AutoProposeTime is working in the same timezone as this servlet.
+    AutoProposeTimes.setTimezone(TIMEZONE); 
     
     AutoProposeTimes proposer;
     List<TimePeriod> times;
@@ -163,5 +171,15 @@ public class GoogleCalendarTimesServlet extends HttpServlet {
    */
   public static void setApiKey(String newKey) {
     API_KEY = newKey;
+  }
+
+  /**
+   * Sets the timezone that this servlet will be using to work
+   * with PERIOD_START and PERIOD_END times.
+   * @param timezoneString The string that represents the timezone.
+   * Must be one of the timezones as returned by TimeZone.getAvailableIDs()
+   */
+  public static void setTimezone(String timezone) {
+    TIMEZONE = timezone;
   }
 }

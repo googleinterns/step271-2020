@@ -21,6 +21,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
+import java.util.TimeZone;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -44,7 +45,7 @@ public final class GoogleCalendarTimesServletTest {
   private final String DURATION_HOURS = "0"; 
   private final int DURATION_MS = 30 * 60 * 1000;
   private final String DATE_FORMAT = "yyyy-MM-dd'T'HH:mm";
-  private final SimpleDateFormat FORMATTER = new SimpleDateFormat(DATE_FORMAT);
+  private final String TIMEZONE = "AET";
   private final String PERIOD_START_STR = "2021-02-11T10:00";
   private final String PERIOD_END_STR = "2021-02-11T18:00";
   private final String TIME_10AM = "2021-02-11T10:00";
@@ -90,10 +91,13 @@ public final class GoogleCalendarTimesServletTest {
         .thenReturn(PERIOD_END_STR);
     
     // Initialise the Dates here to recognise the ParseException.
-    periodStart = FORMATTER.parse(PERIOD_START_STR);
-    periodEnd = FORMATTER.parse(PERIOD_END_STR);
+    SimpleDateFormat formatter = new SimpleDateFormat(DATE_FORMAT);
+    formatter.setTimeZone(TimeZone.getTimeZone(TIMEZONE));
+    periodStart = formatter.parse(PERIOD_START_STR);
+    periodEnd = formatter.parse(PERIOD_END_STR);
 
     // Initialise a new spy every test to ensure atomicity
+    GoogleCalendarTimesServlet.setTimezone(TIMEZONE);
     servletSpy = spy(new GoogleCalendarTimesServlet());
   }
   
@@ -214,7 +218,7 @@ public final class GoogleCalendarTimesServletTest {
 
    /**
     * Creates a TimePeriod with a start and end time as given in the 
-    * parameters
+    * parameters. The start and end times are timezone data independent.
     * @param start The start time in the format "yyyy-MM-dd'T'HH:mm"
     * @param end The end time in the format "yyyy-MM-dd'T'HH:mm"
     * @return The created TimePeriod
@@ -222,8 +226,9 @@ public final class GoogleCalendarTimesServletTest {
     */
   private TimePeriod timePeriodFromDatestring(String start, String end) 
       throws ParseException {
-    DateTime startDateTime = new DateTime(FORMATTER.parse(start));
-    DateTime endDateTime = new DateTime(FORMATTER.parse(end));
+    SimpleDateFormat formatterNoTimeZone = new SimpleDateFormat(DATE_FORMAT);
+    DateTime startDateTime = new DateTime(formatterNoTimeZone.parse(start));
+    DateTime endDateTime = new DateTime(formatterNoTimeZone.parse(end));
     TimePeriod time = new TimePeriod()
         .setStart(startDateTime)
         .setEnd(endDateTime);
