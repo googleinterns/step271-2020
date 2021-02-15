@@ -12,7 +12,7 @@ public class ErrorMessages {
       "Too many results returned";
   public static final String REPEAT_TITLE_ERROR = 
       "There is already a location with this title";
-  public static final String MAX_ENTITIES = 
+  public static final String MAX_ENTITIES_ERROR = 
       "Maximum number of entities reached";
   public static final String BAD_EMAIL_REQUEST_ERROR = 
       "MeetingId and guest list must both be provided to send email invitations";
