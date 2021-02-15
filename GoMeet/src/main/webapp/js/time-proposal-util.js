@@ -71,10 +71,6 @@ class TimeProposalUtil {
   static verifyFutureTime(time) {
     let timeEntered = new Date(time);
     let now = new Date(TimeProposalUtil.getDatetimeNow());
-    if (!(timeEntered > now)) {
-      return false;
-    } else {
-      return true;
-    }
+    return timeEntered > now;
   }
 }

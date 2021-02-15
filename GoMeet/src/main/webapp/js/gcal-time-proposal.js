@@ -42,13 +42,9 @@ function rectifyTimeBoundaries(start, end) {
   // that end is later than start by at least 1 minute.
   let startDate = new Date(start);
   let endDate = new Date(end);
-  if (TimeProposalUtil.verifyFutureTime(start) &&
+  return (TimeProposalUtil.verifyFutureTime(start) &&
       TimeProposalUtil.verifyFutureTime(end) &&
-      endDate > startDate) {
-    return true;
-  } else {
-    return false;
-  }
+      endDate > startDate);
 }
 
 /**
