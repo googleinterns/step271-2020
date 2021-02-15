@@ -120,7 +120,7 @@ function buildInfoWindowVote(title, voteCount, note, keyString) {
   const titleContainer = createSpanContainer(title, 'displayTitle');
   const noteContainer = createSpanContainer(note, 'displayNote');
   const voteContainer = createSpanContainer(voteCount, 'displayVoteCount');
- 
+
   const button = document.createElement('button');
   button.setAttribute('id', 'voteButton');
   button.appendChild(document.createTextNode('VOTE'));
