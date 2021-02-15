@@ -2,10 +2,12 @@
 <html>
   <head>
     <title>GoMeet</title>
+    <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
     <script src="js/load-map.js"></script>
     <script src="js/error-messages.js"></script>
     <script src="js/meeting-location-dao.js"></script>
     <script src="js/interactive-map.js"></script>
+    <script src="js/interactive-chart.js"></script>
     <script src="js/meeting-display.js"></script>
     <script src="js/login-status.js"></script>
     <script src="js/dao-utils.js"></script>
@@ -33,7 +35,9 @@
     <div id="vote-meeting-locations">
       <h2>Meeting Locations</h2>
       <p>Click on the map to propose a new location.</p>
-      <div id="map" data-mem="permanent"></div></br>
+      <button onclick="initMap()">View Map</button>
+      <button onclick="drawChart()">View Chart</button><br>
+      <div id="map" data-mem="permanent"></div><br>
       <button onclick="displayPopularLocations()">Most Popular Locations</button><br>
       <p>Popular Locations:</p>
       <ul id="popular-locations-container"></ul>
