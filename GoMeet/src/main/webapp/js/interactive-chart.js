@@ -1,6 +1,6 @@
 google.charts.load('current', {'packages':['corechart']});
 
-/** Fetches fruit data and uses it to create a chart. */
+/** Fetches location data and uses it to create a chart. */
 async function drawChart() {
   const dao = MeetingLocationDaoFactory.getLocationDao('permanent');
   let locations = await dao.fetchLocations();
