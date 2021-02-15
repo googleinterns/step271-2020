@@ -1,4 +1,17 @@
-/** Tests for MeetingLocationDAO. */
+/** Tests for PermMeetingLocationDao. */
+
+/** Tests for MeetingLocationDaoFactory. */
+describe('getLocationDao', function() {
+  it ('Should return Dao for permanent storage', function() {
+    const dao = MeetingLocationDaoFactory.getLocationDao('permanent');
+    expect(dao instanceof PermMeetingLocationDao).toBe(true);
+  });
+
+  it ('Should return Dao for temporary storage', function() {
+    const dao = MeetingLocationDaoFactory.getLocationDao('temporary');
+    expect(dao instanceof TempMeetingLocationDao).toBe(true);
+  });
+});
 
 /** Tests for fetchLocations(). */
 describe ('Fetch Locations', function() {
@@ -18,14 +31,14 @@ describe ('Fetch Locations', function() {
     promiseHelper.resolve(response);
     spyOn(window, 'fetch').and.returnValue(fetchPromise);
 
-    let responseJson = await MeetingLocationDAO.fetchLocations();
+    let responseJson = await new PermMeetingLocationDao().fetchLocations();
 
     expect(responseJson).toEqual(LOCATIONS);
   });
 });
 
 /** Tests for fetchPopularLocatios(). */
-describe('Fetch Popuar Locations', function() {
+describe('Fetch Popular Locations', function() {
   const BAD_REQUEST_RESPONSE =
       {status: 404, statusText : 'Not Found.'};
 
@@ -35,7 +48,7 @@ describe('Fetch Popuar Locations', function() {
 
     let errorMessage;
     try {
-      await MeetingLocationDAO.fetchPopularLocations();
+      await new PermMeetingLocationDao().fetchPopularLocations();
     } catch (error) {
       errorMessage = error.message;
     }
@@ -46,6 +59,7 @@ describe('Fetch Popuar Locations', function() {
 /** Tests for newLocation(). */
 describe('New Location', function() {
   const TITLE_A = 'Taco Place';
+  const EMPTY = '';
   const LAT_A = 10.0; 
   const LNG_A = 15.0; 
   const NOTE_A = 'I like Tacos';
@@ -65,7 +79,7 @@ describe('New Location', function() {
 
     spyOn(window, 'fetch').and.returnValue(fetchPromise);
 
-    let receivedResponse = await MeetingLocationDAO.newLocation(
+    let receivedResponse = await new PermMeetingLocationDao().newLocation(
         TITLE_A, LAT_A, LNG_A, NOTE_A);
 
     let expectedParams = new URLSearchParams();
@@ -81,22 +95,201 @@ describe('New Location', function() {
     // Check if the response was returned.
     expect(receivedResponse).toEqual(KEY_STRING);
   });
+
+  it ('Should throw an error if the title is empty', async function() {
+    let errorMessage;
+    try {
+      await new PermMeetingLocationDao().newLocation(EMPTY, LAT_A, LNG_A, NOTE_A);
+    } catch (error) {
+      errorMessage = error.message;
+    }
+    expect(errorMessage).toEqual(BLANK_FIELDS_ALERT);
+  });
 });
 
 /** Tests for updateLocation(). */
 describe('Update Location', function() {
   const KEY_STRING = '1234';
+  const OK_RESPONSE = {status : 200};
+  const BAD_REQUEST_RESPONSE = {status : 400};
 
   it ('Should send a post request with the correct params', function() {
-    spyOn(window, 'fetch');
+    spyOn(window, 'fetch').and.returnValue(OK_RESPONSE);
 
     let expectedParams = new URLSearchParams();
     expectedParams.append('key', KEY_STRING);
 
-    MeetingLocationDAO.updateLocation(KEY_STRING);
+    new PermMeetingLocationDao().updateLocation(KEY_STRING);
 
     // Check if fetch was called with the right params.
     expect(window.fetch).toHaveBeenCalledWith('/update-location-data',
         {method: 'POST', body: expectedParams}); 
+  });
+
+  it ('Should throw an error if fetch return status code of 400', async function() {    
+    spyOn(window, 'fetch').and.returnValue(BAD_REQUEST_RESPONSE);
+    let errorMessage;
+    try {
+      await new PermMeetingLocationDao().updateLocation(KEY_STRING);
+    } catch (error) {
+       errorMessage = error.message;
+    }
+    expect(errorMessage).toEqual(ENTITY_NOT_FOUND);
+  });
+});
+
+/** Tests for TempMeetingLocationDao. */
+
+/** Tests if a new location is stored on session storage. */
+describe('New Location Temp', function() {
+  const LOCATION_A =
+      {title: 'Pizza Place', lat: 10.0, lng: 15.0, note: 'I like cheese!', keyString: ''};
+  const LOCATION_B = 
+      {title: 'Super Soup', lat: 10.0, lng: 15.0,
+      note: 'Where is my super soup?', keyString: ''};
+  let fakeSessionStorage;
+  const dao = new TempMeetingLocationDao();
+
+  beforeEach(function() {
+    // Set up fake session storage.
+    fakeSessionStorage = {};
+    spyOn(sessionStorage, 'setItem').and.callFake(function(key, value) {
+      fakeSessionStorage[key] = value;
+    });
+    spyOn(sessionStorage, 'getItem').and.callFake(function(key) {
+      return fakeSessionStorage[key];
+    });
+  });
+      
+  it ('Should store arguments as a new location', async function() {
+    await dao.newLocation(LOCATION_A.title, LOCATION_A.lat, LOCATION_A.lng,
+        LOCATION_A.note);
+    
+    const storedLocations = JSON.parse(fakeSessionStorage['locations']);
+    expect(storedLocations.length).toBe(1);
+
+    const storedLocation = storedLocations[0];
+    expect(storedLocation).toEqual(LOCATION_A);
+  });
+
+  it ('Should add to the location list of there is something already stored',
+      async function() {
+    // Add a location to fakeSessionStorage.
+    fakeSessionStorage['locations'] = JSON.stringify([LOCATION_B]);
+
+    await dao.newLocation(LOCATION_A.title, LOCATION_A.lat, LOCATION_A.lng,
+        LOCATION_A.note);
+
+    const storedLocations = JSON.parse(fakeSessionStorage['locations']);
+    expect(storedLocations.length).toBe(2);
+
+    const storedLocation1 = storedLocations[0];
+    const storedLocation2 = storedLocations[1];
+    expect(storedLocation1).toEqual(LOCATION_B);
+    expect(storedLocation2).toEqual(LOCATION_A);
+  });
+});
+
+describe('Fetch Locations', function() {
+  const LOCATION_A =
+      {title: 'Pizza Place', lat: 10.0, lng: 15.0, note: 'I like cheese!', keyString: ''};
+  const dao = new TempMeetingLocationDao();
+  let fakeSessionStorage;
+
+  beforeEach(function() {
+    // Set up fake session storage.
+    fakeSessionStorage = {};
+    spyOn(sessionStorage, 'setItem').and.callFake(function(key, value) {
+      fakeSessionStorage[key] = value;
+    });
+    spyOn(sessionStorage, 'getItem').and.callFake(function(key) {
+      return fakeSessionStorage[key];
+    });
+  });
+
+  it ('Should return locations stored on sessionStorage', function() {
+    fakeSessionStorage['locations'] = JSON.stringify([LOCATION_A]);
+
+    let results = dao.fetchLocations();
+
+    expect(results.length).toBe(1);
+    expect(results[0]).toEqual(LOCATION_A);
+  });
+
+  it ('Should return an empty array with sessionStorage is empty', function() {
+    let results = dao.fetchLocations();
+    expect(results.length).toBe(0);
+  });
+});
+
+describe('validTitle', function() {
+  const LOCATION_A =
+      {title: 'Pizza Place', lat: 10.0, lng: 15.0, note: 'I like cheese!',
+      keyString: ''};
+  const dao = new TempMeetingLocationDao();
+  let fakeSessionStorage;
+
+  beforeEach(function() {
+    // Set up fake session storage.
+    fakeSessionStorage = {};
+    fakeSessionStorage['locations'] = JSON.stringify([LOCATION_A]);
+    spyOn(sessionStorage, 'setItem').and.callFake(function(key, value) {
+      fakeSessionStorage[key] = value;
+    });
+    spyOn(sessionStorage, 'getItem').and.callFake(function(key) {
+      return fakeSessionStorage[key];
+    });
+  });
+
+  it ('Should return false if the new location title is a repeat',
+      function() {
+    let result = dao.validTitle(LOCATION_A.title);
+    expect(result).toBe(false);
+  });
+
+  it ('Should return true if the new location title is not a repeat',
+      function() {
+    let result = dao.validTitle('Anti-Pizza Place');
+    expect(result).toBe(true);
+  });
+});
+
+describe('maxEntitiesReached', function() {
+  const LOCATION_A =
+      {title: 'Pizza Place', lat: 10.0, lng: 15.0, note: 'I like cheese!',
+      keyString: ''};
+  const dao = new TempMeetingLocationDao();
+  let fakeSessionStorage;
+
+  beforeEach(function() {
+    // Set up fake session storage.
+    fakeSessionStorage = {};
+    spyOn(sessionStorage, 'setItem').and.callFake(function(key, value) {
+      fakeSessionStorage[key] = value;
+    });
+    spyOn(sessionStorage, 'getItem').and.callFake(function(key) {
+      return fakeSessionStorage[key];
+    });
+  });
+
+  it ('Should return false if the number of locations is less than the maximum',
+      function() {
+    fakeSessionStorage['locations'] = JSON.stringify([LOCATION_A]);
+    const result = dao.maxEntitiesReached();
+    expect(result).toBe(false);
+  });
+
+  it ('Should return false if locations is empty', function() {
+    const result = dao.maxEntitiesReached();
+    expect(result).toBe(false);
+  });
+
+  it ('Should return true if the number of locations is greater than the maximum',
+      function() {
+    fakeSessionStorage['locations'] =
+        JSON.stringify(
+            [LOCATION_A, LOCATION_A, LOCATION_A,LOCATION_A, LOCATION_A]);
+    const result = dao.maxEntitiesReached();
+    expect(result).toBe(true);
   });
 });

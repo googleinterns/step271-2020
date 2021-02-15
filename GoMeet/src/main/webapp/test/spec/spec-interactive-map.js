@@ -44,15 +44,12 @@ describe('Build Info window input', function() {
   const NOTE_A = 'My note!';
   const MAP = {};
   const KEY_STRING = '1234';
-  let mockedLocation;
-  let infoWindowContent;
   
-  beforeAll(function() {
-    mockedLocation = jasmine.createSpyObj('Marker', ['setMap']);
-    infoWindowContent = buildInfoWindowInput(LAT_A, LNG_A, mockedLocation, MAP);
-  });
-
   it ('Should have two textareas and one button', function() {
+    const mockedLocation = jasmine.createSpyObj('Marker', ['setMap']);
+    const infoWindowContent =
+        buildInfoWindowInput(LAT_A, LNG_A, mockedLocation, MAP);
+
     const childNodes = infoWindowContent.children;
 
     let textareaCount = 0;
@@ -70,17 +67,32 @@ describe('Build Info window input', function() {
     expect(buttonCount).toBe(1);
   });
 
-  it ('Should call alert if title is empty', function() {
-    spyOn(window, 'alert');
+  it ('Should handle error if dao throws error', async function() {
+    const mockedLocationDao = new PermMeetingLocationDao();
+    spyOn(mockedLocationDao, 'newLocation').and.throwError(BLANK_FIELDS_ALERT);
+    spyOn(MeetingLocationDaoFactory, 'getLocationDao').and.returnValue(
+        mockedLocationDao);
+
+    const mockedLocation = jasmine.createSpyObj('Marker', ['setMap']);
+    const infoWindowContent = buildInfoWindowInput(LAT_A, LNG_A, mockedLocation, MAP);
+
+    spyOn(window, 'handleError');
     const titleTextbox = infoWindowContent.children[1];
     const button = infoWindowContent.children[6];
     titleTextbox.value = EMPTY_TITLE;
-    button.click();
-    expect(window.alert).toHaveBeenCalled(); 
+    await button.onclick();
+    expect(window.handleError).toHaveBeenCalled(); 
   });
 
-  it ('Should call createLocationForDisplay with the corerct params', async function() {
-    spyOn(MeetingLocationDAO, 'newLocation').and.returnValue(KEY_STRING)
+  it ('Should call createLocationForDisplay with the correct params', async function() {
+    const mockedLocationDao = new PermMeetingLocationDao();
+    spyOn(mockedLocationDao, 'newLocation').and.returnValue(KEY_STRING);
+    spyOn(MeetingLocationDaoFactory, 'getLocationDao').and.returnValue(
+        mockedLocationDao);
+
+    const mockedLocation = jasmine.createSpyObj('Marker', ['setMap']);
+    const infoWindowContent = buildInfoWindowInput(LAT_A, LNG_A, mockedLocation, MAP);
+
     spyOn(window, 'createLocationForDisplay');
 
     infoWindowContent.querySelector('#titleTextbox').value = TITLE_A;
@@ -102,9 +114,13 @@ describe ('Fetch Locations', function() {
   const LNG = 15.0;
 
   it ('Should create a marker for the location returned', async function() {
-    const LOCATIONS =
+    const locations =
         [{title: TITLE, lat: LAT, lng: LNG, note: NOTE}];
-    spyOn(MeetingLocationDAO, 'fetchLocations').and.returnValue(LOCATIONS);
+
+    const mockedLocationDao = new PermMeetingLocationDao();
+    spyOn(mockedLocationDao, 'fetchLocations').and.returnValue(locations);
+    spyOn(MeetingLocationDaoFactory, 'getLocationDao').and.returnValue(
+        mockedLocationDao);
 
     // Set up mocks for Google MAPS API
     const markerConstructorSpy = spyOn(google.maps, 'Marker');
@@ -131,6 +147,20 @@ describe ('Fetch Locations', function() {
     expect(titleText).toBe(TITLE);
     expect(noteText).toBe(NOTE);
   }); 
+
+  it ('Should call handle error if Dao throws an error', async function() {
+    // Spy on Dao.  
+    const mockedLocationDao = new PermMeetingLocationDao();
+    spyOn(mockedLocationDao, 'fetchLocations').and.throwError('Not Found.');
+    spyOn(MeetingLocationDaoFactory, 'getLocationDao').and.returnValue(
+        mockedLocationDao);
+
+    spyOn(window, 'handleError');
+
+    await fetchLocations();
+
+    expect(window.handleError).toHaveBeenCalled();
+  });
 });
 
 /** Test for building info window for voting. */
@@ -164,7 +194,12 @@ describe ('Build Info Window Vote', function() {
 
   it ('Should increment the voteCount when the vote button is pressed',
       async function() {
-    spyOn(MeetingLocationDAO, 'updateLocation');
+    // Create Dao spy.
+    const mockedLocationDao = new PermMeetingLocationDao();
+    spyOn(mockedLocationDao, 'updateLocation');
+    spyOn(MeetingLocationDaoFactory, 'getLocationDao').and.returnValue(
+        mockedLocationDao);
+
     let currDisplayVote;
     const infoWindowContent = buildInfoWindowVote(TITLE_A, COUNT_A, NOTE_A);
 
@@ -178,6 +213,23 @@ describe ('Build Info Window Vote', function() {
         .innerText;
     expect(parseInt(currDisplayVote)).toBe(COUNT_A + 1);
   });
+  
+  it ('Should handle error if dao throws an error', async function() {
+    // Set up dao mock. 
+    const mockedLocationDao = new PermMeetingLocationDao();
+    spyOn(mockedLocationDao, 'updateLocation').and.throwError(ENTITY_NOT_FOUND);
+    spyOn(MeetingLocationDaoFactory, 'getLocationDao').and.returnValue(
+        mockedLocationDao);
+
+    spyOn(window, 'handleError');
+
+    const infoWindowContent = buildInfoWindowVote(TITLE_A, COUNT_A, NOTE_A);
+
+    const button = infoWindowContent.querySelector('#voteButton');
+    await button.onclick();
+
+    expect(window.handleError).toHaveBeenCalled();
+  });
 });
 
 /** Tests for displaying popular locations. */
@@ -189,10 +241,17 @@ describe ('Display Popular Location', function() {
       note: 'I like Unagi!'},
       {title: 'Pizza Place', lat: 15.0, lng: 22.0, voteCount: 5,
       note: 'I like tomato!'}];
+  const EMPTY = [];
 
   it ('Should add 3 list elements to the popular location list',
       async function() {     
-    spyOn(MeetingLocationDAO, 'fetchPopularLocations').and.returnValue(LOCATIONS);
+    // Spy on Dao.     
+    const mockedLocationDao = new PermMeetingLocationDao();
+    spyOn(mockedLocationDao, 'fetchPopularLocations').and.returnValue(
+        LOCATIONS);
+    spyOn(MeetingLocationDaoFactory, 'getLocationDao').and.returnValue(
+        mockedLocationDao);
+
     spyOn(window, 'createPopularLocationElement').and.callThrough();
 
     await displayPopularLocations();
@@ -213,8 +272,11 @@ describe ('Display Popular Location', function() {
   });
 
   it ('Should display a message when there are no locations', async function() {
-    const locations = [];
-    spyOn(MeetingLocationDAO, 'fetchPopularLocations').and.returnValue(locations);
+    // Spy on Dao.  
+    const mockedLocationDao = new PermMeetingLocationDao();
+    spyOn(mockedLocationDao, 'fetchPopularLocations').and.returnValue(EMPTY);
+    spyOn(MeetingLocationDaoFactory, 'getLocationDao').and.returnValue(
+        mockedLocationDao);
 
     await displayPopularLocations();
 
@@ -225,10 +287,17 @@ describe ('Display Popular Location', function() {
     expect(childNodes[0].textContent).toBe('There are no locations to display.');
   });
 
-  it ('Should handle error is MeetingLocationDAO throws an error', async function() {
+  it ('Should handle error is PermMeetingLocationDao throws an error', async function() {
+    // Spy on Dao.  
+    const mockedLocationDao = new PermMeetingLocationDao();
+    spyOn(mockedLocationDao, 'fetchPopularLocations').and.throwError('Not Found.');
+    spyOn(MeetingLocationDaoFactory, 'getLocationDao').and.returnValue(
+        mockedLocationDao);
+
     spyOn(window, 'handleError');
-    spyOn(MeetingLocationDAO, 'fetchPopularLocations').and.throwError('Not Found.');
+
     await displayPopularLocations();
+
     expect(window.handleError).toHaveBeenCalled();
   });
 });
