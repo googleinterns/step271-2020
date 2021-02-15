@@ -11,7 +11,7 @@ public class ErrorMessages {
   public static final String TOO_MANY_RESULTS_ERROR = 
       "Too many results returned";
   public static final String BAD_REQUEST_ERROR_LOCATION = 
-      "Invalid location";
+      "There is already a location with this title";
   public static final String MAX_ENTITIES = 
       "Maximum number of entities reached";
   public static final String BAD_EMAIL_REQUEST_ERROR = 
