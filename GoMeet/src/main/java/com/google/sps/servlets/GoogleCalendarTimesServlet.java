@@ -84,7 +84,7 @@ public class GoogleCalendarTimesServlet extends HttpServlet {
     } catch (ParseException e) {
       ServletUtil.sendErrorResponse(response, 
           HttpServletResponse.SC_BAD_REQUEST, 
-          ErrorMessages.INVALID_ARG_FORMAT);
+          ErrorMessages.BAD_REQUEST_ERROR);
       return;
     }
 

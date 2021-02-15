@@ -213,7 +213,7 @@ public final class GoogleCalendarTimesServletTest {
     servletSpy.doGet(mockedRequest, mockedResponse);
 
     ServletTestUtil.expectBadRequest(HttpServletResponse.SC_BAD_REQUEST, 
-        ErrorMessages.INVALID_ARG_FORMAT, mockedResponse, stringWriter, writer);
+        ErrorMessages.BAD_REQUEST_ERROR, mockedResponse, stringWriter, writer);
   }
 
   @Test
