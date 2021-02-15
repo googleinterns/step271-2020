@@ -64,6 +64,8 @@ describe('New Location', function() {
   const LNG_A = 15.0; 
   const NOTE_A = 'I like Tacos';
   const KEY_STRING = '1234';
+  const BAD_REQUEST_RESPONSE =
+      {status : 400, message : 'Invalid Location'};
 
   it ('Should send a post request with the correct params', async function() {
     // Set up fake promise to return 
@@ -104,6 +106,24 @@ describe('New Location', function() {
       errorMessage = error.message;
     }
     expect(errorMessage).toEqual(BLANK_FIELDS_ALERT);
+  });
+
+  it ('Should throw an error if response status is not between 200 and 299', 
+      async function() {
+    // Spy on Fetch API.
+    const fetchResultSpy = jasmine.createSpyObj('Response', ['json'], {status : 400});
+    fetchResultSpy.json.and.callFake(function() {
+      return BAD_REQUEST_RESPONSE;
+    });
+    spyOn(window, 'fetch').and.returnValue(fetchResultSpy);
+    
+    let errorMessage;
+    try {
+      await new PermMeetingLocationDao().newLocation(TITLE_A, LAT_A, LNG_A, NOTE_A);
+    } catch (error) {
+      errorMessage = error.message;
+    }
+    expect(errorMessage).toBe(BAD_REQUEST_RESPONSE.message);
   });
 });
 
