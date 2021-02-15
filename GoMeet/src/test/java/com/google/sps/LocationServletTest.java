@@ -153,7 +153,7 @@ public class LocationServletTest {
 
     // Check hashmap with the correct values was sent.
     assertEquals((Double) map.get("status"), Double.valueOf(HttpServletResponse.SC_BAD_REQUEST));
-    assertEquals((String) map.get("message"), ErrorMessages.MAX_ENTITIES);
+    assertEquals((String) map.get("message"), ErrorMessages.MAX_ENTITIES_ERROR);
   }
 
    /**
@@ -186,7 +186,7 @@ public class LocationServletTest {
 
     // Check hashmap with the correct values was sent.
     assertEquals((Double) map.get("status"), Double.valueOf(HttpServletResponse.SC_BAD_REQUEST));
-    assertEquals((String) map.get("message"), ErrorMessages.BAD_REQUEST_ERROR_LOCATION);
+    assertEquals((String) map.get("message"), ErrorMessages.REPEAT_TITLE_ERROR);
   }
 
   /** 

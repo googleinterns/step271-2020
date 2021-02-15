@@ -58,10 +58,10 @@ public class LocationServlet extends HttpServlet {
       response.getWriter().println(json);
     } catch (SimilarEntityExistsException e) {
       ServletUtil.sendErrorResponse(
-          response, HttpServletResponse.SC_BAD_REQUEST, ErrorMessages.BAD_REQUEST_ERROR_LOCATION);
+          response, HttpServletResponse.SC_BAD_REQUEST, ErrorMessages.REPEAT_TITLE_ERROR);
     } catch (MaxEntitiesReachedException e) {
       ServletUtil.sendErrorResponse(
-          response, HttpServletResponse.SC_BAD_REQUEST, ErrorMessages.MAX_ENTITIES);
+          response, HttpServletResponse.SC_BAD_REQUEST, ErrorMessages.MAX_ENTITIES_ERROR);
     }
   }
 

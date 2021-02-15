@@ -135,7 +135,8 @@ class PermMeetingLocationDao {
   /** 
    * Sends a new location to the servlet.
    * @return {String} Key String from the servlet.
-   * Throws an error if title is blank.
+   * @throws an error if title is blank.
+   * @throws an error if the server responds with BAD_REQUEST.
    */
   async newLocation(title, lat, lng, note) {
     if (title === '') {
@@ -147,8 +148,12 @@ class PermMeetingLocationDao {
     params.append('lng', lng);
     params.append('note', note);
     let response = await fetch(this.storingEndPoint, {method: 'POST', body: params});
-    let result = await response.json();
-    return result;
+    let json = await response.json();
+    if (response.status >= 200 && response.status <= 299) {
+      return json;
+    } else {
+      throw new Error(json.message);
+    }
   }
 
   /** Sends a request to the servlet to update a location entity's voteCount.
