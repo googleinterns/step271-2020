@@ -10,7 +10,7 @@ public class ErrorMessages {
       "Entity not found";
   public static final String TOO_MANY_RESULTS_ERROR = 
       "Too many results returned";
-  public static final String BAD_REQUEST_ERROR_LOCATION = 
+  public static final String REPEAT_TITLE_ERROR = 
       "There is already a location with this title";
   public static final String MAX_ENTITIES = 
       "Maximum number of entities reached";
