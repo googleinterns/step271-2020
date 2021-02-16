@@ -1,5 +1,5 @@
-// TESTS FOR rectifyTimeBoundaries
-describe('rectifyTimeBoundaries', function() {
+// TESTS FOR verifyTimeBoundary
+describe('verifyTimeBoundary', function() {
   const TIME_PAST = '2021-02-11T12:00';
   const FAKE_NOW = new Date(2021, 1, 12, 12, 0, 0, 0); // Time now: 2021-02-12T12:00
   const TIME_START = '2021-02-13T14:00' ; 
@@ -13,16 +13,16 @@ describe('rectifyTimeBoundaries', function() {
 
   it('returns true if both start and end are in the future \
       and end is later than start', function() {
-    expect(rectifyTimeBoundaries(TIME_START, TIME_END)).toBe(true);
+    expect(verifyTimeBoundary(TIME_START, TIME_END)).toBe(true);
   });
 
   it('returns false if start is in the past', function() {
-    expect(rectifyTimeBoundaries(TIME_PAST, TIME_END)).toBe(false);
+    expect(verifyTimeBoundary(TIME_PAST, TIME_END)).toBe(false);
   });
 
   it('returns false if end is earlier than start', function() {
     // This case also covers the case where end time is in the past.
-    expect(rectifyTimeBoundaries(TIME_START, TIME_PAST)).toBe(false);
+    expect(verifyTimeBoundary(TIME_START, TIME_PAST)).toBe(false);
   });
 
   afterEach(function() {
@@ -32,12 +32,12 @@ describe('rectifyTimeBoundaries', function() {
 
 // TESTS FOR generateTimes
 describe('generateTimes', function() {
-  let rectifyTimeBoundariesSpy;
+  let verifyTimeBoundarySpy;
   let startInput;
   let endInput;
 
   beforeEach(function() {
-    rectifyTimeBoundariesSpy = spyOn(window, 'rectifyTimeBoundaries');
+    verifyTimeBoundarySpy = spyOn(window, 'verifyTimeBoundary');
     spyOn(GoogleCalendarTimesDAO, 'findTimes');
     spyOn(window, 'alert');
     startInput = document.getElementById('period-start');
@@ -49,7 +49,7 @@ describe('generateTimes', function() {
     // Fill the fields up with some values so that they are not empty
     startInput.value = '2021-02-12T14:00';
     endInput.value = '2021-02-12T20:00';
-    rectifyTimeBoundariesSpy.and.returnValue(true);
+    verifyTimeBoundarySpy.and.returnValue(true);
 
     generateTimes();
 
@@ -63,7 +63,7 @@ describe('generateTimes', function() {
     startInput.value = '2021-02-12T14:00';
     endInput.value = '2021-02-12T20:00';
     // However, the start and end times are invalid.
-    rectifyTimeBoundariesSpy.and.returnValue(false);
+    verifyTimeBoundarySpy.and.returnValue(false);
     generateTimes();
     checkStartEndReset();
   });
@@ -72,7 +72,7 @@ describe('generateTimes', function() {
       the user if the period-start field is empty', function() {
     // The start field is empty.
     endInput.value = '2021-02-12T20:00';
-    rectifyTimeBoundariesSpy.and.returnValue(false);
+    verifyTimeBoundarySpy.and.returnValue(false);
     generateTimes();
     checkStartEndReset();
   });
@@ -81,7 +81,7 @@ describe('generateTimes', function() {
       the user if the period-end field is empty', function() {
     startInput.value = '2021-02-12T14:00';
     // The end field is empty.
-    rectifyTimeBoundariesSpy.and.returnValue(false);
+    verifyTimeBoundarySpy.and.returnValue(false);
     generateTimes();
     checkStartEndReset();
   });
