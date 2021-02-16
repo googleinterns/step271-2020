@@ -27,24 +27,22 @@ class TimeProposalUtil {
 
   /**
    * Clears the input field and alerts the user, if the user entered a time that
-   * is earlier than or equal to the date and time now. See verifyUniqueFutureTime.
+   * is earlier than or equal to the date and time now. See addUniqueFutureTime.
    * @param {Element} elem the input element where the user inputted the time
    * @param {Set} enteredTimes The set of datetime strings representing
    * all the times entered so far. Function will add 'time' to this
    * set if 'time' is unique and in the future.
    */
   static rectifyInputtedTime(elem, enteredTimes) {
-    if (!TimeProposalUtil.verifyUniqueFutureTime(elem.value, enteredTimes)) {
+    if (!TimeProposalUtil.addUniqueFutureTime(elem.value, enteredTimes)) {
       elem.value = "";
       alert(INVALID_TIME_ERROR);
     }
   }
 
   /**
-   * Verify that the time is a future time relative to
-   * the time now, and it is unique (i.e. not in enteredTimes).
-   * If unique and in the future, add to the enteredTimes set, and
-   * return true, otherwise return false.
+   * If given time is unique and in the future, add to the 
+   * enteredTimes set, and return true, otherwise return false.
    * @param {String} time The datetime string to be verified.
    * @param {Set} enteredTimes The set of datetime strings representing
    * all the times entered so far. Function will add 'time' to this
@@ -52,7 +50,7 @@ class TimeProposalUtil {
    * @return true if the time is unique and in the future,
    * otherwise false
    */
-  static verifyUniqueFutureTime(time, enteredTimes) {
+  static addUniqueFutureTime(time, enteredTimes) {
     if (TimeProposalUtil.verifyFutureTime(time) && 
         !(enteredTimes.has(time))) {
       enteredTimes.add(time);

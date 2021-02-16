@@ -16,8 +16,8 @@ describe('getDatetimeNow', function() {
   })
 });
 
-// Tests for verifyUniqueFutureTime
-describe('verifyUniqueFutureTime', function() {
+// Tests for addUniqueFutureTime
+describe('addUniqueFutureTime', function() {
   let enteredTimes = new Set();
   beforeEach(function() {
     jasmine.clock().install();
@@ -30,7 +30,7 @@ describe('verifyUniqueFutureTime', function() {
     // create a date that is 24 hours (24*60*60*1000 milliseconds) earlier than FAKE_NOW
     let inputtedTime = new Date(FAKE_NOW.getTime() - 24*60*60*1000).toISOString();
     inputtedTime = inputtedTime.substring(0, inputtedTime.length - 1); // trim the time zone data
-    expect(TimeProposalUtil.verifyUniqueFutureTime(inputtedTime, enteredTimes)).toBe(false);
+    expect(TimeProposalUtil.addUniqueFutureTime(inputtedTime, enteredTimes)).toBe(false);
     expect(enteredTimes.has(inputtedTime)).toBe(false);
   });
 
@@ -39,7 +39,7 @@ describe('verifyUniqueFutureTime', function() {
     // create a date that is 24 hours (24*60*60*1000 milliseconds) earlier than FAKE_NOW
     let inputtedTime = new Date(FAKE_NOW.getTime() - 24*60*60*1000).toISOString();
     inputtedTime = inputtedTime.substring(0, inputtedTime.length - 1);
-    expect(TimeProposalUtil.verifyUniqueFutureTime(inputtedTime, enteredTimes)).toBe(false);
+    expect(TimeProposalUtil.addUniqueFutureTime(inputtedTime, enteredTimes)).toBe(false);
     expect(enteredTimes.has(inputtedTime)).toBe(false);
   });
 
@@ -48,7 +48,7 @@ describe('verifyUniqueFutureTime', function() {
     // create a date that is 24 hours (24*60*60*1000 milliseconds) later than FAKE_NOW
     let inputtedTime = new Date(FAKE_NOW.getTime() + 24*60*60*1000).toISOString();
     inputtedTime = inputtedTime.substring(0, inputtedTime.length - 1);
-    expect(TimeProposalUtil.verifyUniqueFutureTime(inputtedTime, enteredTimes)).toBe(true);
+    expect(TimeProposalUtil.addUniqueFutureTime(inputtedTime, enteredTimes)).toBe(true);
     expect(enteredTimes.has(inputtedTime)).toBe(true);
   });
 
@@ -58,7 +58,7 @@ describe('verifyUniqueFutureTime', function() {
     let inputtedTime = new Date(FAKE_NOW.getTime() + 24*60*60*1000).toISOString();
     inputtedTime = inputtedTime.substring(0, inputtedTime.length - 1);
     enteredTimes.add(inputtedTime);
-    expect(TimeProposalUtil.verifyUniqueFutureTime(inputtedTime, enteredTimes)).toBe(false);
+    expect(TimeProposalUtil.addUniqueFutureTime(inputtedTime, enteredTimes)).toBe(false);
     expect(enteredTimes.has(inputtedTime)).toBe(true);
   });
 
@@ -76,8 +76,8 @@ describe('rectifyInputtedTime', function() {
     spyOn(window, 'alert');
   });
 
-  it('clears the input field and alerts the user if verifyUniqueFutureTime is false', function() {
-    spyOn(TimeProposalUtil, 'verifyUniqueFutureTime').and.returnValue(false);
+  it('clears the input field and alerts the user if addUniqueFutureTime is false', function() {
+    spyOn(TimeProposalUtil, 'addUniqueFutureTime').and.returnValue(false);
     // set the value of the inputElem to a date so it's not empty
     let value = new Date().toISOString();
     value = value.substring(0, value.length - 1);
@@ -90,8 +90,8 @@ describe('rectifyInputtedTime', function() {
     expect(window.alert).toHaveBeenCalledWith(INVALID_TIME_ERROR);
   });
 
-  it('does not clear the input field if verifyUniqueFutureTime is true', function() {
-    spyOn(TimeProposalUtil, 'verifyUniqueFutureTime').and.returnValue(true);
+  it('does not clear the input field if addUniqueFutureTime is true', function() {
+    spyOn(TimeProposalUtil, 'addUniqueFutureTime').and.returnValue(true);
     // set the value of the inputElem to a date so it's not empty
     let value = new Date().toISOString();
     value = value.substring(0, value.length - 1);
