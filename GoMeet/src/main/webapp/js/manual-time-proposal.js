@@ -9,11 +9,15 @@ var enteredTimes = new Set();
 /**
  * Called onload to set the minimum time users can input into the <input> with
  * name 'meeting-time-1' (default input visible on page load) to the current 
- * date and time.
+ * date and time, and also sets the onchange property to 
+ * 'TimeProposalUtil.rectifyInputtedTime(this, enteredTimes)', which will prevent
+ * user from inputting invalid times.
  * @param {Document} document the document that this function operates on.
  */
 function setMinDatetime(document) {
-  document.getElementsByName('meeting-time-1').item(0).min = getDatetimeNow();
+  let defaultTimeInput = document.getElementsByName('meeting-time-1').item(0);
+  defaultTimeInput.min = TimeProposalUtil.getDatetimeNow();
+  defaultTimeInput.onchange = function() {TimeProposalUtil.rectifyInputtedTime(this, enteredTimes)};
 }
 
 /**
@@ -38,10 +42,10 @@ function addTimeInput(document) {
   inputField.type = 'datetime-local';
   inputField.name = MEETING_TIME_NAME_PREFIX + timeNameSuffix.toString();
   // restrict potential meeting times to future dates only
-  let minDate = getDatetimeNow();
+  let minDate = TimeProposalUtil.getDatetimeNow();
   inputField.min = minDate;
   // whenever user changes the input value, check what the time they inputted to be valid
-  inputField.onchange = function() {rectifyInputtedTime(this);};
+  inputField.onchange = function() {TimeProposalUtil.rectifyInputtedTime(this, enteredTimes);};
 
   let label = document.createElement('label');
   label.htmlFor = inputField.name;
@@ -118,64 +122,6 @@ function toggleDeleteButtons(document, display) {
   }
   for (let i = 0; i < deleteButtons.length; i++) {
     deleteButtons[i].style.display = displayValue;
-  }
-}
-
-/**
- * Returns the ISO datestring of the local current date and time (hours and minutes),
- * with the time zone data trimmed. 
- * The timezone data in the string returned by Date.toISOString() is always 'Z' 
- * representing UTC time, meaning regardless of what Date() is initialised with,
- * the time is assumed to be UTC time. 
- * Seconds and milliseconds are set to 0, as that level of granularity is 
- * not required for the purposes of this module.
- * @returns the ISO string in the format YYYY-MM-DDTHH:MM:00:00
- */
-function getDatetimeNow() {
-  let now = new Date();
-
-  // number of minutes BEHIND that UTC time is relative to local time
-  // e.g. Sydney Time is 660 minutes (11 hrs) ahead, so timezoneOffset = -660
-  let timezoneOffset = now.getTimezoneOffset(); 
-
-  let nowOffset = new Date(now.getTime() - timezoneOffset * 60 * 1000);
-  nowOffset.setMilliseconds(0);
-  nowOffset.setSeconds(0);
-  nowOffset = nowOffset.toISOString();
-  nowOffset = nowOffset.substring(0,nowOffset.length - 1); // trim zone data off
-
-  return nowOffset;
-}
-
-/**
- * Clears the input field and alerts the user, if the user entered a time that 
- * is earlier than or equal to the date and time now. See verifyUniqueFutureTime.
- * @param {Element} elem the input element where the user inputted the time
- */
-function rectifyInputtedTime(elem) {
-  if (!verifyUniqueFutureTime(elem.value)) {
-    elem.value = '';
-    alert(INVALID_TIME_ERROR);
-  }
-}
-
-/**
- * Verify that the time is a future time relative to 
- * the time now, and it is unique (i.e. not in enteredTimes).
- * If unique and in the future, add to the enteredTimes set, and
- * return true, otherwise return false.
- * @param {String} time The datetime string to be verified.
- * @return true if the time is unique and in the future,
- * otherwise false
- */
-function verifyUniqueFutureTime(time) {
-  let timeEntered = new Date(time);
-  let now = new Date(getDatetimeNow());
-  if (enteredTimes.has(time) || !(timeEntered > now)) {
-    return false;
-  } else {
-    enteredTimes.add(time);
-    return true;
   }
 }
 

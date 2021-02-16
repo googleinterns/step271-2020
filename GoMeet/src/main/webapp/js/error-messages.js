@@ -11,4 +11,5 @@ const ENTITY_NOT_FOUND = 'This entity could not be found';
 const SAME_TITLE = 'There is already a location with this title';
 const MAX_ENTITIES = 'The maximum number of entities has been reached';
 const USER_HAS_VOTED = 'You have already voted for this';
-
+const INVALID_TIME_PERIOD = 'The time period must not be empty, and must be in the future. \
+    Start time must be earlier than end time.';

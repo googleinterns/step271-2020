@@ -24,6 +24,7 @@
   <script src="../js/load-map.js"></script> 
   <script src="../js/interactive-map.js"></script>
   <script src="../js/interactive-chart.js"></script>
+  <script src="../js/time-proposal-util.js"></script>
   <script src="../js/manual-time-proposal.js"></script>
   <script src="../js/meeting-event-dao.js"></script>
   <script src="../js/meeting-time-dao.js"></script>
@@ -32,6 +33,7 @@
   <script src="../js/vote-meeting-time.js"></script>
   <script src="../js/submit-meeting.js"></script>
   <script src="../js/google-calendar-times-dao.js"></script>
+  <script src="../js/gcal-time-proposal.js"></script>
   
   <!-- include spec files (files containing test code) here... -->
   <script src="spec/spec-create-meeting-step1.js"></script>
@@ -45,12 +47,13 @@
   <script src="spec/spec-meeting-time-dao.js"></script>
   <script src="spec/spec-meeting-location-dao.js"></script>
   <script src="spec/spec-email-dao.js"></script>
-  <script src="spec/spec-meeting-location-dao.js"></script>
+  <script src="spec/spec-time-proposal-util.js"></script>
   <script src="spec/spec-vote-meeting-time-dao.js"></script>
   <script src="spec/spec-vote-meeting-time.js"></script>
   <script src="spec/spec-login-status.js"></script>
   <script src="spec/spec-submit-meeting.js"></script>
   <script src="spec/spec-google-calendar-times-dao.js"></script>
+  <script src="spec/spec-gcal-time-proposal.js"></script>
   
 </head>
 <body>
@@ -96,5 +99,12 @@
   <ul style="display: none;" id="sent-list"></ul>
   <p style="display: none;" id="failed-text"></p>
   <ul style="display: none;" id="failed-list"></ul>
+  <div style="display: none;">
+    <!-- Tests for generateTime in spec-gcal-time-proposal.js -->
+    <input id="period-start" type="datetime-local" >
+    <input id="period-end" type="datetime-local">
+    <div id="generated-times"></div>
+    <button id="next-button"></button>
+  </div>
 </body>
 </html>
