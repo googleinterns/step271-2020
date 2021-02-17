@@ -51,6 +51,24 @@ document.head.appendChild(script);
 
 Note: This file was not committed to the remote repository in order to maintain confidentiality of personal API keys. 
 
+**Google Calendar API**
+
+In following file:
+
+```
+step271-2020/GoMeet/src/main/java/com/google/sps/servlets/GoogleCalendarTimesServlet.java
+```
+
+Add your API Key in between "" here:
+
+```
+private static String API_KEY = "";
+```
+
+**Running the App Engine Development Server**
+
+In the [Cloud Shell editor](https://shell.cloud.google.com/?show=ide%2Cterminal), clone this repository.
+
 In the terminal, navigate to the following directory:
 
 ```
@@ -63,9 +81,13 @@ Run the following Maven command:
 mvn package appengine:run
 ```
 
-The application running on the App Engine Development Server may then be previewed on port 8080.
+The application running on the App Engine Development Server may then be previewed on port 8080, via the 'Web Preview' > 'Preview on port 8080' buttons on the top right of the Cloud Shell editor.
+
+For more information, see the documentation [here](https://cloud.google.com/appengine/docs/standard/java/using-maven#testing_your_application_with_the_development_server).
 
 ## Test Execution Instructions
+
+In the [Cloud Shell editor](https://shell.cloud.google.com/?show=ide%2Cterminal), clone this repository.
 
 In the terminal, navigate to the following directory:
 
@@ -81,9 +103,11 @@ Run the following Maven command:
 mvn test
 ```
 
+The test results will be displayed in the terminal.
+
 **JavaScript Tests**
 
-Run the following Maven command: 
+After adding the `load-map.js` file as described above, run the following Maven command: 
 
 ```
 mvn package appengine:run
@@ -92,5 +116,5 @@ mvn package appengine:run
 Then, preview the App Engine Development Server on port 8080 and navigate to: 
 
 ````
-test/SpecRunner.html?random=false
+/test/SpecRunner.html?random=false
 ````
