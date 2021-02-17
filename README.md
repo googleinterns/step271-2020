@@ -24,6 +24,33 @@ Key Features:
 
 ## Application Preview Instructions
 
+**Map Visualisation**
+
+Application requires a `load-map.js` file to be created in the following directory: 
+
+````
+step271-2020/GoMeet/src/main/webapp/js
+````
+
+Then, copy the following script into the file and replace "YOUR_API_KEY" with your unique API key: 
+
+````
+// Create the script tag, set the appropriate attributes
+var script = document.createElement('script');
+script.src = 'https://maps.googleapis.com/maps/api/js?key=YOUR_API_KEY&callback=initMapAPI';
+script.defer = true;
+
+// Attach your callback function to the `window` object
+window.initMapAPI = function() {
+// JS API is loaded and available
+};
+
+// Append the 'script' element to 'head'
+document.head.appendChild(script);
+````
+
+Note: This file was not committed to the remote repository in order to maintain confidentiality of personal API keys. 
+
 In the terminal, navigate to the following directory:
 
 ```
@@ -37,3 +64,33 @@ mvn package appengine:run
 ```
 
 The application running on the App Engine Development Server may then be previewed on port 8080.
+
+## Test Execution Instructions
+
+In the terminal, navigate to the following directory:
+
+```
+step271-2020/GoMeet
+```
+
+**Java Tests**
+
+Run the following Maven command:
+
+```
+mvn test
+```
+
+**JavaScript Tests**
+
+Run the following Maven command: 
+
+```
+mvn package appengine:run
+```
+
+Then, preview the App Engine Development Server on port 8080 and navigate to: 
+
+````
+test/SpecRunner.html?random=false
+````
